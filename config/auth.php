@@ -40,6 +40,18 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+
+        // Guard untuk Admin
+        'admin' => [
+            'driver' => 'session',
+            'provider' => 'admins',
+        ],
+
+        // Guard untuk dokter/perawat
+        'tenaga_medis' => [
+            'driver' => 'session',
+            'provider' => 'tenaga_medis',
+        ],
     ],
 
     /*
@@ -69,6 +81,16 @@ return [
         //     'driver' => 'database',
         //     'table' => 'users',
         // ],
+        
+        'admins' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Admin::class,
+        ],
+
+        'tenaga_medis' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\TenagaMedis::class,
+        ],
     ],
 
     /*
