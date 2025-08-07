@@ -16,4 +16,9 @@ class TenagaMedis extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    public function rekamMedis()
+    {
+        return $this->hasMany(RekamMedis::class, 'dokter_id');
+    }
 }
