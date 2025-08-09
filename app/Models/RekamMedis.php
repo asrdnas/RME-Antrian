@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class RekamMedis extends Model
 {
-    
+
     protected $fillable = [
         'patient_id',
         'dokter_id',
@@ -18,7 +18,7 @@ class RekamMedis extends Model
 
     public function patient()
     {
-        return $this->belongsTo(Patient::class);
+        return $this->belongsTo(Patient::class); // foreign key default: patient_id
     }
 
     public function dokter()
@@ -28,6 +28,7 @@ class RekamMedis extends Model
 
     public function admin()
     {
-        return $this->belongsTo(Admin::class);
+        return $this->belongsTo(Admin::class); // foreign key default: admin_id
     }
+
 }

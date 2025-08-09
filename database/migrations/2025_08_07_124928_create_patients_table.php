@@ -45,6 +45,8 @@ return new class extends Migration
             $table->boolean('perlu_penerjemah')->default(false);
             $table->boolean('bahasa_isyarat')->default(false);
 
+            $table->enum('status_validasi', ['pending', 'approved', 'rejected'])->default('pending');
+
             $table->timestamps();
         });
     }
