@@ -10,7 +10,6 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Filament\Tables\Actions\Action;
 use Filament\Notifications\Notification;
 
 class AntrianResource extends Resource
@@ -23,33 +22,52 @@ class AntrianResource extends Resource
     public static function form(Form $form): Form
     {
         return $form->schema([
-            Forms\Components\Select::make('patient_id')
-                ->label('Pilih Pasien')
-                ->options(Patient::where('status_validasi', 'approved')->pluck('nama_pasien', 'id'))
-                ->searchable()
+            Forms\Components\TextInput::make('nik')
+                ->label('NIK Pasien')
                 ->required()
+                ->length(16)
+                ->numeric()
                 ->reactive()
                 ->afterStateUpdated(function ($state, callable $set) {
-                    if ($state) {
-                        $set('no_antrian', self::generateNoAntrian());
+                    // Reset patient_id dan nama_pasien setiap kali nik berubah
+                    $set('patient_id', null);
+                    $set('nama_pasien', null);
+
+                    if ($state && strlen($state) === 16) {
+                        $patient = Patient::where('nik', $state)->first();
+                        if ($patient) {
+                            $set('patient_id', $patient->id);
+                            $set('nama_pasien', $patient->nama_pasien);
+                        }
                     }
                 })
                 ->rules([
-                    function () {
-                        return function (string $attribute, $value, $fail) {
-                            if (request()->routeIs('filament.resources.antrians.create')) {
-                                $exists = Antrian::where('patient_id', $value)
-                                    ->whereIn('status', ['menunggu', 'dipanggil'])
-                                    ->whereDate('tanggal', today())
-                                    ->exists();
-
-                                if ($exists) {
-                                    $fail('Pasien ini sudah ada di antrian dan belum selesai.');
-                                }
+                    'required',
+                    'numeric',
+                    'digits:16',
+                    function ($attribute, $value, $fail) {
+                        $patient = Patient::where('nik', $value)->first();
+                        if (!$patient) {
+                            $fail('Pasien dengan NIK ini tidak ditemukan.');
+                        } else {
+                            $exists = Antrian::where('patient_id', $patient->id)
+                                ->whereIn('status', ['menunggu', 'dipanggil'])
+                                ->whereDate('tanggal', today())
+                                ->exists();
+                            if ($exists) {
+                                $fail('Pasien ini sudah memiliki antrian aktif hari ini.');
                             }
-                        };
-                    }
+                        }
+                    },
                 ]),
+
+            Forms\Components\TextInput::make('nama_pasien')
+                ->label('Nama Pasien')
+                ->disabled()
+                ->reactive()
+                ->visible(fn ($get) => !empty($get('nama_pasien'))),
+
+            Forms\Components\Hidden::make('patient_id'),
 
             Forms\Components\TextInput::make('no_antrian')
                 ->label('Nomor Antrian')
@@ -74,6 +92,29 @@ class AntrianResource extends Resource
         ]);
     }
 
+    // Supaya patient_id terisi dari nik sebelum simpan
+    public static function mutateFormDataBeforeCreate(array $data): array
+    {
+        if (!empty($data['nik'])) {
+            $patient = Patient::where('nik', $data['nik'])->first();
+            if ($patient) {
+                $data['patient_id'] = $patient->id;
+            }
+        }
+        return $data;
+    }
+
+    public static function mutateFormDataBeforeSave(array $data, $record): array
+    {
+        if (!empty($data['nik'])) {
+            $patient = Patient::where('nik', $data['nik'])->first();
+            if ($patient) {
+                $data['patient_id'] = $patient->id;
+            }
+        }
+        return $data;
+    }
+
     public static function table(Table $table): Table
     {
         return $table
@@ -94,7 +135,7 @@ class AntrianResource extends Resource
                     ]),
             ])
             ->headerActions([
-                Action::make('resetAntrianHarian')
+                Tables\Actions\Action::make('resetAntrianHarian')
                     ->label('Reset Antrian Hari Ini')
                     ->color('danger')
                     ->icon('heroicon-o-trash')
@@ -111,7 +152,7 @@ class AntrianResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
 
-                Action::make('panggilPasien')
+                Tables\Actions\Action::make('panggilPasien')
                     ->label('Panggil Pasien')
                     ->icon('heroicon-o-megaphone')
                     ->color('warning')
@@ -125,7 +166,7 @@ class AntrianResource extends Resource
                             ->send();
                     }),
 
-                Action::make('tandaiSelesai')
+                Tables\Actions\Action::make('tandaiSelesai')
                     ->label('Tandai Selesai')
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
