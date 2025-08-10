@@ -22,6 +22,7 @@ class AntrianResource extends Resource
     public static function form(Form $form): Form
     {
         return $form->schema([
+            // Field nik hanya tampil di create page
             Forms\Components\TextInput::make('nik')
                 ->label('NIK Pasien')
                 ->required()
@@ -29,10 +30,8 @@ class AntrianResource extends Resource
                 ->numeric()
                 ->reactive()
                 ->afterStateUpdated(function ($state, callable $set) {
-                    // Reset patient_id dan nama_pasien setiap kali nik berubah
                     $set('patient_id', null);
                     $set('nama_pasien', null);
-
                     if ($state && strlen($state) === 16) {
                         $patient = Patient::where('nik', $state)->first();
                         if ($patient) {
@@ -41,31 +40,24 @@ class AntrianResource extends Resource
                         }
                     }
                 })
-                ->rules([
-                    'required',
-                    'numeric',
-                    'digits:16',
-                    function ($attribute, $value, $fail) {
-                        $patient = Patient::where('nik', $value)->first();
-                        if (!$patient) {
-                            $fail('Pasien dengan NIK ini tidak ditemukan.');
-                        } else {
-                            $exists = Antrian::where('patient_id', $patient->id)
-                                ->whereIn('status', ['menunggu', 'dipanggil'])
-                                ->whereDate('tanggal', today())
-                                ->exists();
-                            if ($exists) {
-                                $fail('Pasien ini sudah memiliki antrian aktif hari ini.');
-                            }
-                        }
-                    },
-                ]),
+                ->visible(fn ($livewire) => $livewire instanceof Pages\CreateAntrian),
 
             Forms\Components\TextInput::make('nama_pasien')
                 ->label('Nama Pasien')
                 ->disabled()
                 ->reactive()
-                ->visible(fn ($get) => !empty($get('nama_pasien'))),
+                ->afterStateHydrated(function ($state, callable $set, $get) {
+                    if (empty($state)) {
+                        $patient_id = $get('patient_id');
+                        if ($patient_id) {
+                            $patient = Patient::find($patient_id);
+                            if ($patient) {
+                                $set('nama_pasien', $patient->nama_pasien);
+                            }
+                        }
+                    }
+                })
+                ->visible(),
 
             Forms\Components\Hidden::make('patient_id'),
 
@@ -73,7 +65,7 @@ class AntrianResource extends Resource
                 ->label('Nomor Antrian')
                 ->required()
                 ->numeric()
-                ->default(fn() => self::generateNoAntrian()),
+                ->default(fn () => self::generateNoAntrian()),
 
             Forms\Components\Select::make('status')
                 ->label('Status')
@@ -156,7 +148,7 @@ class AntrianResource extends Resource
                     ->label('Panggil Pasien')
                     ->icon('heroicon-o-megaphone')
                     ->color('warning')
-                    ->visible(fn($record) => $record->status === 'menunggu')
+                    ->visible(fn ($record) => $record->status === 'menunggu')
                     ->requiresConfirmation()
                     ->action(function ($record) {
                         $record->update(['status' => 'dipanggil']);
@@ -170,7 +162,7 @@ class AntrianResource extends Resource
                     ->label('Tandai Selesai')
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
-                    ->visible(fn($record) => $record->status === 'dipanggil')
+                    ->visible(fn ($record) => $record->status === 'dipanggil')
                     ->requiresConfirmation()
                     ->action(function ($record) {
                         $record->update(['status' => 'selesai']);
