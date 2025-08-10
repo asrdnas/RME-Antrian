@@ -132,4 +132,5 @@ class PasienResource extends Resource
             'edit' => Pages\EditPasien::route('/{record}/edit'),
         ];
     }
+
 }
