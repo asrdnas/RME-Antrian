@@ -12,8 +12,10 @@ class CreateAntrian extends CreateRecord
 {
     protected static string $resource = AntrianResource::class;
 
-    protected function beforeValidate(array $data): array
+    protected function beforeValidate(): void
     {
+        $data = $this->form->getState();
+
         if (empty($data['nik'])) {
             throw ValidationException::withMessages([
                 'nik' => 'NIK Pasien harus diisi.',
@@ -38,8 +40,6 @@ class CreateAntrian extends CreateRecord
                 'nik' => 'Pasien ini sudah memiliki antrian aktif hari ini.',
             ]);
         }
-
-        return $data;
     }
 
     protected function mutateFormDataBeforeCreate(array $data): array
