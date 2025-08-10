@@ -3,62 +3,285 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ValidasiPasienResource\Pages;
-use App\Filament\Resources\ValidasiPasienResource\RelationManagers;
-use App\Models\ValidasiPasien;
+use App\Models\Patient;
+use App\Models\Antrian;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Notifications\Notification;
 
 class ValidasiPasienResource extends Resource
 {
-    protected static ?string $model = ValidasiPasien::class;
-
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-
-    public static function form(Form $form): Form
-    {
-        return $form
-            ->schema([
-                //
-            ]);
-    }
+    protected static ?string $model = Patient::class;
+    protected static ?string $navigationIcon = 'heroicon-o-check-circle';
+    protected static ?string $navigationLabel = 'Validasi Pasien';
+    protected static ?string $navigationGroup = 'Manajemen Klinik';
 
     public static function table(Table $table): Table
     {
         return $table
+            ->query(
+                Patient::query()->where('status_validasi', 'pending')
+            )
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('nama_pasien')
+                    ->label('Nama Pasien')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('nik')
+                    ->label('NIK')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('no_rme')
+                    ->label('No RME'),
+                Tables\Columns\TextColumn::make('alamat_pasien')
+                    ->label('Alamat')
+                    ->limit(30),
+                Tables\Columns\BadgeColumn::make('status_validasi')
+                    ->label('Status Validasi')
+                    ->colors([
+                        'warning' => 'pending',
+                        'success' => 'approved',
+                        'danger' => 'rejected',
+                    ]),
             ])
             ->filters([
-                //
+                SelectFilter::make('status_validasi')
+                    ->label('Filter Status')
+                    ->options([
+                        'pending' => 'Pending',
+                        'approved' => 'Approved',
+                        'rejected' => 'Rejected',
+                    ])
+                    ->default('pending'),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                Tables\Actions\Action::make('validasi')
+                    ->label('Validasi')
+                    ->color('success')
+                    ->visible(fn ($record) => $record->status_validasi === 'pending')
+                    ->requiresConfirmation()
+                    ->icon('heroicon-o-check')
+                    ->action(function ($record, $livewire) {
+                        // Pastikan kolom bisa diupdate
+                        $record->status_validasi = 'approved';
+                        $record->save();
+
+                        // Tambah ke antrian
+                        Antrian::create([
+                            'patient_id' => $record->id,
+                            'no_antrian' => self::generateNoAntrian(),
+                            'status' => 'menunggu',
+                            'tanggal' => now(),
+                        ]);
+
+                        // Notifikasi sukses
+                        Notification::make()
+                            ->title('Pasien berhasil divalidasi')
+                            ->success()
+                            ->send();
+
+                        // Refresh tabel supaya barisnya hilang
+                        $livewire->dispatch('$refresh');
+                    }),
+
+                    // Edit Nomor Antrian
+                Tables\Actions\Action::make('edit_no_antrian')
+                    ->label('Edit No Antrian')
+                    ->icon('heroicon-o-pencil')
+                    ->color('primary')
+                    ->visible(fn($record) => $record->status_validasi === 'pending')
+                    ->form([
+                        Forms\Components\TextInput::make('no_antrian')
+                            ->label('Nomor Antrian')
+                            ->numeric()
+                            ->default(fn($record) => $record->no_antrian ?? self::generateNoAntrian())
+                            ->required()
+                            ->rules([
+                                function () {
+                                    return function (string $attribute, $value, $fail) {
+                                        if (Antrian::whereDate('tanggal', today())
+                                            ->where('no_antrian', $value)
+                                            ->exists()) {
+                                            $fail('Nomor antrian ini sudah digunakan hari ini.');
+                                        }
+                                    };
+                                }
+                            ]),
+                    ])
+                    ->action(function ($record, array $data) {
+                        $record->update(['no_antrian' => $data['no_antrian']]);
+
+                        Notification::make()
+                            ->title('Nomor antrian berhasil diperbarui.')
+                            ->success()
+                            ->send();
+                    }),
+                
+                Tables\Actions\DeleteAction::make(),
             ]);
     }
 
-    public static function getRelations(): array
+    public static function form(Form $form): Form
     {
-        return [
-            //
-        ];
+        return $form->schema(self::getFormSchema());
     }
 
     public static function getPages(): array
     {
         return [
             'index' => Pages\ListValidasiPasiens::route('/'),
-            'create' => Pages\CreateValidasiPasien::route('/create'),
-            'edit' => Pages\EditValidasiPasien::route('/{record}/edit'),
+        ];
+    }
+
+    public static function generateNoAntrian()
+    {
+        $lastNumber = Antrian::whereDate('tanggal', today())->max('no_antrian');
+        return $lastNumber ? intval($lastNumber) + 1 : 1;
+    }
+
+    public static function generateNoRme()
+    {
+        $today = now()->format('Ymd');
+        $lastRme = Patient::whereDate('created_at', today())->max('no_rme');
+
+        if ($lastRme) {
+            $lastNumber = intval(substr($lastRme, -4));
+            $newNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
+        } else {
+            $newNumber = '0001';
+        }
+
+        return 'RME' . $today . $newNumber;
+    }
+
+    private static function getFormSchema(): array
+    {
+        return [
+            Forms\Components\Hidden::make('no_rme')
+                ->default(fn () => self::generateNoRme()),
+
+            Forms\Components\Section::make('Data Pribadi Pasien')->schema([
+                Forms\Components\TextInput::make('nama_pasien')
+                    ->label('Nama Lengkap')
+                    ->required()
+                    ->afterStateUpdated(fn ($state, callable $set) => $set('nama_pasien', strtoupper($state))),
+                Forms\Components\TextInput::make('nik')
+                    ->label('Nomor KTP')
+                    ->required()
+                    ->numeric()
+                    ->length(16)
+                    ->unique(Patient::class, 'nik'),
+                Forms\Components\TextInput::make('tempat_lahir')
+                    ->label('Tempat Lahir')
+                    ->required()
+                    ->afterStateUpdated(fn ($state, callable $set) => $set('tempat_lahir', strtoupper($state))),
+                Forms\Components\DatePicker::make('tanggal_lahir')
+                    ->label('Tanggal Lahir')
+                    ->required(),
+                Forms\Components\TextInput::make('umur_pasien')
+                    ->label('Umur')
+                    ->numeric()
+                    ->required(),
+                Forms\Components\Radio::make('jenis_kelamin')
+                    ->label('Jenis Kelamin')
+                    ->options([
+                        'laki-laki' => 'Laki-laki',
+                        'perempuan' => 'Perempuan',
+                    ])
+                    ->required(),
+                Forms\Components\Textarea::make('alamat_pasien')
+                    ->label('Alamat')
+                    ->required(),
+                Forms\Components\TextInput::make('no_tlp_pasien')
+                    ->label('Nomor Telepon')
+                    ->numeric(),
+                Forms\Components\Radio::make('status_perkawinan_pasien')
+                    ->label('Status Perkawinan')
+                    ->options([
+                        'menikah' => 'Menikah',
+                        'belum_menikah' => 'Belum Menikah',
+                        'janda' => 'Janda',
+                        'duda' => 'Duda',
+                    ]),
+                Forms\Components\TextInput::make('agama_pasien')
+                    ->label('Agama'),
+                Forms\Components\Radio::make('pekerjaan_pasien')
+                    ->label('Pekerjaan')
+                    ->options([
+                        'pns' => 'PNS',
+                        'tni' => 'TNI',
+                        'polisi' => 'Polisi',
+                        'bumn' => 'BUMN',
+                        'bumd' => 'BUMD',
+                        'karyawan_swasta' => 'Karyawan Swasta',
+                        'petani' => 'Petani',
+                        'pedagang' => 'Pedagang',
+                        'lain-lain' => 'Lain-lain',
+                    ])
+                    ->reactive(),
+                Forms\Components\TextInput::make('pekerjaan_pasien_lain')
+                    ->label('Pekerjaan Lainnya')
+                    ->visible(fn ($get) => $get('pekerjaan_pasien') === 'lain-lain'),
+                Forms\Components\Radio::make('pendidikan_pasien')
+                    ->label('Pendidikan')
+                    ->options([
+                        'tidak_lulus' => 'Tidak Lulus',
+                        'sd' => 'SD',
+                        'smp' => 'SMP',
+                        'sma' => 'SMA',
+                        'slta' => 'SLTA',
+                        's1' => 'Sarjana S1',
+                        's2' => 'S2',
+                        's3' => 'S3',
+                        'lain-lain' => 'Lain-lain',
+                    ])
+                    ->reactive(),
+                Forms\Components\TextInput::make('pendidikan_pasien_lain')
+                    ->label('Pendidikan Lainnya')
+                    ->visible(fn ($get) => $get('pendidikan_pasien') === 'lain-lain'),
+            ])->columns(2),
+
+            Forms\Components\Section::make('Data Penanggung Jawab')->schema([
+                Forms\Components\TextInput::make('nama_penanggung_jawab')
+                    ->label('Nama Penanggung Jawab')
+                    ->required(),
+                Forms\Components\TextInput::make('umur_penanggung_jawab')
+                    ->label('Umur Penanggung Jawab')
+                    ->numeric()
+                    ->required(),
+                Forms\Components\Radio::make('pekerjaan_penanggung_jawab')
+                    ->label('Pekerjaan Penanggung Jawab')
+                    ->options([
+                        'pns' => 'PNS',
+                        'tni' => 'TNI',
+                        'polisi' => 'Polisi',
+                        'bumn' => 'BUMN',
+                        'bumd' => 'BUMD',
+                        'karyawan_swasta' => 'Karyawan Swasta',
+                        'petani' => 'Petani',
+                        'pedagang' => 'Pedagang',
+                        'lain-lain' => 'Lain-lain',
+                    ])
+                    ->reactive(),
+                Forms\Components\TextInput::make('pekerjaan_penanggung_jawab_lain')
+                    ->label('Pekerjaan Lainnya')
+                    ->visible(fn ($get) => $get('pekerjaan_penanggung_jawab') === 'lain-lain'),
+                Forms\Components\Radio::make('hubungan_dengan_pasien')
+                    ->label('Hubungan Dengan Pasien')
+                    ->options([
+                        'suami' => 'Suami',
+                        'istri' => 'Istri',
+                        'ibu' => 'Ibu',
+                        'ayah' => 'Ayah',
+                        'lain-lain' => 'Lain-lain',
+                    ])
+                    ->reactive(),
+                Forms\Components\TextInput::make('hubungan_dengan_pasien_lain')
+                    ->label('Hubungan Lainnya')
+                    ->visible(fn ($get) => $get('hubungan_dengan_pasien') === 'lain-lain'),
+            ])->columns(2),
         ];
     }
 }
