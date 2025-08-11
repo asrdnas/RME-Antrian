@@ -28,7 +28,6 @@ class RekamMedis extends Model
 
     public function admin()
     {
-        return $this->belongsTo(Admin::class); // foreign key default: admin_id
+        return $this->belongsTo(Admin::class, 'admin_id');  // foreign key default: admin_id
     }
-
 }

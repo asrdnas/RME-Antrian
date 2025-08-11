@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('dokter_id')->constrained('tenaga_medis')->onDelete('cascade');
             $table->foreignId('admin_id')->constrained('admins')->onDelete('cascade');
 
-            $table->timestamp('tanggal');
+           $table->timestamp('tanggal') ;
             $table->text('tindakan')->nullable();
             $table->text('diagnosa')->nullable();
 
