@@ -151,8 +151,8 @@ class RekamMedisResource extends Resource
                 Forms\Components\Select::make('status_pulang')
                     ->label('Status Pulang')
                     ->options([
-                        'Pulang'     => 'Pulang',
-                        'Rujuk'      => 'Rujuk',
+                        'Pulang' => 'Pulang',
+                        'Rujuk' => 'Rujuk',
                         'Rawat Inap' => 'Rawat Inap',
                     ])
                     ->required(),
@@ -204,7 +204,7 @@ class RekamMedisResource extends Resource
                     ->label('Diagnosa')
                     ->default('-')
                     ->limit(50)
-                    ->tooltip(fn ($record) => $record->deskripsi_icd10),
+                    ->tooltip(fn($record) => $record->deskripsi_icd10),
 
                 Tables\Columns\TextColumn::make('tenaga_medis')
                     ->label('Tenaga Medis')
@@ -221,7 +221,7 @@ class RekamMedisResource extends Resource
                     ->colors([
                         'success' => 'Pulang',
                         'warning' => 'Rujuk',
-                        'danger'  => 'Rawat Inap',
+                        'danger' => 'Rawat Inap',
                     ]),
             ])
             ->filters([
@@ -232,8 +232,8 @@ class RekamMedisResource extends Resource
                     ])
                     ->query(function ($query, array $data) {
                         return $query
-                            ->when($data['from'], fn ($q, $date) => $q->whereDate('tanggal', '>=', $date))
-                            ->when($data['until'], fn ($q, $date) => $q->whereDate('tanggal', '<=', $date));
+                            ->when($data['from'], fn($q, $date) => $q->whereDate('tanggal', '>=', $date))
+                            ->when($data['until'], fn($q, $date) => $q->whereDate('tanggal', '<=', $date));
                     }),
             ])
             ->actions([

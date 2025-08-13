@@ -40,7 +40,7 @@ class AntrianResource extends Resource
                         }
                     }
                 })
-                ->visible(fn ($livewire) => $livewire instanceof Pages\CreateAntrian),
+                ->visible(fn($livewire) => $livewire instanceof Pages\CreateAntrian),
 
             Forms\Components\TextInput::make('nama_pasien')
                 ->label('Nama Pasien')
@@ -65,7 +65,7 @@ class AntrianResource extends Resource
                 ->label('Nomor Antrian')
                 ->required()
                 ->numeric()
-                ->default(fn () => self::generateNoAntrian()),
+                ->default(fn() => self::generateNoAntrian()),
 
             Forms\Components\Select::make('status')
                 ->label('Status')
@@ -149,7 +149,7 @@ class AntrianResource extends Resource
                     ->label('Panggil Pasien')
                     ->icon('heroicon-o-megaphone')
                     ->color('warning')
-                    ->visible(fn ($record) => $record->status === 'menunggu')
+                    ->visible(fn($record) => $record->status === 'menunggu')
                     ->requiresConfirmation()
                     ->action(function ($record) {
                         $record->update(['status' => 'dipanggil']);
@@ -163,7 +163,7 @@ class AntrianResource extends Resource
                     ->label('Tandai Selesai')
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
-                    ->visible(fn ($record) => $record->status === 'dipanggil')
+                    ->visible(fn($record) => $record->status === 'dipanggil')
                     ->requiresConfirmation()
                     ->action(function ($record) {
                         $record->update(['status' => 'selesai']);

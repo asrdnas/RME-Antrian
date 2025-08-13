@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -46,7 +45,7 @@ return new class extends Migration
             $table->integer('respiratory_rate')->nullable(); // x/menit
             $table->integer('heart_rate')->nullable();       // bpm
 
-             // Tenaga Medis & Status
+            // Tenaga Medis & Status
             $table->string('tenaga_medis')->nullable();
             $table->enum('status_pulang', ['Pulang', 'Rujuk', 'Rawat Inap'])->nullable();
 
