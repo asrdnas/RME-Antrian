@@ -13,6 +13,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Notifications\Notification;
+
 class AntrianResource extends Resource
 {
     protected static ?string $model = Antrian::class;
@@ -41,13 +42,27 @@ class AntrianResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
                     ->options([
-                        'menunggu' => 'Menunggu',
+                        'menunggu'  => 'Menunggu',
                         'dipanggil' => 'Dipanggil',
-                        'selesai' => 'Selesai',
+                        'selesai'   => 'Selesai',
                     ]),
             ])
-            ->actions([
+            ->headerActions([
+                Tables\Actions\Action::make('resetAntrianHarian')
+                    ->label('Reset Antrian Hari Ini')
+                    ->color('danger')
+                    ->icon('heroicon-o-trash')
+                    ->requiresConfirmation()
+                    ->action(function () {
+                        Antrian::whereDate('tanggal', today())->delete();
 
+                        Notification::make()
+                            ->title('Antrian hari ini berhasil direset.')
+                            ->success()
+                            ->send();
+                    }),
+            ])
+            ->actions([
                 Tables\Actions\Action::make('panggilPasien')
                     ->label('Panggil Pasien')
                     ->icon('heroicon-o-megaphone')

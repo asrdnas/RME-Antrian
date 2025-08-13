@@ -110,7 +110,7 @@ class AntrianResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->poll('5s') // Refresh otomatis setiap 5 detik
+            ->poll('3s') // Refresh otomatis setiap 5 detik
             ->columns([
                 Tables\Columns\TextColumn::make('no_antrian')->label('No Antrian')->sortable(),
                 Tables\Columns\TextColumn::make('patient.no_rme')->label('No RME'),
