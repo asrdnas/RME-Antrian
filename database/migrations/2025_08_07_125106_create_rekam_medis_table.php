@@ -13,18 +13,57 @@ return new class extends Migration
     {
         Schema::create('rekam_medis', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('patient_id')->constrained()->onDelete('cascade');
-            $table->foreignId('dokter_id')->constrained('tenaga_medis')->onDelete('cascade');
-            $table->foreignId('admin_id')->constrained('admins')->onDelete('cascade');
 
-           $table->timestamp('tanggal') ;
-            $table->text('tindakan')->nullable();
-            $table->text('diagnosa')->nullable();
+            // Relasi
+            $table->foreignId('patient_id')->constrained('patients')->cascadeOnDelete();
+            $table->foreignId('dokter_id')->constrained('tenaga_medis')->cascadeOnDelete();
+            $table->foreignId('admin_id')->constrained('admins')->cascadeOnDelete();
+
+            // Tanggal & Waktu
+            $table->date('tanggal')->nullable();
+            $table->time('waktu_kedatangan')->nullable();
+            $table->time('waktu_mulai')->nullable();
+            $table->time('waktu_selesai')->nullable();
+
+            // Anamnesa & Pemeriksaan
+            $table->text('anamnesa')->nullable();
+            $table->text('pemeriksaan')->nullable();
+
+            // Kesadaran
+            $table->enum('kesadaran', ['Sadar', 'Tidak Sadar'])->nullable();
+
+            // Pengukuran Fisik
+            $table->decimal('tinggi_badan', 5, 2)->nullable(); // cm
+            $table->decimal('berat_badan', 5, 2)->nullable();  // kg
+            $table->integer('sistole')->nullable();            // mmHg
+            $table->integer('diastole')->nullable();           // mmHg
+
+            // Resep & Catatan
+            $table->text('resep')->nullable();
+            $table->text('catatan')->nullable();
+
+            // Pemeriksaan vital
+            $table->integer('respiratory_rate')->nullable(); // x/menit
+            $table->integer('heart_rate')->nullable();       // bpm
+
+             // Tenaga Medis & Status
+            $table->string('tenaga_medis')->nullable();
+            $table->enum('status_pulang', ['Pulang', 'Rujuk', 'Rawat Inap'])->nullable();
+
+            // Terapi
+            $table->text('terapi')->nullable();
+
+            // Kasus
+            $table->enum('kasus_lama_baru', ['Lama', 'Baru'])->nullable();
+
+            // Diagnosa ICD-10
+            $table->string('kode_icd10')->nullable();
+            $table->string('deskripsi_icd10')->nullable();
+
 
             $table->timestamps();
         });
     }
-
     /**
      * Reverse the migrations.
      */

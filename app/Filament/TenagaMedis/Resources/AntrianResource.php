@@ -31,19 +31,19 @@ class AntrianResource extends Resource
     {
         return $table
         ->columns([
-            Tables\Columns\TextColumn::make('no_antrian')->label('No Antrian')->sortable(),
-            Tables\Columns\TextColumn::make('patient.no_rme')->label('No RME'),
-            Tables\Columns\TextColumn::make('patient.nama_pasien')->label('Nama Pasien')->sortable(),
-            Tables\Columns\TextColumn::make('patient.alamat_pasien')->label('Alamat Pasien')->limit(20),
-            Tables\Columns\TextColumn::make('status')->label('Status'),
-            Tables\Columns\TextColumn::make('tanggal')->label('Tanggal')->dateTime('d/m/Y H:i'),
+            Tables\Columns\TextColumn::make('no_antrian')                  ->label('No Antrian')->sortable(),
+            Tables\Columns\TextColumn::make('patient.no_rme')              ->label('No RME'),
+            Tables\Columns\TextColumn::make('patient.nama_pasien')         ->label('Nama Pasien')->sortable(),
+            Tables\Columns\TextColumn::make('patient.alamat_pasien')       ->label('Alamat Pasien')->limit(20),
+            Tables\Columns\TextColumn::make('status')                      ->label('Status'),
+            Tables\Columns\TextColumn::make('tanggal')->label('Tanggal')   ->dateTime('d/m/Y H:i'),
         ])
         ->filters([
             Tables\Filters\SelectFilter::make('status')
                 ->options([
-                    'menunggu' => 'Menunggu',
+                    'menunggu'  => 'Menunggu',
                     'dipanggil' => 'Dipanggil',
-                    'selesai' => 'Selesai',
+                    'selesai'   => 'Selesai',
                 ]),
         ])
         ->actions([

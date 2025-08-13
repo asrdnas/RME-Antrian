@@ -65,9 +65,9 @@ class PasienResource extends Resource
             Tables\Filters\SelectFilter::make('status_validasi')
                 ->label('Status Validasi')
                 ->options([
-                    'pending' => 'Pending',
-                    'approved' => 'Approved',
-                    'rejected' => 'Rejected',
+                    'pending'   => 'Pending',
+                    'approved'  => 'Approved',
+                    'rejected'  => 'Rejected',
                 ]),
         ])
         ->headerActions([
