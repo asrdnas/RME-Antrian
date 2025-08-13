@@ -34,6 +34,7 @@ class PasienResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+        ->poll('3s')
             ->columns([
                 Tables\Columns\TextColumn::make('nama_pasien')
                     ->label('Nama Pasien')

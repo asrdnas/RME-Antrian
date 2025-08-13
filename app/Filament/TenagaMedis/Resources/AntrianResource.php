@@ -46,6 +46,22 @@ class AntrianResource extends Resource
                     'selesai'   => 'Selesai',
                 ]),
         ])
+        ->headerActions([
+            Tables\Actions\Action::make('resetAntrianHarian')
+                ->label('Reset Antrian Hari Ini')
+                ->color('danger')
+                ->icon('heroicon-o-trash')
+                ->requiresConfirmation()
+                ->action(function () {
+                    Antrian::whereDate('tanggal', today())->delete();
+
+                    Notification::make()
+                        ->title('Antrian hari ini berhasil direset.')
+                        ->success()
+                        ->send();
+                }),
+        ])
+
         ->actions([
 
             Tables\Actions\Action::make('panggilPasien')
