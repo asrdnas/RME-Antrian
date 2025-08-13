@@ -13,7 +13,13 @@ class ListAntrians extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            // Tombol Create seperti biasa
             Actions\CreateAction::make(),
+
+            Actions\Action::make('riwayat')
+            ->label('Riwayat Antrian')
+            ->icon('heroicon-o-clock')
+            ->url(fn () => url('/admin/riwayat-antrians')),
         ];
     }
 }

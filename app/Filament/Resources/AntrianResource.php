@@ -5,12 +5,14 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\AntrianResource\Pages;
 use App\Models\Antrian;
 use App\Models\Patient;
+use App\Models\RiwayatAntrian;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Notifications\Notification;
+use Carbon\Carbon;
 
 class AntrianResource extends Resource
 {
@@ -22,7 +24,6 @@ class AntrianResource extends Resource
     public static function form(Form $form): Form
     {
         return $form->schema([
-            // Field nik hanya tampil di create page
             Forms\Components\TextInput::make('nik')
                 ->label('NIK Pasien')
                 ->required()
@@ -32,6 +33,7 @@ class AntrianResource extends Resource
                 ->afterStateUpdated(function ($state, callable $set) {
                     $set('patient_id', null);
                     $set('nama_pasien', null);
+
                     if ($state && strlen($state) === 16) {
                         $patient = Patient::where('nik', $state)->first();
                         if ($patient) {
@@ -56,8 +58,7 @@ class AntrianResource extends Resource
                             }
                         }
                     }
-                })
-                ->visible(),
+                }),
 
             Forms\Components\Hidden::make('patient_id'),
 
@@ -84,19 +85,7 @@ class AntrianResource extends Resource
         ]);
     }
 
-    // Supaya patient_id terisi dari nik sebelum simpan
     public static function mutateFormDataBeforeCreate(array $data): array
-    {
-        if (!empty($data['nik'])) {
-            $patient = Patient::where('nik', $data['nik'])->first();
-            if ($patient) {
-                $data['patient_id'] = $patient->id;
-            }
-        }
-        return $data;
-    }
-
-    public static function mutateFormDataBeforeSave(array $data, $record): array
     {
         if (!empty($data['nik'])) {
             $patient = Patient::where('nik', $data['nik'])->first();
@@ -110,7 +99,8 @@ class AntrianResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->poll('3s') // Refresh otomatis setiap 5 detik
+            ->poll('3s')
+            ->query(Antrian::whereDate('tanggal', today()))
             ->columns([
                 Tables\Columns\TextColumn::make('no_antrian')->label('No Antrian')->sortable(),
                 Tables\Columns\TextColumn::make('patient.no_rme')->label('No RME'),
@@ -128,16 +118,39 @@ class AntrianResource extends Resource
                     ]),
             ])
             ->headerActions([
-                Tables\Actions\Action::make('resetAntrianHarian')
-                    ->label('Reset Antrian Hari Ini')
-                    ->color('danger')
-                    ->icon('heroicon-o-trash')
+                Tables\Actions\Action::make('resetAntrian')
+                    ->label('Reset & Backup Antrian Hari Ini')
+                    ->icon('heroicon-o-archive-box')
+                    ->color('success')
                     ->requiresConfirmation()
+                    ->disabled(fn() => Antrian::whereDate('tanggal', today())
+                        ->where('status', '!=', 'selesai')
+                        ->exists())
+                    ->tooltip(fn() => Antrian::whereDate('tanggal', today())
+                        ->where('status', '!=', 'selesai')
+                        ->exists()
+                        ? 'Tidak bisa reset, ada pasien yang belum selesai' 
+                        : null)
                     ->action(function () {
+                        $now = Carbon::now();
+                        $antrians = Antrian::whereDate('tanggal', today())->get();
+
+                        foreach ($antrians as $antrian) {
+                            RiwayatAntrian::create([
+                                'no_antrian' => $antrian->no_antrian,
+                                'no_rme' => $antrian->patient->no_rme ?? null,
+                                'nama_pasien' => $antrian->patient->nama_pasien ?? null,
+                                'alamat_pasien' => $antrian->patient->alamat_pasien ?? null,
+                                'status' => $antrian->status,
+                                'tanggal' => $antrian->tanggal,
+                                'tanggal_reset' => $now,
+                            ]);
+                        }
+
                         Antrian::whereDate('tanggal', today())->delete();
 
                         Notification::make()
-                            ->title('Antrian hari ini berhasil direset.')
+                            ->title('Antrian hari ini berhasil di-backup dan di-reset.')
                             ->success()
                             ->send();
                     }),
