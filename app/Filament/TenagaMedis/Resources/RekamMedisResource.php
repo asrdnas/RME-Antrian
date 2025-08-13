@@ -39,31 +39,41 @@ class RekamMedisResource extends Resource
     }
 
     public static function form(Form $form): Form
-    {
-        return $form
+{
+    return $form
+    ->schema([
+        // Identitas Pasien
+        Forms\Components\Fieldset::make('🧍 Identitas Pasien')
             ->schema([
                 Forms\Components\Select::make('patient_id')
                     ->label('Nama Pasien')
-                    ->options(
-                        Patient::whereNotNull('nama_pasien')
-                            ->pluck('nama_pasien', 'id')
-                            ->toArray()
-                    )
+                    ->options(Patient::pluck('nama_pasien', 'id'))
                     ->searchable()
+                    ->placeholder('Pilih Pasien...')
                     ->required(),
 
                 Forms\Components\Select::make('dokter_id')
-                    ->label('Dokter')
+                    ->label('👨‍⚕️ Dokter')
                     ->relationship('dokter', 'name')
                     ->searchable()
+                    ->placeholder('Pilih Dokter...')
                     ->required(),
 
                 Forms\Components\Select::make('admin_id')
-                    ->label('Admin')
+                    ->label('👩‍💼 Admin')
                     ->options(Admin::pluck('name', 'id'))
                     ->searchable()
+                    ->placeholder('Pilih Admin...')
                     ->required(),
+            ])
+            ->columns(3)
+            ->extraAttributes([
+                'style' => 'background-color:#1e1e1e; border:1px solid #2e2e2e; border-radius:8px; padding:15px;'
+            ]),
 
+        // Waktu & Tanggal
+        Forms\Components\Fieldset::make('⏳ Waktu & Tanggal')
+            ->schema([
                 Forms\Components\DatePicker::make('tanggal')
                     ->label('Tanggal')
                     ->default(now())
@@ -71,26 +81,33 @@ class RekamMedisResource extends Resource
 
                 Forms\Components\Grid::make(3)->schema([
                     Forms\Components\TimePicker::make('waktu_kedatangan')
-                        ->label('Waktu Kedatangan')
-                        ->default(now()->format('H:i')) // ✅ default supaya tidak error
+                        ->label('Kedatangan')
+                        ->default(now()->format('H:i'))
                         ->required(),
 
                     Forms\Components\TimePicker::make('waktu_mulai')
-                        ->label('Waktu Mulai Pemeriksaan')
+                        ->label('Mulai')
                         ->required(),
 
                     Forms\Components\TimePicker::make('waktu_selesai')
-                        ->label('Waktu Selesai Pemeriksaan')
+                        ->label('Selesai')
                         ->required(),
                 ]),
+            ])
+            ->extraAttributes([
+                'style' => 'background-color:#1e1e1e; border:1px solid #2e2e2e; border-radius:8px; padding:15px;'
+            ]),
 
+        // Pemeriksaan
+        Forms\Components\Fieldset::make('🔍 Pemeriksaan')
+            ->schema([
                 Forms\Components\Textarea::make('anamnesa')
                     ->label('Anamnesa')
                     ->rows(3)
                     ->required(),
 
                 Forms\Components\Textarea::make('pemeriksaan')
-                    ->label('Pemeriksaan')
+                    ->label('Pemeriksaan Fisik')
                     ->rows(3)
                     ->required(),
 
@@ -101,7 +118,14 @@ class RekamMedisResource extends Resource
                         'Tidak Sadar' => 'Tidak Sadar',
                     ])
                     ->required(),
+            ])
+            ->extraAttributes([
+                'style' => 'background-color:#1e1e1e; border:1px solid #2e2e2e; border-radius:8px; padding:15px;'
+            ]),
 
+        // Tanda Vital
+        Forms\Components\Fieldset::make('❤️‍🔥 Tanda Vital & Pengukuran')
+            ->schema([
                 Forms\Components\Grid::make(3)->schema([
                     Forms\Components\TextInput::make('tinggi_badan')
                         ->label('Tinggi Badan')
@@ -118,34 +142,37 @@ class RekamMedisResource extends Resource
                         ->numeric()
                         ->suffix('mmHg'),
 
-                    Forms\Components\TextInput::make('diastole') // ✅ perbaiki typo
+                    Forms\Components\TextInput::make('diastole')
                         ->label('Diastole')
                         ->numeric()
                         ->suffix('mmHg'),
+
+                    Forms\Components\TextInput::make('respiratory_rate')
+                        ->label('RR')
+                        ->numeric()
+                        ->suffix('x/menit')
+                        ->required(),
+
+                    Forms\Components\TextInput::make('heart_rate')
+                        ->label('HR')
+                        ->numeric()
+                        ->suffix('bpm')
+                        ->required(),
                 ]),
+            ])
+            ->extraAttributes([
+                'style' => 'background-color:#1e1e1e; border:1px solid #2e2e2e; border-radius:8px; padding:15px;'
+            ]),
 
-                Forms\Components\Textarea::make('resep')
-                    ->label('Resep / Obat')
-                    ->rows(2),
-
-                Forms\Components\Textarea::make('catatan')
-                    ->label('Catatan Tambahan')
-                    ->rows(2),
-
-                Forms\Components\TextInput::make('respiratory_rate')
-                    ->label('Respiratory Rate (RR)')
-                    ->numeric()
-                    ->suffix('x/menit')
-                    ->required(),
-
-                Forms\Components\TextInput::make('heart_rate')
-                    ->label('Heart Rate (HR)')
-                    ->numeric()
-                    ->suffix('bpm')
-                    ->required(),
-
-                Forms\Components\TextInput::make('tenaga_medis')
-                    ->label('Tenaga Medis')
+        // Diagnosa & Terapi
+        Forms\Components\Fieldset::make('🩺 Diagnosa & Terapi')
+            ->schema([
+                Forms\Components\Select::make('kasus_lama_baru')
+                    ->label('Kasus')
+                    ->options([
+                        'Lama' => 'Lama',
+                        'Baru' => 'Baru',
+                    ])
                     ->required(),
 
                 Forms\Components\Select::make('status_pulang')
@@ -157,29 +184,44 @@ class RekamMedisResource extends Resource
                     ])
                     ->required(),
 
+                Forms\Components\TextInput::make('tenaga_medis')
+                    ->label('Tenaga Medis')
+                    ->required(),
+
                 Forms\Components\Textarea::make('terapi')
                     ->label('Terapi')
                     ->rows(3),
 
-                Forms\Components\Select::make('kasus_lama_baru')
-                    ->label('Kasus Lama/Baru')
-                    ->options([
-                        'Lama' => 'Lama',
-                        'Baru' => 'Baru',
-                    ])
-                    ->required(),
+                Forms\Components\Textarea::make('resep')
+                    ->label('Resep / Obat')
+                    ->rows(2),
 
-                Forms\Components\Fieldset::make('Diagnosa ICD-10')
+                Forms\Components\Fieldset::make('📋 Diagnosa ICD-10')
                     ->schema([
                         Forms\Components\TextInput::make('kode_icd10')
-                            ->label('Kode ICD-10')
-                            ->nullable(), // ✅ tidak wajib jika mau
+                            ->label('Kode ICD-10'),
                         Forms\Components\TextInput::make('deskripsi_icd10')
-                            ->label('Deskripsi Diagnosa')
-                            ->nullable(),
+                            ->label('Deskripsi Diagnosa'),
                     ]),
-            ]);
-    }
+            ])
+            ->extraAttributes([
+                'style' => 'background-color:#1e1e1e; border:1px solid #2e2e2e; border-radius:8px; padding:15px;'
+            ]),
+
+        // Keterangan Tambahan
+        Forms\Components\Fieldset::make('📝 Keterangan Tambahan')
+            ->schema([
+                Forms\Components\Textarea::make('catatan')
+                    ->label('Catatan')
+                    ->rows(2),
+            ])
+            ->extraAttributes([
+                'style' => 'background-color:#1e1e1e; border:1px solid #2e2e2e; border-radius:8px; padding:15px;'
+            ]),
+    ]);
+
+}
+
 
     public static function table(Table $table): Table
     {
