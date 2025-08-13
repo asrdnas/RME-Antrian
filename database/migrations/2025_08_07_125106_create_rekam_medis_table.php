@@ -29,7 +29,7 @@ return new class extends Migration {
             $table->text('pemeriksaan')->nullable();
 
             // Kesadaran
-            $table->enum('kesadaran', ['Sadar', 'Tidak Sadar'])->nullable();
+            $table->enum('kesadaran', ['Sadar', 'Tidak Sadar']);
 
             // Pengukuran Fisik
             $table->decimal('tinggi_badan', 5, 2)->nullable(); // cm
