@@ -129,7 +129,7 @@ class AntrianResource extends Resource
                     ->tooltip(fn() => Antrian::whereDate('tanggal', today())
                         ->where('status', '!=', 'selesai')
                         ->exists()
-                        ? 'Tidak bisa reset, ada pasien yang belum selesai' 
+                        ? 'Tidak bisa reset, ada pasien yang belum selesai'
                         : null)
                     ->action(function () {
                         $now = Carbon::now();
@@ -180,12 +180,17 @@ class AntrianResource extends Resource
                     ->requiresConfirmation()
                     ->action(function ($record) {
                         $record->update(['status' => 'selesai']);
+
+                        // Tambah total kunjungan pasien
+                        if ($record->patient) {
+                            $record->patient->increment('total_kunjungan');
+                        }
+
                         Notification::make()
                             ->title('Pasien ' . $record->patient->nama_pasien . ' ditandai selesai.')
                             ->success()
                             ->send();
                     }),
-
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([

@@ -14,9 +14,19 @@ return new class extends Migration {
             $table->id();
 
             // Relasi
-            $table->foreignId('patient_id')->constrained('patients')->cascadeOnDelete();
-            $table->foreignId('dokter_id')->constrained('tenaga_medis')->cascadeOnDelete();
-            $table->foreignId('admin_id')->constrained('admins')->cascadeOnDelete();
+            $table->foreignId('patient_id')
+                ->constrained('patients')
+                ->cascadeOnDelete();
+
+            $table->foreignId('dokter_id')
+                ->nullable()
+                ->constrained('tenaga_medis')
+                ->cascadeOnDelete();
+
+            $table->foreignId('admin_id')
+                ->nullable()
+                ->constrained('admins')
+                ->cascadeOnDelete();
 
             // Tanggal & Waktu
             $table->date('tanggal')->nullable();
@@ -29,7 +39,7 @@ return new class extends Migration {
             $table->text('pemeriksaan')->nullable();
 
             // Kesadaran
-            $table->enum('kesadaran', ['Sadar', 'Tidak Sadar']);
+            $table->enum('kesadaran', ['Sadar', 'Tidak Sadar'])->nullable();
 
             // Pengukuran Fisik
             $table->decimal('tinggi_badan', 5, 2)->nullable(); // cm
@@ -59,10 +69,10 @@ return new class extends Migration {
             $table->string('kode_icd10')->nullable();
             $table->string('deskripsi_icd10')->nullable();
 
-
             $table->timestamps();
         });
     }
+
     /**
      * Reverse the migrations.
      */

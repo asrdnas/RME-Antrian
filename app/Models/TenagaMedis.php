@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Spatie\Permission\Traits\HasRoles;
 
 class TenagaMedis extends Authenticatable
 {
+     use HasRoles;
     protected $guard = 'tenaga_medis';
 
     protected $fillable = [

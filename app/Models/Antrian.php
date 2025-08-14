@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+
 use Illuminate\Database\Eloquent\Model;
 
 class Antrian extends Model
@@ -15,5 +16,15 @@ class Antrian extends Model
     public function patient()
     {
         return $this->belongsTo(Patient::class);
+    }
+
+    protected static function booted()
+    {
+        static::updated(function ($antrian) {
+            // Cek kalau status berubah menjadi 'selesai'
+            if ($antrian->isDirty('status') && $antrian->status === 'selesai') {
+                $antrian->patient?->increment('total_kunjungan');
+            }
+        });
     }
 }

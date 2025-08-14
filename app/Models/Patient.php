@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Patient extends Model
 {
     protected $guarded = [];
+
     protected $fillable = [
         'nama_pasien',
         'nik',
@@ -33,6 +34,7 @@ class Patient extends Model
         'bahasa_sehari_hari',
         'perlu_penerjemah',
         'bahasa_isyarat',
+        'total_kunjungan', // tambahkan ini
     ];
 
     public function antrians()

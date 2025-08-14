@@ -4,9 +4,8 @@ namespace App\Filament\TenagaMedis\Resources;
 
 use App\Filament\TenagaMedis\Resources\RekamMedisResource\Pages;
 use App\Models\RekamMedis;
-use App\Models\Pasien;
-use App\Models\Admin;
 use App\Models\Patient;
+use App\Models\Admin;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Facades\Filament;
@@ -14,7 +13,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Notifications\Notification;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 
 class RekamMedisResource extends Resource
 {
@@ -39,189 +38,230 @@ class RekamMedisResource extends Resource
     }
 
     public static function form(Form $form): Form
-{
-    return $form
-    ->schema([
-        // Identitas Pasien
-        Forms\Components\Fieldset::make('🧍 Identitas Pasien')
+    {
+        return $form->schema([
+            // ===== Identitas Pasien =====
+        Forms\Components\Fieldset::make('Identitas Pasien')
             ->schema([
-                Forms\Components\Select::make('patient_id')
-                    ->label('Nama Pasien')
-                    ->options(Patient::pluck('nama_pasien', 'id'))
-                    ->searchable()
-                    ->placeholder('Pilih Pasien...')
+                Forms\Components\TextInput::make('no_rme')
+                    ->label('No. RME')
+                    ->prefixIcon('heroicon-o-identification')
+                    ->reactive()
+                    ->afterStateUpdated(function ($state, callable $set) {
+                        $patient = Patient::where('no_rme', $state)->first();
+                        if ($patient) {
+                            $set('patient_id', $patient->id);
+                            $set('nama_pasien', $patient->nama_pasien);
+                        } else {
+                            $set('patient_id', null);
+                            $set('nama_pasien', '');
+                        }
+                    })
                     ->required(),
 
+                Forms\Components\Hidden::make('patient_id')->required(),
+
+                Forms\Components\TextInput::make('nama_pasien')
+                    ->label('Nama Pasien')
+                    ->prefixIcon('heroicon-o-user-circle')
+                    ->disabled()
+                    ->dehydrated(false),
+
+                // Auto set ID sesuai panel
+                Forms\Components\Hidden::make('dokter_id')
+                    ->default(fn () => Filament::getCurrentPanel()->getId() === 'tenaga-medis' ? Auth::id() : null),
+
+                Forms\Components\Hidden::make('admin_id')
+                    ->default(fn () => Filament::getCurrentPanel()->getId() === 'admin' ? Auth::id() : null),
+
+                // Dokter name (readonly untuk tenaga-medis)
+                Forms\Components\TextInput::make('dokter_name')
+                    ->label('Dokter')
+                    ->prefixIcon('heroicon-o-user')
+                    ->default(fn () => Filament::getCurrentPanel()->getId() === 'tenaga-medis' ? Auth::user()->name : null)
+                    ->disabled()
+                    ->visible(fn () => Filament::getCurrentPanel()->getId() === 'tenaga-medis'),
+
+                // Dropdown dokter (untuk admin)
                 Forms\Components\Select::make('dokter_id')
-                    ->label('👨‍⚕️ Dokter')
+                    ->label('Dokter')
+                    ->prefixIcon('heroicon-o-user')
                     ->relationship('dokter', 'name')
                     ->searchable()
                     ->placeholder('Pilih Dokter...')
-                    ->required(),
-
-                Forms\Components\Select::make('admin_id')
-                    ->label('👩‍💼 Admin')
-                    ->options(Admin::pluck('name', 'id'))
-                    ->searchable()
-                    ->placeholder('Pilih Admin...')
-                    ->required(),
+                    ->visible(fn () => Filament::getCurrentPanel()->getId() === 'admin'),
             ])
             ->columns(3)
             ->extraAttributes([
                 'style' => 'background-color:#1e1e1e; border:1px solid #2e2e2e; border-radius:8px; padding:15px;'
             ]),
 
-        // Waktu & Tanggal
-        Forms\Components\Fieldset::make('⏳ Waktu & Tanggal')
-            ->schema([
-                Forms\Components\DatePicker::make('tanggal')
-                    ->label('Tanggal')
-                    ->default(now())
-                    ->required(),
-
-                Forms\Components\Grid::make(3)->schema([
-                    Forms\Components\TimePicker::make('waktu_kedatangan')
-                        ->label('Kedatangan')
-                        ->default(now()->format('H:i'))
+            // Waktu & Tanggal
+            Forms\Components\Fieldset::make('Waktu & Tanggal')
+                ->schema([
+                    Forms\Components\DatePicker::make('tanggal')
+                        ->label('Tanggal')
+                        ->prefixIcon('heroicon-o-calendar')
+                        ->default(now())
                         ->required(),
 
-                    Forms\Components\TimePicker::make('waktu_mulai')
-                        ->label('Mulai')
-                        ->required(),
+                    Forms\Components\Grid::make(3)->schema([
+                        Forms\Components\TimePicker::make('waktu_kedatangan')
+                            ->label('Kedatangan')
+                            ->prefixIcon('heroicon-o-clock')
+                            ->default(now()->format('H:i'))
+                            ->required(),
 
-                    Forms\Components\TimePicker::make('waktu_selesai')
-                        ->label('Selesai')
-                        ->required(),
-                ]),
-            ])
-            ->extraAttributes([
-                'style' => 'background-color:#1e1e1e; border:1px solid #2e2e2e; border-radius:8px; padding:15px;'
-            ]),
+                        Forms\Components\TimePicker::make('waktu_mulai')
+                            ->label('Mulai')
+                            ->prefixIcon('heroicon-o-play')
+                            ->required(),
 
-        // Pemeriksaan
-        Forms\Components\Fieldset::make('🔍 Pemeriksaan')
-            ->schema([
-                Forms\Components\Textarea::make('anamnesa')
-                    ->label('Anamnesa')
-                    ->rows(3)
-                    ->required(),
-
-                Forms\Components\Textarea::make('pemeriksaan')
-                    ->label('Pemeriksaan Fisik')
-                    ->rows(3)
-                    ->required(),
-
-                Forms\Components\Select::make('kesadaran')
-                    ->label('Kesadaran')
-                    ->options([
-                        'Sadar' => 'Sadar',
-                        'Tidak Sadar' => 'Tidak Sadar',
-                    ])
-                    ->required(),
-            ])
-            ->extraAttributes([
-                'style' => 'background-color:#1e1e1e; border:1px solid #2e2e2e; border-radius:8px; padding:15px;'
-            ]),
-
-        // Tanda Vital
-        Forms\Components\Fieldset::make('❤️‍🔥 Tanda Vital & Pengukuran')
-            ->schema([
-                Forms\Components\Grid::make(3)->schema([
-                    Forms\Components\TextInput::make('tinggi_badan')
-                        ->label('Tinggi Badan')
-                        ->numeric()
-                        ->suffix('cm'),
-
-                    Forms\Components\TextInput::make('berat_badan')
-                        ->label('Berat Badan')
-                        ->numeric()
-                        ->suffix('kg'),
-
-                    Forms\Components\TextInput::make('sistole')
-                        ->label('Sistole')
-                        ->numeric()
-                        ->suffix('mmHg'),
-
-                    Forms\Components\TextInput::make('diastole')
-                        ->label('Diastole')
-                        ->numeric()
-                        ->suffix('mmHg'),
-
-                    Forms\Components\TextInput::make('respiratory_rate')
-                        ->label('RR')
-                        ->numeric()
-                        ->suffix('x/menit')
-                        ->required(),
-
-                    Forms\Components\TextInput::make('heart_rate')
-                        ->label('HR')
-                        ->numeric()
-                        ->suffix('bpm')
-                        ->required(),
-                ]),
-            ])
-            ->extraAttributes([
-                'style' => 'background-color:#1e1e1e; border:1px solid #2e2e2e; border-radius:8px; padding:15px;'
-            ]),
-
-        // Diagnosa & Terapi
-        Forms\Components\Fieldset::make('🩺 Diagnosa & Terapi')
-            ->schema([
-                Forms\Components\Select::make('kasus_lama_baru')
-                    ->label('Kasus')
-                    ->options([
-                        'Lama' => 'Lama',
-                        'Baru' => 'Baru',
-                    ])
-                    ->required(),
-
-                Forms\Components\Select::make('status_pulang')
-                    ->label('Status Pulang')
-                    ->options([
-                        'Pulang' => 'Pulang',
-                        'Rujuk' => 'Rujuk',
-                        'Rawat Inap' => 'Rawat Inap',
-                    ])
-                    ->required(),
-
-                Forms\Components\TextInput::make('tenaga_medis')
-                    ->label('Tenaga Medis')
-                    ->required(),
-
-                Forms\Components\Textarea::make('terapi')
-                    ->label('Terapi')
-                    ->rows(3),
-
-                Forms\Components\Textarea::make('resep')
-                    ->label('Resep / Obat')
-                    ->rows(2),
-
-                Forms\Components\Fieldset::make('📋 Diagnosa ICD-10')
-                    ->schema([
-                        Forms\Components\TextInput::make('kode_icd10')
-                            ->label('Kode ICD-10'),
-                        Forms\Components\TextInput::make('deskripsi_icd10')
-                            ->label('Deskripsi Diagnosa'),
+                        Forms\Components\TimePicker::make('waktu_selesai')
+                            ->label('Selesai')
+                            ->prefixIcon('heroicon-o-stop')
+                            ->required(),
                     ]),
-            ])
-            ->extraAttributes([
-                'style' => 'background-color:#1e1e1e; border:1px solid #2e2e2e; border-radius:8px; padding:15px;'
-            ]),
+                ])
+                ->extraAttributes([
+                    'style' => 'background-color:#1e1e1e; border:1px solid #2e2e2e; border-radius:8px; padding:15px;'
+                ]),
 
-        // Keterangan Tambahan
-        Forms\Components\Fieldset::make('📝 Keterangan Tambahan')
-            ->schema([
-                Forms\Components\Textarea::make('catatan')
-                    ->label('Catatan')
-                    ->rows(2),
-            ])
-            ->extraAttributes([
-                'style' => 'background-color:#1e1e1e; border:1px solid #2e2e2e; border-radius:8px; padding:15px;'
-            ]),
-    ]);
+            // Pemeriksaan
+            Forms\Components\Fieldset::make('Pemeriksaan')
+                ->schema([
+                    Forms\Components\Textarea::make('anamnesa')
+                        ->label('📝 Anamnesa')
+                        ->rows(3)
+                        ->required(),
 
-}
+                    Forms\Components\Textarea::make('pemeriksaan')
+                        ->label('👁 Pemeriksaan Fisik')
+                        ->rows(3)
+                        ->required(),
 
+                    Forms\Components\Select::make('kesadaran')
+                        ->label('Kesadaran')
+                        ->prefixIcon('heroicon-o-light-bulb')
+                        ->options([
+                            'Sadar' => 'Sadar',
+                            'Tidak Sadar' => 'Tidak Sadar',
+                        ])
+                        ->required(),
+                ])
+                ->extraAttributes([
+                    'style' => 'background-color:#1e1e1e; border:1px solid #2e2e2e; border-radius:8px; padding:15px;'
+                ]),
+
+            // Tanda Vital
+            Forms\Components\Fieldset::make('Tanda Vital & Pengukuran')
+                ->schema([
+                    Forms\Components\Grid::make(3)->schema([
+                        Forms\Components\TextInput::make('tinggi_badan')
+                            ->label('Tinggi Badan')
+                            ->prefixIcon('heroicon-o-arrow-up')
+                            ->numeric()
+                            ->suffix('cm'),
+
+                        Forms\Components\TextInput::make('berat_badan')
+                            ->label('Berat Badan')
+                            ->prefixIcon('heroicon-o-scale')
+                            ->numeric()
+                            ->suffix('kg'),
+
+                        Forms\Components\TextInput::make('sistole')
+                            ->label('Sistole')
+                            ->prefixIcon('heroicon-o-heart')
+                            ->numeric()
+                            ->suffix('mmHg'),
+
+                        Forms\Components\TextInput::make('diastole')
+                            ->label('Diastole')
+                            ->prefixIcon('heroicon-o-heart')
+                            ->numeric()
+                            ->suffix('mmHg'),
+
+                        Forms\Components\TextInput::make('respiratory_rate')
+                            ->label('RR')
+                            ->prefixIcon('heroicon-o-sparkles')
+                            ->numeric()
+                            ->suffix('x/menit')
+                            ->required(),
+
+                        Forms\Components\TextInput::make('heart_rate')
+                            ->label('HR')
+                            ->prefixIcon('heroicon-o-heart')
+                            ->numeric()
+                            ->suffix('bpm')
+                            ->required(),
+                    ]),
+                ])
+                ->extraAttributes([
+                    'style' => 'background-color:#1e1e1e; border:1px solid #2e2e2e; border-radius:8px; padding:15px;'
+                ]),
+
+            // Diagnosa & Terapi
+            Forms\Components\Fieldset::make('Diagnosa & Terapi')
+                ->schema([
+                    Forms\Components\Select::make('kasus_lama_baru')
+                        ->label('Kasus')
+                        ->prefixIcon('heroicon-o-clipboard')
+                        ->options([
+                            'Lama' => 'Lama',
+                            'Baru' => 'Baru',
+                        ])
+                        ->required(),
+
+                    Forms\Components\Select::make('status_pulang')
+                        ->label('Status Pulang')
+                        ->prefixIcon('heroicon-o-home')
+                        ->options([
+                            'Pulang' => 'Pulang',
+                            'Rujuk' => 'Rujuk',
+                            'Rawat Inap' => 'Rawat Inap',
+                        ])
+                        ->required(),
+
+                    Forms\Components\TextInput::make('tenaga_medis')
+                        ->label('Tenaga Medis')
+                        ->prefixIcon('heroicon-o-user-group')
+                        ->required(),
+
+                    Forms\Components\Textarea::make('terapi')
+                        ->label('💊 Terapi')
+                        ->rows(3),
+
+                    Forms\Components\Textarea::make('resep')
+                        ->label('🧾 Resep / Obat')
+                        ->rows(2),
+
+                    Forms\Components\Fieldset::make('Diagnosa ICD-10')
+                        ->schema([
+                            Forms\Components\TextInput::make('kode_icd10')
+                                ->label('Kode ICD-10')
+                                ->prefixIcon('heroicon-o-hashtag'),
+
+                            Forms\Components\TextInput::make('deskripsi_icd10')
+                                ->label('Deskripsi Diagnosa')
+                                ->prefixIcon('heroicon-o-document-text'),
+                        ]),
+                ])
+                ->extraAttributes([
+                    'style' => 'background-color:#1e1e1e; border:1px solid #2e2e2e; border-radius:8px; padding:15px;'
+                ]),
+
+            // Keterangan Tambahan
+            Forms\Components\Fieldset::make('Keterangan Tambahan')
+                ->schema([
+                    Forms\Components\Textarea::make('catatan')
+                        ->label('🗒 Catatan')
+                        ->rows(2),
+                ])
+                ->extraAttributes([
+                    'style' => 'background-color:#1e1e1e; border:1px solid #2e2e2e; border-radius:8px; padding:15px;'
+                ]),
+        ]);
+    }
 
     public static function table(Table $table): Table
     {
@@ -239,7 +279,7 @@ class RekamMedisResource extends Resource
 
                 Tables\Columns\TextColumn::make('kode_icd10')
                     ->label('Kode ICD-10')
-                    ->default('-') // ✅ jika null
+                    ->default('-')
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('deskripsi_icd10')
@@ -288,8 +328,6 @@ class RekamMedisResource extends Resource
             ]);
     }
 
-
-
     public static function getPages(): array
     {
         return [
@@ -298,6 +336,4 @@ class RekamMedisResource extends Resource
             'edit' => Pages\EditRekamMedis::route('/{record}/edit'),
         ];
     }
-
-
 }
