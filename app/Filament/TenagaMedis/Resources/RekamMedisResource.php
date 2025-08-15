@@ -41,60 +41,60 @@ class RekamMedisResource extends Resource
     {
         return $form->schema([
             // ===== Identitas Pasien =====
-        Forms\Components\Fieldset::make('Identitas Pasien')
-            ->schema([
-                Forms\Components\TextInput::make('no_rme')
-                    ->label('No. RME')
-                    ->prefixIcon('heroicon-o-identification')
-                    ->reactive()
-                    ->afterStateUpdated(function ($state, callable $set) {
-                        $patient = Patient::where('no_rme', $state)->first();
-                        if ($patient) {
-                            $set('patient_id', $patient->id);
-                            $set('nama_pasien', $patient->nama_pasien);
-                        } else {
-                            $set('patient_id', null);
-                            $set('nama_pasien', '');
-                        }
-                    })
-                    ->required(),
+            Forms\Components\Fieldset::make('Identitas Pasien')
+                ->schema([
+                    Forms\Components\TextInput::make('no_rme')
+                        ->label('No. RME')
+                        ->prefixIcon('heroicon-o-identification')
+                        ->reactive()
+                        ->afterStateUpdated(function ($state, callable $set) {
+                            $patient = Patient::where('no_rme', $state)->first();
+                            if ($patient) {
+                                $set('patient_id', $patient->id);
+                                $set('nama_pasien', $patient->nama_pasien);
+                            } else {
+                                $set('patient_id', null);
+                                $set('nama_pasien', '');
+                            }
+                        })
+                        ->required(),
 
-                Forms\Components\Hidden::make('patient_id')->required(),
+                    Forms\Components\Hidden::make('patient_id')->required(),
 
-                Forms\Components\TextInput::make('nama_pasien')
-                    ->label('Nama Pasien')
-                    ->prefixIcon('heroicon-o-user-circle')
-                    ->disabled()
-                    ->dehydrated(false),
+                    Forms\Components\TextInput::make('nama_pasien')
+                        ->label('Nama Pasien')
+                        ->prefixIcon('heroicon-o-user-circle')
+                        ->disabled()
+                        ->dehydrated(false),
 
-                // Auto set ID sesuai panel
-                Forms\Components\Hidden::make('dokter_id')
-                    ->default(fn () => Filament::getCurrentPanel()->getId() === 'tenaga-medis' ? Auth::id() : null),
+                    // Auto set ID sesuai panel
+                    Forms\Components\Hidden::make('dokter_id')
+                        ->default(fn() => Filament::getCurrentPanel()->getId() === 'tenaga-medis' ? Auth::id() : null),
 
-                Forms\Components\Hidden::make('admin_id')
-                    ->default(fn () => Filament::getCurrentPanel()->getId() === 'admin' ? Auth::id() : null),
+                    Forms\Components\Hidden::make('admin_id')
+                        ->default(fn() => Filament::getCurrentPanel()->getId() === 'admin' ? Auth::id() : null),
 
-                // Dokter name (readonly untuk tenaga-medis)
-                Forms\Components\TextInput::make('dokter_name')
-                    ->label('Dokter')
-                    ->prefixIcon('heroicon-o-user')
-                    ->default(fn () => Filament::getCurrentPanel()->getId() === 'tenaga-medis' ? Auth::user()->name : null)
-                    ->disabled()
-                    ->visible(fn () => Filament::getCurrentPanel()->getId() === 'tenaga-medis'),
+                    // Dokter name (readonly untuk tenaga-medis)
+                    Forms\Components\TextInput::make('dokter_name')
+                        ->label('Dokter')
+                        ->prefixIcon('heroicon-o-user')
+                        ->default(fn() => Filament::getCurrentPanel()->getId() === 'tenaga-medis' ? Auth::user()->name : null)
+                        ->disabled()
+                        ->visible(fn() => Filament::getCurrentPanel()->getId() === 'tenaga-medis'),
 
-                // Dropdown dokter (untuk admin)
-                Forms\Components\Select::make('dokter_id')
-                    ->label('Dokter')
-                    ->prefixIcon('heroicon-o-user')
-                    ->relationship('dokter', 'name')
-                    ->searchable()
-                    ->placeholder('Pilih Dokter...')
-                    ->visible(fn () => Filament::getCurrentPanel()->getId() === 'admin'),
-            ])
-            ->columns(3)
-            ->extraAttributes([
-                'style' => 'background-color:#1e1e1e; border:1px solid #2e2e2e; border-radius:8px; padding:15px;'
-            ]),
+                    // Dropdown dokter (untuk admin)
+                    Forms\Components\Select::make('dokter_id')
+                        ->label('Dokter')
+                        ->prefixIcon('heroicon-o-user')
+                        ->relationship('dokter', 'name')
+                        ->searchable()
+                        ->placeholder('Pilih Dokter...')
+                        ->visible(fn() => Filament::getCurrentPanel()->getId() === 'admin'),
+                ])
+                ->columns(3)
+                ->extraAttributes([
+                    'style' => 'background-color:#1e1e1e; border:1px solid #2e2e2e; border-radius:8px; padding:15px;'
+                ]),
 
             // Waktu & Tanggal
             Forms\Components\Fieldset::make('Waktu & Tanggal')
@@ -267,6 +267,11 @@ class RekamMedisResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('patient.no_rme')
+                    ->label('NO RME')
+                    ->searchable()
+                    ->sortable(),
+
                 Tables\Columns\TextColumn::make('patient.nama_pasien')
                     ->label('Nama Pasien')
                     ->searchable()
