@@ -18,7 +18,7 @@ class AntrianResource extends Resource
 {
     protected static ?string $model = Antrian::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-users';
+    protected static ?string $navigationIcon = 'heroicon-o-queue-list';
 
     public static function form(Form $form): Form
     {
