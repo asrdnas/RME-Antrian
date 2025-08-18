@@ -62,7 +62,8 @@ class PasienResource extends Resource
                     ->label('No Telepon'),
                 Tables\Columns\TextColumn::make('total_kunjungan')
                     ->label('Total Kunjungan')
-                    ->sortable(),
+                    ->sortable()
+                    ->alignCenter(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status_validasi')
@@ -130,6 +131,12 @@ class PasienResource extends Resource
         return [
             //
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->withCount('rekamMedis');
     }
 
     public static function getPages(): array

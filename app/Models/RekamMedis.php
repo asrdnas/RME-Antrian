@@ -37,7 +37,7 @@ class RekamMedis extends Model
         'terapi',
         'kasus_lama_baru',
         'kode_icd10',        // ✅ tambahkan ini
-        'deskripsi_icd10',  
+        'deskripsi_icd10',
     ];
 
     public function patient()
@@ -55,7 +55,7 @@ class RekamMedis extends Model
         return $this->belongsTo(Admin::class, 'admin_id');  // foreign key default: admin_id
     }
 
-     protected static function booted()
+    protected static function booted()
     {
         static::created(function ($rekamMedis) {
             // Setiap kali rekam medis baru dibuat, tambah total kunjungan

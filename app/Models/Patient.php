@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Patient extends Model
 {
     protected $guarded = [];
-
+    protected $appends = ['total_kunjungan'];
     protected $fillable = [
         'nama_pasien',
         'nik',
@@ -44,6 +44,11 @@ class Patient extends Model
 
     public function rekamMedis()
     {
-        return $this->hasMany(RekamMedis::class);
+        return $this->hasMany(RekamMedis::class, 'patient_id', 'id');
+    }
+
+    public function getTotalKunjunganAttribute()
+    {
+        return $this->rekamMedis()->count();
     }
 }
