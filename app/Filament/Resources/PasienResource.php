@@ -60,6 +60,7 @@ class PasienResource extends Resource
                     ->label('Total Kunjungan')
                     ->sortable(),
 
+
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status_validasi')

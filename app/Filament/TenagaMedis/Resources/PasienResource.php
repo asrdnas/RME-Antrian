@@ -60,6 +60,9 @@ class PasienResource extends Resource
                     ->label('Jenis Kelamin'),
                 Tables\Columns\TextColumn::make('no_tlp_pasien')
                     ->label('No Telepon'),
+                Tables\Columns\TextColumn::make('total_kunjungan')
+                    ->label('Total Kunjungan')
+                    ->sortable(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status_validasi')

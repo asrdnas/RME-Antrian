@@ -54,4 +54,12 @@ class RekamMedis extends Model
     {
         return $this->belongsTo(Admin::class, 'admin_id');  // foreign key default: admin_id
     }
+
+     protected static function booted()
+    {
+        static::created(function ($rekamMedis) {
+            // Setiap kali rekam medis baru dibuat, tambah total kunjungan
+            $rekamMedis->patient?->increment('total_kunjungan');
+        });
+    }
 }

@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -17,8 +16,14 @@ return new class extends Migration
             $table->string('status'); // enum bisa disesuaikan
             $table->string('no_antrian');
             $table->timestamp('tanggal')->nullable();
+
+            // cukup ini saja
+            $table->timestamp('waktu_mulai')->nullable();
+            $table->timestamp('waktu_selesai')->nullable();
+
             $table->timestamps();
         });
+
     }
 
     /**

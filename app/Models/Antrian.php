@@ -11,6 +11,8 @@ class Antrian extends Model
         'status',
         'no_antrian',
         'tanggal',
+        'waktu_mulai',
+        'waktu_selesai',
     ];
 
     public function patient()
@@ -20,10 +22,16 @@ class Antrian extends Model
 
     protected static function booted()
     {
-        static::updated(function ($antrian) {
-            // Cek kalau status berubah menjadi 'selesai'
-            if ($antrian->isDirty('status') && $antrian->status === 'selesai') {
-                $antrian->patient?->increment('total_kunjungan');
+        static::updating(function ($antrian) {
+            // Kalau status berubah jadi dipanggil & waktu_mulai masih kosong
+            if ($antrian->isDirty('status') && $antrian->status === 'dipanggil' && !$antrian->waktu_mulai) {
+                $antrian->waktu_mulai = now();
+            }
+
+            // Kalau status berubah jadi selesai & waktu_selesai masih kosong
+            if ($antrian->isDirty('status') && $antrian->status === 'selesai' && !$antrian->waktu_selesai) {
+                $antrian->waktu_selesai = now();
+
             }
         });
     }

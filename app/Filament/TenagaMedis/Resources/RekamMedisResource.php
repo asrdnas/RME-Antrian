@@ -14,6 +14,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Auth;
+ use Carbon\Carbon;
 
 class RekamMedisResource extends Resource
 {
@@ -43,21 +44,52 @@ class RekamMedisResource extends Resource
             // ===== Identitas Pasien =====
             Forms\Components\Fieldset::make('Identitas Pasien')
                 ->schema([
-                    Forms\Components\TextInput::make('no_rme')
-                        ->label('No. RME')
-                        ->prefixIcon('heroicon-o-identification')
-                        ->reactive()
-                        ->afterStateUpdated(function ($state, callable $set) {
-                            $patient = Patient::where('no_rme', $state)->first();
-                            if ($patient) {
-                                $set('patient_id', $patient->id);
-                                $set('nama_pasien', $patient->nama_pasien);
-                            } else {
-                                $set('patient_id', null);
-                                $set('nama_pasien', '');
-                            }
-                        })
-                        ->required(),
+Forms\Components\TextInput::make('no_rme')
+    ->label('No. RME')
+    ->prefixIcon('heroicon-o-identification')
+    ->reactive()
+    ->afterStateUpdated(function ($state, callable $set) {
+        $patient = Patient::where('no_rme', $state)->first();
+
+        if ($patient) {
+            $set('patient_id', $patient->id);
+            $set('nama_pasien', $patient->nama_pasien);
+
+            // Ambil antrian terakhir pasien
+            $antrian = \App\Models\Antrian::where('patient_id', $patient->id)
+                ->latest()
+                ->first();
+
+            if ($antrian) {
+                $set('waktu_kedatangan', optional($antrian->created_at)->format('H:i'));
+                $set('waktu_mulai', $antrian->waktu_mulai ? Carbon::parse($antrian->waktu_mulai)->format('H:i') : null);
+                $set('waktu_selesai', $antrian->waktu_selesai ? Carbon::parse($antrian->waktu_selesai)->format('H:i') : null);
+            } else {
+                $set('waktu_kedatangan', null);
+                $set('waktu_mulai', null);
+                $set('waktu_selesai', null);
+            }
+
+            // Total kunjungan dihitung dari rekam medis
+            $totalKunjungan = RekamMedis::where('patient_id', $patient->id)->count();
+            $set('total_kunjungan', $totalKunjungan);
+
+        } else {
+            $set('patient_id', null);
+            $set('nama_pasien', '');
+            $set('waktu_kedatangan', null);
+            $set('waktu_mulai', null);
+            $set('waktu_selesai', null);
+            $set('total_kunjungan', null);
+        }
+    })
+    ->required(),
+
+
+
+                    Forms\Components\Placeholder::make('total_kunjungan')
+                        ->label('Total Kunjungan')
+                        ->content(fn($get) => $get('total_kunjungan') ?? '-'),
 
                     Forms\Components\Hidden::make('patient_id')->required(),
 
@@ -105,27 +137,35 @@ class RekamMedisResource extends Resource
                         ->default(now())
                         ->required(),
 
-                    Forms\Components\Grid::make(3)->schema([
-                        Forms\Components\TimePicker::make('waktu_kedatangan')
-                            ->label('Kedatangan')
-                            ->prefixIcon('heroicon-o-clock')
-                            ->default(now()->format('H:i'))
-                            ->required(),
+                    Forms\Components\Grid::make(3)
+                        ->schema([
+                            Forms\Components\TimePicker::make('waktu_kedatangan')
+                                ->label('Kedatangan')
+                                ->prefixIcon('heroicon-o-clock')
+                                ->reactive()
+                                ->disabled()
+                                ->dehydrated(false),
 
-                        Forms\Components\TimePicker::make('waktu_mulai')
-                            ->label('Mulai')
-                            ->prefixIcon('heroicon-o-play')
-                            ->required(),
+                            Forms\Components\TimePicker::make('waktu_mulai')
+                                ->label('Mulai')
+                                ->prefixIcon('heroicon-o-play')
+                                ->reactive()
+                                ->disabled()
+                                ->dehydrated(false),
 
-                        Forms\Components\TimePicker::make('waktu_selesai')
-                            ->label('Selesai')
-                            ->prefixIcon('heroicon-o-stop')
-                            ->required(),
-                    ]),
+                            Forms\Components\TimePicker::make('waktu_selesai')
+                                ->label('Selesai')
+                                ->prefixIcon('heroicon-o-stop')
+                                ->reactive()
+                                ->disabled()
+                                ->dehydrated(false),
+
+                        ]),
                 ])
                 ->extraAttributes([
                     'style' => 'background-color:#1e1e1e; border:1px solid #2e2e2e; border-radius:8px; padding:15px;'
                 ]),
+
 
             // Pemeriksaan
             Forms\Components\Fieldset::make('Pemeriksaan')
