@@ -27,6 +27,10 @@ class PasienResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-identification';
 
+    protected static ?string $navigationLabel = 'Pasien';
+
+    protected static ?string $pluralModelLabel = 'Daftar Pasien';
+
     public static function form(Form $form): Form
     {
         return $form
@@ -36,54 +40,113 @@ class PasienResource extends Resource
     }
 
     public static function table(Table $table): Table
-    {
-        return $table
-            ->columns([
-                Tables\Columns\TextColumn::make('nama_pasien')
-                    ->label('Nama Pasien')
-                    ->sortable()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('nik')
-                    ->label('NIK')
-                    ->sortable()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('no_rme')
-                    ->label('No RME')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('alamat_pasien')
-                    ->label('Alamat')
-                    ->limit(30),
-                Tables\Columns\TextColumn::make('tanggal_lahir')
-                    ->label('Tanggal Lahir')
-                    ->date(),
-                Tables\Columns\TextColumn::make('jenis_kelamin')
-                    ->label('Jenis Kelamin'),
-                Tables\Columns\TextColumn::make('no_tlp_pasien')
-                    ->label('No Telepon'),
-                Tables\Columns\TextColumn::make('total_kunjungan')
-                    ->label('Total Kunjungan')
-                    ->sortable()
-                    ->alignCenter(),
-            ])
-            ->filters([
-                Tables\Filters\SelectFilter::make('status_validasi')
-                    ->label('Status Validasi')
-                    ->options([
-                        'pending' => 'Pending',
-                        'approved' => 'Approved',
-                        'rejected' => 'Rejected',
-                    ]),
-            ])
-            ->headerActions([
-                Action::make('exportExcel')
-                    ->label('Export to Excel')
-                    ->icon('heroicon-o-arrow-down-tray')
-                    ->action(function () {
-                        return Excel::download(new PasiensExport, 'pasiens.xlsx');
-                    }),
-            ])
+{
+    return $table
+        ->columns([
+            Tables\Columns\TextColumn::make('nama_pasien')
+                ->label('Nama Pasien')
+                ->sortable()
+                ->searchable()
+                ->color('secondary')
+                ->alignCenter(), // rata tengah
 
-            // ->actions([
+            Tables\Columns\TextColumn::make('nik')
+                ->label('NIK')
+                ->sortable()
+                ->searchable()
+                ->color('info')
+                ->alignCenter(),
+
+            Tables\Columns\TextColumn::make('no_rme')
+                ->label('No RME')
+                ->sortable()
+                ->color('success')
+                ->alignCenter(),
+
+            Tables\Columns\TextColumn::make('alamat_pasien')
+                ->label('Alamat')
+                ->limit(30)
+                ->color('secondary')
+                ->alignCenter(),
+
+            Tables\Columns\TextColumn::make('tanggal_lahir')
+                ->label('Tanggal Lahir')
+                ->date('d M Y')
+                ->color('secondary')
+                ->alignCenter(),
+
+            Tables\Columns\TextColumn::make('jenis_kelamin')
+                ->label('Jenis Kelamin')
+                ->color('secondary')
+                ->alignCenter(),
+
+            Tables\Columns\TextColumn::make('no_tlp_pasien')
+                ->label('No Telepon')
+                ->color('secondary')
+                ->alignCenter(),
+
+            Tables\Columns\TextColumn::make('total_kunjungan')
+                ->label('Total Kunjungan')
+                ->badge()
+                ->color(fn ($state) => match (true) {
+                    $state == 0 => 'danger',
+                    $state > 0 && $state < 3 => 'warning',
+                    $state >= 3 => 'success',
+                })
+                ->sortable()
+                ->alignCenter(),
+        ])
+        ->filters([
+            Tables\Filters\SelectFilter::make('status_validasi')
+                ->label('Status Validasi')
+                ->options([
+                    'pending' => 'Pending',
+                    'approved' => 'Approved',
+                    'rejected' => 'Rejected',
+                ]),
+        ])
+        ->headerActions([
+            Action::make('exportExcel')
+                ->label('Export to Excel')
+                ->icon('heroicon-o-arrow-down-tray')
+                ->action(function () {
+                    return Excel::download(new PasiensExport, 'pasiens.xlsx');
+                }),
+        ])
+        ->bulkActions([
+            Tables\Actions\DeleteBulkAction::make(),
+        ])
+        ->recordClasses(fn ($record) => 'bg-white hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800');
+}
+
+
+
+
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->withCount('rekamMedis');
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => Pages\ListPasiens::route('/'),
+            'create' => Pages\CreatePasien::route('/create'),
+            'edit' => Pages\EditPasien::route('/{record}/edit'),
+        ];
+    }
+}
+
+
+// ->actions([
             //     // Tables\Actions\EditAction::make(),
 
             //     Action::make('tambahKeAntrian')
@@ -121,32 +184,3 @@ class PasienResource extends Resource
 
             //     // Tables\Actions\DeleteAction::make(),
             // ])
-            ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
-            ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
-    }
-
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()
-            ->withCount('rekamMedis');
-    }
-
-    public static function getPages(): array
-    {
-        return [
-            'index' => Pages\ListPasiens::route('/'),
-            'create' => Pages\CreatePasien::route('/create'),
-            'edit' => Pages\EditPasien::route('/{record}/edit'),
-        ];
-    }
-}
-
-
