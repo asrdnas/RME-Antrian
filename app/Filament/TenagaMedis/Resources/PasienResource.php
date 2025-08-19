@@ -119,9 +119,6 @@ class PasienResource extends Resource
         ->recordClasses(fn ($record) => 'bg-white hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800');
 }
 
-
-
-
     public static function getRelations(): array
     {
         return [
@@ -143,6 +140,7 @@ class PasienResource extends Resource
             'edit' => Pages\EditPasien::route('/{record}/edit'),
         ];
     }
+
 }
 
 
