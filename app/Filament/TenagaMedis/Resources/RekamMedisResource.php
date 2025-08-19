@@ -14,7 +14,8 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Auth;
- use Carbon\Carbon;
+use Carbon\Carbon;
+use Filament\Tables\Actions\ActionGroup;
 
 class RekamMedisResource extends Resource
 {
@@ -309,6 +310,8 @@ Forms\Components\TextInput::make('no_rme')
             ->columns([
                 Tables\Columns\TextColumn::make('patient.no_rme')
                     ->label('NO RME')
+                    // ->badge() // kasih badge
+                    ->color('primary') // warna biru biar standout
                     ->searchable()
                     ->sortable(),
 
@@ -319,7 +322,9 @@ Forms\Components\TextInput::make('no_rme')
 
                 Tables\Columns\TextColumn::make('tanggal')
                     ->label('Tanggal')
-                    ->date()
+                    ->date('d M Y') // format tanggal cantik
+                    ->badge()
+                    ->color('secondary')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('kode_icd10')
@@ -348,7 +353,7 @@ Forms\Components\TextInput::make('no_rme')
                     ->colors([
                         'success' => 'Pulang',
                         'warning' => 'Rujuk',
-                        'danger' => 'Rawat Inap',
+                        'danger'  => 'Rawat Inap',
                     ]),
             ])
             ->filters([
@@ -364,14 +369,18 @@ Forms\Components\TextInput::make('no_rme')
                     }),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                ActionGroup::make([
+                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make(),
+                ])->label('Aksi'), // label optional
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
+
+
 
     public static function getPages(): array
     {
