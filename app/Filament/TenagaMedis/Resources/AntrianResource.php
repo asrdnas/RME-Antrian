@@ -35,6 +35,7 @@ class AntrianResource extends Resource
     public static function table(Table $table): Table
 {
     return $table
+        ->recordUrl(null) // <- ini bikin row tidak bisa diklik
         ->poll('3s')
         ->striped() // zebra row biar lebih enak dilihat
         ->columns([

@@ -38,6 +38,7 @@ class PasienResource extends Resource
     public static function table(Table $table): Table
 {
     return $table
+        ->recordUrl(null) // <- ini bikin row tidak bisa diklik
         ->columns([
             Tables\Columns\TextColumn::make('nama_pasien')
                 ->label('Nama Pasien')
