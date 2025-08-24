@@ -36,7 +36,7 @@ class AntrianResource extends Resource
 {
     return $table
         ->recordUrl(null) // <- ini bikin row tidak bisa diklik
-        ->poll('3s')
+        ->poll('2s')
         ->striped() // zebra row biar lebih enak dilihat
         ->columns([
             Tables\Columns\TextColumn::make('no_antrian')
@@ -90,18 +90,73 @@ class AntrianResource extends Resource
         ])
         ->actions([
             Tables\Actions\Action::make('panggilPasien')
-                ->label('Panggil Pasien')
-                ->icon('heroicon-o-megaphone')
-                ->color('warning')
-                ->visible(fn($record) => $record->status === 'menunggu')
-                ->requiresConfirmation()
-                ->action(function ($record) {
-                    $record->update(['status' => 'dipanggil']);
-                    Notification::make()
-                        ->title('Pasien ' . $record->patient->nama_pasien . ' dipanggil.')
-                        ->success()
-                        ->send();
-                }),
+            ->label('Panggil Pasien')
+            ->icon('heroicon-o-megaphone')
+            ->color('warning')
+            ->visible(fn($record) => $record->status === 'menunggu')
+            ->requiresConfirmation()
+            ->action(function ($record, $livewire) {
+                // Update status pasien
+                $record->update(['status' => 'dipanggil']);
+
+                // Notifikasi visual
+                Notification::make()
+                    ->title('Pasien ' . $record->patient->nama_pasien . ' dipanggil.')
+                    ->success()
+                    ->send();
+
+                // Jalankan suara pertama kali
+                $livewire->js(<<<JS
+                    const text = `Atas nama {$record->patient->nama_pasien}, dengan nomor antrian {$record->no_antrian}, silakan masuk ruangan.`;
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.lang = "id-ID";
+
+                    // Cari voice cewek bahasa Indonesia
+                    const voices = window.speechSynthesis.getVoices();
+                    const femaleVoice = voices.find(v =>
+                        v.lang.startsWith("id") &&
+                        (v.name.toLowerCase().includes("female") || v.name.toLowerCase().includes("woman") || v.name.toLowerCase().includes("google"))
+                    );
+                    if (femaleVoice) utterance.voice = femaleVoice;
+
+                    // Natural settings
+                    utterance.rate   = 0.95;
+                    utterance.pitch  = 1.1;
+                    utterance.volume = 1;
+
+                    // Stop suara sebelumnya biar gak numpuk
+                    window.speechSynthesis.cancel();
+                    window.speechSynthesis.speak(utterance);
+                JS);
+            }),
+
+            Tables\Actions\Action::make('ulangPanggilan')
+        ->label('Ulang Panggilan')
+        ->icon('heroicon-o-speaker-wave')
+        ->color('secondary')
+        ->visible(fn($record) => $record->status === 'dipanggil') // hanya muncul kalau sudah dipanggil
+        ->action(function ($record, $livewire) {
+            // Hanya play suara ulang tanpa ubah status
+            $livewire->js(<<<JS
+                const text = `Satu kali lagi. Atas nama {$record->patient->nama_pasien}, dengan nomor antrian {$record->no_antrian}, silakan masuk ruangan.`;
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = "id-ID";
+
+                const voices = window.speechSynthesis.getVoices();
+                const femaleVoice = voices.find(v =>
+                    v.lang.startsWith("id") &&
+                    (v.name.toLowerCase().includes("female") || v.name.toLowerCase().includes("woman") || v.name.toLowerCase().includes("google"))
+                );
+                if (femaleVoice) utterance.voice = femaleVoice;
+
+                utterance.rate   = 0.95;
+                utterance.pitch  = 1.1;
+                utterance.volume = 1;
+
+                window.speechSynthesis.cancel();
+                window.speechSynthesis.speak(utterance);
+            JS);
+        }),
 
             Tables\Actions\Action::make('tandaiSelesai')
                 ->label('Tandai Selesai')
@@ -109,13 +164,33 @@ class AntrianResource extends Resource
                 ->color('success')
                 ->visible(fn($record) => $record->status === 'dipanggil')
                 ->requiresConfirmation()
-                ->action(function ($record) {
-                    $record->update(['status' => 'selesai']);
-                    Notification::make()
-                        ->title('Pasien ' . $record->patient->nama_pasien . ' ditandai selesai.')
-                        ->success()
-                        ->send();
-                }),
+                ->action(function ($record, $livewire) {
+                // Update status ke selesai
+                $record->update(['status' => 'selesai']);
+
+        // Notifikasi Filament
+        Notification::make()
+            ->title('✅ Pasien ' . $record->patient->nama_pasien . ' sudah selesai.')
+            ->success()
+            ->send();
+
+        // Tambahin suara konfirmasi biar interaktif
+        $livewire->js(<<<JS
+            const text = "Atas nama pasien{$record->patient->nama_pasien}, dengan nomor antrian {$record->no_antrian}, pemeriksaan telah selesai. Terima kasih.";
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = "id-ID";
+
+            // Atur suara biar lebih natural
+            utterance.rate = 0.85;   // agak lambat
+            utterance.pitch = 1.1;  // pitch sedikit naik
+            utterance.volume = 1;    // volume full
+
+            // Batalin kalau ada suara yang masih jalan, lalu bacakan
+            window.speechSynthesis.cancel();
+            window.speechSynthesis.speak(utterance);
+        JS);
+    }),
+
         ])
         ->bulkActions([
             Tables\Actions\DeleteBulkAction::make(),
@@ -127,7 +202,6 @@ class AntrianResource extends Resource
             default     => 'hover:bg-gray-800/50',
         });
 }
-
 
     public static function getRelations(): array
     {
@@ -145,3 +219,6 @@ class AntrianResource extends Resource
         ];
     }
 }
+
+
+

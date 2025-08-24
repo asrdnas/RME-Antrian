@@ -101,7 +101,7 @@ class AntrianResource extends Resource
     {
         return $table
         ->recordUrl(null) // <- ini bikin row tidak bisa diklik
-        ->poll('3s')
+        ->poll('2s')
         ->query(Antrian::whereDate('tanggal', today()))
         ->columns([
             Tables\Columns\TextColumn::make('no_antrian')
