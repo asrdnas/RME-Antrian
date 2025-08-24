@@ -34,7 +34,7 @@ class Patient extends Model
         'bahasa_sehari_hari',
         'perlu_penerjemah',
         'bahasa_isyarat',
-        'total_kunjungan', // tambahkan ini
+        'total_kunjungan',
     ];
 
     public function antrians()
@@ -50,5 +50,17 @@ class Patient extends Model
     public function getTotalKunjunganAttribute()
     {
         return $this->rekamMedis()->count();
+    }
+
+    // Accessor untuk alamat_pasien -> kapital
+    public function getAlamatPasienAttribute($value)
+    {
+        return strtoupper($value);
+    }
+
+    // Accessor untuk tempat_lahir -> kapital
+    public function getTempatLahirAttribute($value)
+    {
+        return strtoupper($value);
     }
 }

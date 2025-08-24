@@ -60,68 +60,43 @@ class ValidasiPasienResource extends Resource
                 Tables\Actions\Action::make('validasi')
                     ->label('Validasi')
                     ->color('success')
-                    ->visible(fn ($record) => $record->status_validasi === 'pending')
-                    ->requiresConfirmation()
+                    ->visible(fn($record) => $record->status_validasi === 'pending')
                     ->icon('heroicon-o-check')
-                    ->action(function ($record, $livewire) {
-                        // Pastikan kolom bisa diupdate
+                    ->form([
+                        Forms\Components\Select::make('pelayanan')
+                            ->label('Pilih Pelayanan')
+                            ->options([
+                                'Dokter Umum' => 'Dokter Umum',
+                                'Dokter Gigi' => 'Dokter Gigi',
+                            ])
+                            ->required(),
+                    ])
+                    ->action(function ($record, array $data, $livewire) {
+                        // Update status validasi
                         $record->status_validasi = 'approved';
                         $record->save();
 
-                        // Tambah ke antrian
+                        // Buat antrian baru; ruangan dan no_antrian otomatis diatur oleh booted()
                         Antrian::create([
                             'patient_id' => $record->id,
-                            'no_antrian' => self::generateNoAntrian(),
-                            'status' => 'menunggu',
-                            'tanggal' => now(),
+                            'pelayanan' => $data['pelayanan'],
                         ]);
 
-                        // Notifikasi sukses
                         Notification::make()
-                            ->title('Pasien berhasil divalidasi')
+                            ->title('Pasien berhasil divalidasi dan masuk antrian')
                             ->success()
                             ->send();
 
-                        // Refresh tabel supaya barisnya hilang
                         $livewire->dispatch('$refresh');
                     }),
 
-                    // Edit Nomor Antrian
-                Tables\Actions\Action::make('edit_no_antrian')
-                    ->label('Edit No Antrian')
-                    ->icon('heroicon-o-pencil')
-                    ->color('primary')
-                    ->visible(fn($record) => $record->status_validasi === 'pending')
-                    ->form([
-                        Forms\Components\TextInput::make('no_antrian')
-                            ->label('Nomor Antrian')
-                            ->numeric()
-                            ->default(fn($record) => $record->no_antrian ?? self::generateNoAntrian())
-                            ->required()
-                            ->rules([
-                                function () {
-                                    return function (string $attribute, $value, $fail) {
-                                        if (Antrian::whereDate('tanggal', today())
-                                            ->where('no_antrian', $value)
-                                            ->exists()) {
-                                            $fail('Nomor antrian ini sudah digunakan hari ini.');
-                                        }
-                                    };
-                                }
-                            ]),
-                    ])
-                    ->action(function ($record, array $data) {
-                        $record->update(['no_antrian' => $data['no_antrian']]);
 
-                        Notification::make()
-                            ->title('Nomor antrian berhasil diperbarui.')
-                            ->success()
-                            ->send();
-                    }),
-                
+
                 Tables\Actions\DeleteAction::make(),
             ]);
     }
+
+
 
     public static function form(Form $form): Form
     {
@@ -135,10 +110,18 @@ class ValidasiPasienResource extends Resource
         ];
     }
 
-    public static function generateNoAntrian()
+    public static function generateNoAntrian(string $pelayanan)
     {
-        $lastNumber = Antrian::whereDate('tanggal', today())->max('no_antrian');
-        return $lastNumber ? intval($lastNumber) + 1 : 1;
+        // Ambil jumlah antrian hari ini untuk pelayanan yang sama
+        $count = Antrian::whereDate('tanggal', today())
+            ->where('pelayanan', $pelayanan)
+            ->count() + 1;
+
+        // Tentukan prefix sesuai pelayanan
+        $prefix = $pelayanan === 'Dokter Gigi' ? 'B' : 'A';
+
+        // Format nomor antrian
+        return $prefix . str_pad($count, 2, '0', STR_PAD_LEFT);
     }
 
     public static function generateNoRme()
@@ -160,13 +143,13 @@ class ValidasiPasienResource extends Resource
     {
         return [
             Forms\Components\Hidden::make('no_rme')
-                ->default(fn () => self::generateNoRme()),
+                ->default(fn() => self::generateNoRme()),
 
             Forms\Components\Section::make('Data Pribadi Pasien')->schema([
                 Forms\Components\TextInput::make('nama_pasien')
                     ->label('Nama Lengkap')
                     ->required()
-                    ->afterStateUpdated(fn ($state, callable $set) => $set('nama_pasien', strtoupper($state))),
+                    ->afterStateUpdated(fn($state, callable $set) => $set('nama_pasien', strtoupper($state))),
                 Forms\Components\TextInput::make('nik')
                     ->label('Nomor KTP')
                     ->required()
@@ -176,7 +159,7 @@ class ValidasiPasienResource extends Resource
                 Forms\Components\TextInput::make('tempat_lahir')
                     ->label('Tempat Lahir')
                     ->required()
-                    ->afterStateUpdated(fn ($state, callable $set) => $set('tempat_lahir', strtoupper($state))),
+                    ->afterStateUpdated(fn($state, callable $set) => $set('tempat_lahir', strtoupper($state))),
                 Forms\Components\DatePicker::make('tanggal_lahir')
                     ->label('Tanggal Lahir')
                     ->required(),
@@ -223,7 +206,7 @@ class ValidasiPasienResource extends Resource
                     ->reactive(),
                 Forms\Components\TextInput::make('pekerjaan_pasien_lain')
                     ->label('Pekerjaan Lainnya')
-                    ->visible(fn ($get) => $get('pekerjaan_pasien') === 'lain-lain'),
+                    ->visible(fn($get) => $get('pekerjaan_pasien') === 'lain-lain'),
                 Forms\Components\Radio::make('pendidikan_pasien')
                     ->label('Pendidikan')
                     ->options([
@@ -240,7 +223,7 @@ class ValidasiPasienResource extends Resource
                     ->reactive(),
                 Forms\Components\TextInput::make('pendidikan_pasien_lain')
                     ->label('Pendidikan Lainnya')
-                    ->visible(fn ($get) => $get('pendidikan_pasien') === 'lain-lain'),
+                    ->visible(fn($get) => $get('pendidikan_pasien') === 'lain-lain'),
             ])->columns(2),
 
             Forms\Components\Section::make('Data Penanggung Jawab')->schema([
@@ -267,7 +250,7 @@ class ValidasiPasienResource extends Resource
                     ->reactive(),
                 Forms\Components\TextInput::make('pekerjaan_penanggung_jawab_lain')
                     ->label('Pekerjaan Lainnya')
-                    ->visible(fn ($get) => $get('pekerjaan_penanggung_jawab') === 'lain-lain'),
+                    ->visible(fn($get) => $get('pekerjaan_penanggung_jawab') === 'lain-lain'),
                 Forms\Components\Radio::make('hubungan_dengan_pasien')
                     ->label('Hubungan Dengan Pasien')
                     ->options([
@@ -280,7 +263,7 @@ class ValidasiPasienResource extends Resource
                     ->reactive(),
                 Forms\Components\TextInput::make('hubungan_dengan_pasien_lain')
                     ->label('Hubungan Lainnya')
-                    ->visible(fn ($get) => $get('hubungan_dengan_pasien') === 'lain-lain'),
+                    ->visible(fn($get) => $get('hubungan_dengan_pasien') === 'lain-lain'),
             ])->columns(2),
         ];
     }

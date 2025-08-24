@@ -4,6 +4,7 @@ namespace App\Filament\Resources\AntrianResource\Pages;
 
 use App\Filament\Resources\AntrianResource;
 use Filament\Resources\Pages\CreateRecord;
+use Filament\Notifications\Notification;
 use Illuminate\Validation\ValidationException;
 use App\Models\Patient;
 use App\Models\Antrian;
@@ -49,5 +50,18 @@ class CreateAntrian extends CreateRecord
             $data['patient_id'] = $patient->id;
         }
         return $data;
+    }
+
+    protected function afterCreate(): void
+    {
+        Notification::make()
+            ->title('Antrian berhasil ditambahkan!')
+            ->success()
+            ->send();
+    }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
     }
 }

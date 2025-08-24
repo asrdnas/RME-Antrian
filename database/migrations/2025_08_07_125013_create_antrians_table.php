@@ -13,6 +13,8 @@ return new class extends Migration {
         Schema::create('antrians', function (Blueprint $table) {
             $table->id();
             $table->foreignId('patient_id')->constrained()->onDelete('cascade');
+            $table->string('pelayanan');
+            $table->string('ruangan')->nullable();
             $table->string('status'); // enum bisa disesuaikan
             $table->string('no_antrian');
             $table->timestamp('tanggal')->nullable();
