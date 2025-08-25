@@ -12,7 +12,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <img src="{{ asset('asset/logo TA/channel-1.jpeg') }}" alt="Logo Klinik Tirta Amerta" />
+            <img src="{{ asset('asset/logo TA/LOGO KLINIK PRATAMA TIRTA AMERTA NEW.png') }}" alt="Logo Klinik Tirta Amerta" />
             <h1>Klinik Tirta Amerta</h1>
         </div>
 

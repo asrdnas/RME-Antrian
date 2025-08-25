@@ -70,6 +70,11 @@ class PasienResource extends Resource
                 ->color('secondary')
                 ->alignCenter(),
 
+            Tables\Columns\TextColumn::make('tempat_lahir')
+                    ->label('Tempat Lahir')
+                    ->alignCenter()
+                    ->limit(20),
+
             Tables\Columns\TextColumn::make('tanggal_lahir')
                 ->label('Tanggal Lahir')
                 ->date('d M Y')

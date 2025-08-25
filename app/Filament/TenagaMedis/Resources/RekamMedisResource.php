@@ -21,7 +21,7 @@ class RekamMedisResource extends Resource
 {
     protected static ?string $model = RekamMedis::class;
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document';
-    protected static ?string $navigationLabel = 'Rekam Medis Gigi';
+    protected static ?string $navigationLabel = 'Rekam Medis';
 
     protected function afterCreate(): void
     {
