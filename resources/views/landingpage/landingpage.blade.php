@@ -4,19 +4,21 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Formulir Skrining Pasien - Klinik Tirta Amerta</title>
+    <title>Formulir Pendaftaran Pasien - Klinik Tirta Amerta</title>
     <link rel="stylesheet" href="{{ asset('asset/css/style.css') }}" />
+    <link rel="icon" type="image/png" href="{{ asset('asset/logo TA/LOGO KLINIK PRATAMA TIRTA AMERTA NEW.png') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
 <body>
     <div class="container">
         <div class="header">
-            <img src="{{ asset('asset/logo TA/LOGO KLINIK PRATAMA TIRTA AMERTA NEW.png') }}" alt="Logo Klinik Tirta Amerta" />
+            <img src="{{ asset('asset/logo TA/LOGO KLINIK PRATAMA TIRTA AMERTA NEW.png') }}"
+                alt="Logo Klinik Tirta Amerta" />
             <h1>Klinik Tirta Amerta</h1>
         </div>
 
-        <h1>Skrining Pasien</h1>
+        <h1>Formulir Pendaftaran Pasien</h1>
         <p class="form-subtitle">Mohon isi semua bagian formulir di bawah ini dengan teliti.</p>
 
         <form id="screeningForm" method="POST" action="{{ route('patients.store') }}">
@@ -166,8 +168,12 @@
             {{-- 3. Persetujuan --}}
             <h2>3. Persetujuan</h2>
             <div class="form-group">
-                <p>Saya menyatakan bahwa semua informasi yang saya berikan di atas adalah benar dan akurat. Saya
-                    menyetujui data ini digunakan untuk tujuan skrining medis.</p>
+                <p>
+                    Saya menyatakan data yang saya berikan benar dan memberikan persetujuan
+                    untuk penyimpanan serta penggunaan permanen oleh Klinik Tirta Amerta
+                    dalam keperluan rekam medis dan administrasi.
+                </p>
+
                 <div class="checkbox-group">
                     <label><input type="checkbox" name="persetujuan" required /> Saya menyetujui</label>
                 </div>
@@ -214,7 +220,7 @@
             setupOtherInput('pendidikan_pasien', 'pendidikan_pasien_lain');
             setupOtherInput('pekerjaan_penanggung_jawab', 'pekerjaan_pj_lain');
             setupOtherInput('hubungan_dengan_pasien', 'hubungan_pasien_lain');
-            
+
             // Pop-up hanya ada jika session 'success' ada, jadi kita tambahkan listener di sini
             const overlay = document.getElementById('successOverlay');
             if (overlay) {
@@ -224,7 +230,7 @@
                 }, 5000);
 
                 // Event listener untuk tombol 'Oke' di dalam pop-up
-                document.getElementById('closePopup').addEventListener('click', function() {
+                document.getElementById('closePopup').addEventListener('click', function () {
                     overlay.style.display = 'none';
                 });
             }

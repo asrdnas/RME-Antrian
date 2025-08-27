@@ -6,17 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class RekamMedis extends Model
 {
-
     protected $fillable = [
         'patient_id',
+        'pelayanan',
         'dokter_id',
-        'admin_id',
-        'tanggal',
-        'tindakan',
-        'diagnosa',
-        'patient_id',
-        'dokter_id',
-        'admin_id',
         'tanggal',
         'waktu_kedatangan',
         'waktu_mulai',
@@ -36,8 +29,9 @@ class RekamMedis extends Model
         'status_pulang',
         'terapi',
         'kasus_lama_baru',
-        'kode_icd10',        // ✅ tambahkan ini
+        'kode_icd10',       
         'deskripsi_icd10',
+        'status_rekam_medis',
     ];
 
     public function patient()
@@ -50,13 +44,42 @@ class RekamMedis extends Model
         return $this->belongsTo(TenagaMedis::class, 'dokter_id');
     }
 
-    public function admin()
-    {
-        return $this->belongsTo(Admin::class, 'admin_id');  // foreign key default: admin_id
-    }
-
     protected static function booted()
     {
+        static::saving(function ($rekamMedis) {
+            // daftar field yang dianggap wajib
+            $requiredFields = [
+                'pelayanan',
+                'dokter_id',
+                'tanggal',
+                'waktu_kedatangan',
+                'waktu_mulai',
+                'waktu_selesai',
+                'anamnesa',
+                'pemeriksaan',
+                'kesadaran',
+                'tinggi_badan',
+                'berat_badan',
+                'sistole',
+                'diastole',
+                'respiratory_rate',
+                'heart_rate',
+                'kasus_lama_baru',
+                'status_pulang',
+                'terapi',
+                'resep',
+                'kode_icd10',
+                'deskripsi_icd10',
+            ];
+
+            // cek apakah semua field sudah terisi
+            $isComplete = collect($requiredFields)
+                ->every(fn ($field) => !empty($rekamMedis->$field));
+
+            // update otomatis status
+            $rekamMedis->status_rekam_medis = $isComplete ? 'approved' : 'pending';
+        });
+
         static::created(function ($rekamMedis) {
             // Setiap kali rekam medis baru dibuat, tambah total kunjungan
             $rekamMedis->patient?->increment('total_kunjungan');

@@ -5,9 +5,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PatientController;
 
 // Halaman Form Skrining
-Route::get('/skrining', function () {
+Route::get('/pendaftaran-patient-klinik-tirta-amerta', function () {
     return view('landingpage.landingpage');
-})->name('skrining.form');
+})->name('pendaftaran.form');
 
 // Proses Simpan Pasien
 Route::post('/patients', [PatientController::class, 'store'])->name('patients.store');

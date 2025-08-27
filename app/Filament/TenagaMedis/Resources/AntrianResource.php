@@ -5,6 +5,7 @@ namespace App\Filament\TenagaMedis\Resources;
 use App\Filament\TenagaMedis\Resources\AntrianResource\Pages;
 use App\Filament\TenagaMedis\Resources\AntrianResource\RelationManagers;
 use App\Models\Antrian;
+use App\Models\RekamMedis;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,6 +14,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Notifications\Notification;
+
 
 class AntrianResource extends Resource
 {
@@ -98,8 +100,8 @@ class AntrianResource extends Resource
                     'selesai' => 'Selesai',
                 ])->native(false),
                 Tables\Filters\SelectFilter::make('pelayanan')->options([
-                    'Dokter Umum' => 'Dokter Umum',
-                    'Dokter Gigi' => 'Dokter Gigi',
+                    'Umum' => 'Umum',
+                    'Gilut' => 'Gilut',
                 ])->native(false),
             ])
             ->actions([
@@ -121,7 +123,7 @@ class AntrianResource extends Resource
 
                         // Jalankan suara pertama kali
                         $livewire->js(<<<JS
-            let text = `Atas nama {$record->patient->nama_pasien}, dengan nomor antrian {$record->no_antrian}, silakan masuk ruangan.`;
+            let text = `Atas nama {$record->patient->nama_pasien}, dengan nomor antrian {$record->no_antrian}, silakan masuk ruangan {$record->ruangan}.`;
 
             // Pastikan kata cluster tidak dibaca "kluster"
             text = text.replace(/kluster/gi, "cluster");
@@ -183,42 +185,36 @@ class AntrianResource extends Resource
             window.speechSynthesis.speak(utterance);
         JS);
                     }),
-
-                Tables\Actions\Action::make('tandaiSelesai')
-                    ->label('Tandai Selesai')
+            
+            Tables\Actions\Action::make('tandaiSelesai')
+                    ->label('Selesai')
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
+                    ->outlined()
                     ->visible(fn($record) => $record->status === 'dipanggil')
                     ->requiresConfirmation()
-                    ->action(function ($record, $livewire) {
-                        // Update status ke selesai
-                        $record->update(['status' => 'selesai']);
+                    ->action(function ($record) {
+                        $record->update([
+                            'status' => 'selesai',
+                            'waktu_selesai' => now(),
+                        ]);
 
-                        // Notifikasi Filament
+                        // --- LOGIKA BARU: BUAT REKAM MEDIS BARU ---
+                        RekamMedis::create([
+                            'tanggal' => $record->tanggal, // Mengambil tanggal dari antrian
+                            'patient_id' => $record->patient_id,
+                            'pelayanan' => $record->pelayanan,
+                            'waktu_kedatangan' => $record->created_at, // Menggunakan created_at dari antrian
+                            'waktu_mulai' => $record->waktu_mulai,
+                            'waktu_selesai' => $record->waktu_selesai,
+                            'status_rekam_medis' => 'pending',
+                            'dokter_id' => null,
+                        ]);
+
                         Notification::make()
-                            ->title('Pasien ' . $record->patient->nama_pasien . ' sudah selesai.')
+                            ->title('Pasien telah selesai. Rekam medis baru telah dibuat.')
                             ->success()
                             ->send();
-
-                        // Tambahin suara konfirmasi biar interaktif
-                        $livewire->js(<<<JS
-            let text = "Atas nama pasien {$record->patient->nama_pasien}, dengan nomor antrian {$record->no_antrian}, pemeriksaan telah selesai. Terima kasih.";
-
-            // Pastikan kata cluster tidak dibaca "kluster"
-            text = text.replace(/kluster/gi, "cluster");
-
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = "id-ID";
-
-            // Atur suara biar lebih natural
-            utterance.rate = 0.85;   // agak lambat
-            utterance.pitch = 1.1;   // pitch sedikit naik
-            utterance.volume = 1;    // volume full
-
-            // Batalin kalau ada suara yang masih jalan, lalu bacakan
-            window.speechSynthesis.cancel();
-            window.speechSynthesis.speak(utterance);
-        JS);
                     }),
 
 

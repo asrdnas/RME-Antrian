@@ -37,14 +37,6 @@ return new class extends Migration
             $table->string('pekerjaan_penanggung_jawab')->nullable();
             $table->string('hubungan_dengan_pasien')->nullable();
 
-            $table->boolean('edukasi_diberikan')->default(false);
-            $table->string('penerima_edukasi')->nullable();
-            $table->string('bicara')->nullable();
-            $table->string('serangan_awal_gangguan_bicara')->nullable();
-            $table->string('bahasa_sehari_hari')->nullable();
-            $table->boolean('perlu_penerjemah')->default(false);
-            $table->boolean('bahasa_isyarat')->default(false);
-
             $table->enum('status_validasi', ['pending', 'approved', 'rejected'])->default('pending');
             $table->unsignedInteger('total_kunjungan')->default(0);
 

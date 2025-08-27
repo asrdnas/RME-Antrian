@@ -14,5 +14,9 @@ class RiwayatAntrian extends Model
         'status',
         'tanggal',
         'tanggal_reset',
+        'waktu_mulai',
+        'waktu_selesai',
+        'pelayanan',
+        'ruangan',
     ];
 }

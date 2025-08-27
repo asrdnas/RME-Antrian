@@ -15,6 +15,7 @@ use Filament\Tables\Actions\Action;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\PasiensExport;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 
 class PasienResource extends Resource
 {
@@ -32,7 +33,67 @@ class PasienResource extends Resource
     {
         return $form
             ->schema([
-                // Isi form jika perlu
+                Forms\Components\TextInput::make('nama_pasien')
+                    ->label('Nama Pasien')
+                    ->required()
+                    ->default(fn($record) => $record?->nama_pasien)
+                    ->reactive()
+                    ->prefixIcon('heroicon-o-user'),
+
+                Forms\Components\TextInput::make('nik')
+                    ->label('NIK')
+                    ->required()
+                    ->maxLength(16)
+                    ->default(fn($record) => $record?->nik)
+                    ->prefixIcon('heroicon-o-identification'),
+
+                // Perbaikan: Sekarang bisa diedit, tapi dengan validasi unik
+                Forms\Components\TextInput::make('no_rme')
+                    ->label('No RME')
+                    ->required()
+                    ->default(fn($record) => $record?->no_rme)
+                    ->prefixIcon('heroicon-o-identification')
+                    ->unique(ignoreRecord: true), // Validasi unik, tapi abaikan record yang sedang diedit
+
+                Forms\Components\Textarea::make('alamat_pasien')
+                    ->label('Alamat')
+                    ->rows(3)
+                    ->default(fn($record) => $record?->alamat_pasien),
+
+                Forms\Components\TextInput::make('tempat_lahir')
+                    ->label('Tempat Lahir')
+                    ->default(fn($record) => $record?->tempat_lahir),
+
+                // Perbaikan untuk format tanggal
+                Forms\Components\DatePicker::make('tanggal_lahir')
+                    ->label('Tanggal Lahir')
+                    ->native(false) // Menggunakan datepicker Filament
+                    ->displayFormat('d/m/Y') // Format untuk ditampilkan di form
+                    ->default(fn($record) => $record?->tanggal_lahir),
+
+                Forms\Components\Select::make('jenis_kelamin')
+                    ->label('Jenis Kelamin')
+                    ->options([
+                        'laki-laki' => 'Laki-laki',
+                        'perempuan' => 'Perempuan',
+                    ])
+                    ->required()
+                    ->default(fn($record) => $record?->jenis_kelamin),
+
+                Forms\Components\TextInput::make('no_tlp_pasien')
+                    ->label('No Telepon')
+                    ->default(fn($record) => $record?->no_tlp_pasien)
+                    ->prefixIcon('heroicon-o-phone'),
+
+                Forms\Components\Select::make('status_validasi')
+                    ->label('Status Validasi')
+                    ->options([
+                        'pending' => 'Pending',
+                        'approved' => 'Approved',
+                        'rejected' => 'Rejected',
+                    ])
+                    ->required()
+                    ->default(fn($record) => $record?->status_validasi),
             ]);
     }
 
@@ -71,7 +132,7 @@ class PasienResource extends Resource
                     ->limit(30)
                     ->tooltip(fn($record) => $record->alamat_pasien)
                     ->icon('heroicon-o-map-pin'),
-                
+
                 Tables\Columns\TextColumn::make('tempat_lahir')
                     ->label('Tempat Lahir')
                     ->alignCenter()
@@ -107,10 +168,16 @@ class PasienResource extends Resource
                     ->badge()
                     ->color('success')
                     ->alignCenter(),
-                
+
                 Tables\Columns\TextColumn::make('status_validasi')
                     ->label('Status validasi')
                     ->sortable()
+                    ->badge() // Tambahkan badge untuk tampilan lebih baik
+                    ->colors([
+                        'warning' => 'pending',
+                        'success' => 'approved',
+                        'danger' => 'rejected',
+                    ])
                     ->alignCenter(),
             ])
             ->filters([
@@ -136,7 +203,7 @@ class PasienResource extends Resource
                     ->button()
                     ->color('info'),
 
-                // Mengubah aksi 'tambahKeAntrian'
+                // Action 'tambahKeAntrian'
                 Action::make('tambahKeAntrian')
                     ->label('Tambah ke Antrian')
                     ->icon('heroicon-o-plus-circle')
@@ -146,15 +213,16 @@ class PasienResource extends Resource
                         Forms\Components\Select::make('pelayanan')
                             ->label('Pilih Pelayanan')
                             ->options([
-                                'Dokter Umum' => 'Dokter Umum',
-                                'Dokter Gigi' => 'Dokter Gigi',
+                                'Umum' => 'Umum',
+                                'Gilut' => 'Gilut',
                             ])
                             ->required()
                             ->native(false),
                     ])
-                    ->action(function (array $data, $record, $livewire) {
+                    ->action(function (array $data, Patient $record) {
                         $pelayanan = $data['pelayanan'];
-                        $exists = Antrian::where('patient_id', $record->id)
+                        $exists = Antrian::query()
+                            ->where('patient_id', $record->id)
                             ->where('pelayanan', $pelayanan)
                             ->whereIn('status', ['menunggu', 'dipanggil'])
                             ->whereDate('tanggal', today())
@@ -171,7 +239,7 @@ class PasienResource extends Resource
                         Antrian::create([
                             'patient_id' => $record->id,
                             'pelayanan' => $pelayanan,
-                            'ruangan' => $pelayanan === 'Dokter Gigi' ? 'Cluster 2' : 'Cluster 1',
+                            'ruangan' => $pelayanan === 'Gilut' ? 'Cluster 2' : 'Cluster 1',
                             'no_antrian' => \App\Filament\Resources\AntrianResource::generateNoAntrian($pelayanan),
                             'status' => 'menunggu',
                             'tanggal' => now(),
@@ -188,14 +256,16 @@ class PasienResource extends Resource
                     ->color('danger'),
             ])
             ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
             ]);
     }
 
     public static function getRelations(): array
     {
         return [
-            // Relation managers jika ada
+            //
         ];
     }
 
@@ -203,7 +273,6 @@ class PasienResource extends Resource
     {
         return [
             'index' => Pages\ListPasiens::route('/'),
-            'create' => Pages\CreatePasien::route('/create'),
             'edit' => Pages\EditPasien::route('/{record}/edit'),
         ];
     }

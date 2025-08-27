@@ -23,10 +23,7 @@ return new class extends Migration {
                 ->constrained('tenaga_medis')
                 ->cascadeOnDelete();
 
-            $table->foreignId('admin_id')
-                ->nullable()
-                ->constrained('admins')
-                ->cascadeOnDelete();
+            $table->string('pelayanan')->nullable();
 
             // Tanggal & Waktu
             $table->date('tanggal')->nullable();
@@ -39,7 +36,7 @@ return new class extends Migration {
             $table->text('pemeriksaan')->nullable();
 
             // Kesadaran
-            $table->enum('kesadaran', ['Sadar', 'Tidak Sadar'])->nullable();
+            $table->enum('kesadaran', ['Compos Mentis','Apatis','Somnolen','Sopor','Koma'])->nullable();
 
             // Pengukuran Fisik
             $table->decimal('tinggi_badan', 5, 2)->nullable(); // cm
@@ -55,9 +52,9 @@ return new class extends Migration {
             $table->integer('respiratory_rate')->nullable(); // x/menit
             $table->integer('heart_rate')->nullable();       // bpm
 
-            // Tenaga Medis & Status
-            $table->string('tenaga_medis')->nullable();
-            $table->enum('status_pulang', ['Pulang', 'Rujuk', 'Rawat Inap'])->nullable();
+           //Status
+            
+            $table->enum('status_pulang', ['Pulang', 'Rujuk', 'Rawat Jalan'])->nullable();
 
             // Terapi
             $table->text('terapi')->nullable();
@@ -68,6 +65,10 @@ return new class extends Migration {
             // Diagnosa ICD-10
             $table->string('kode_icd10')->nullable();
             $table->string('deskripsi_icd10')->nullable();
+
+             $table->enum('status_rekam_medis', ['pending', 'approved'])->default('pending');
+
+
 
             $table->timestamps();
         });

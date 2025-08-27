@@ -31,10 +31,10 @@ class PatientController extends Controller
         ]);
 
         $data['status_pasien'] = 'pending';
-        $data['no_rme'] = 'RME-' . now()->format('YmdHis');
+        $data['no_rme'] = Patient::generateNoRme();
 
         Patient::create($data);
 
-        return redirect()->route('skrining.form')->with('success', 'Data berhasil dikirim, menunggu validasi admin.');
+        return redirect()->route('pendaftaran.form')->with('success', 'Data berhasil dikirim, menunggu validasi admin.');
     }
 }

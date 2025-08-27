@@ -12,6 +12,8 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Notifications\Notification;
+use Filament\Tables\Actions\Action;
+use Illuminate\Database\Eloquent\Builder;
 
 class ValidasiPasienResource extends Resource
 {
@@ -57,7 +59,7 @@ class ValidasiPasienResource extends Resource
                     ->default('pending'),
             ])
             ->actions([
-                Tables\Actions\Action::make('validasi')
+                Action::make('validasi')
                     ->label('Validasi')
                     ->color('success')
                     ->visible(fn($record) => $record->status_validasi === 'pending')
@@ -66,37 +68,34 @@ class ValidasiPasienResource extends Resource
                         Forms\Components\Select::make('pelayanan')
                             ->label('Pilih Pelayanan')
                             ->options([
-                                'Dokter Umum' => 'Dokter Umum',
-                                'Dokter Gigi' => 'Dokter Gigi',
+                                'Umum' => 'Umum',
+                                'Gilut' => 'Gilut',
                             ])
                             ->required(),
                     ])
-                    ->action(function ($record, array $data, $livewire) {
+                    ->action(function ($record, array $data) {
                         // Update status validasi
                         $record->status_validasi = 'approved';
                         $record->save();
 
-                        // Buat antrian baru; ruangan dan no_antrian otomatis diatur oleh booted()
+                        // Buat antrian baru
                         Antrian::create([
                             'patient_id' => $record->id,
                             'pelayanan' => $data['pelayanan'],
+                            'ruangan' => $data['pelayanan'] === 'Gilut' ? 'Cluster 2' : 'Cluster 1',
+                            'no_antrian' => AntrianResource::generateNoAntrian($data['pelayanan']),
+                            'status' => 'menunggu',
+                            'tanggal' => now(),
                         ]);
 
                         Notification::make()
                             ->title('Pasien berhasil divalidasi dan masuk antrian')
                             ->success()
                             ->send();
-
-                        $livewire->dispatch('$refresh');
                     }),
-
-
-
                 Tables\Actions\DeleteAction::make(),
             ]);
     }
-
-
 
     public static function form(Form $form): Form
     {
@@ -109,41 +108,23 @@ class ValidasiPasienResource extends Resource
             'index' => Pages\ListValidasiPasiens::route('/'),
         ];
     }
-
+    
+    // Catatan: Fungsi ini sudah dipindahkan ke AntrianResource
     public static function generateNoAntrian(string $pelayanan)
     {
-        // Ambil jumlah antrian hari ini untuk pelayanan yang sama
         $count = Antrian::whereDate('tanggal', today())
             ->where('pelayanan', $pelayanan)
             ->count() + 1;
-
-        // Tentukan prefix sesuai pelayanan
-        $prefix = $pelayanan === 'Dokter Gigi' ? 'B' : 'A';
-
-        // Format nomor antrian
+        $prefix = $pelayanan === 'Gilut' ? 'B' : 'A';
         return $prefix . str_pad($count, 2, '0', STR_PAD_LEFT);
-    }
-
-    public static function generateNoRme()
-    {
-        $today = now()->format('Ymd');
-        $lastRme = Patient::whereDate('created_at', today())->max('no_rme');
-
-        if ($lastRme) {
-            $lastNumber = intval(substr($lastRme, -4));
-            $newNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
-        } else {
-            $newNumber = '0001';
-        }
-
-        return 'RME' . $today . $newNumber;
     }
 
     private static function getFormSchema(): array
     {
         return [
+            // Memanggil metode statis dari model Patient
             Forms\Components\Hidden::make('no_rme')
-                ->default(fn() => self::generateNoRme()),
+                ->default(fn() => Patient::generateNoRme()),
 
             Forms\Components\Section::make('Data Pribadi Pasien')->schema([
                 Forms\Components\TextInput::make('nama_pasien')

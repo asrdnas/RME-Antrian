@@ -27,8 +27,8 @@ class Antrian extends Model
         static::creating(function ($antrian) {
             // Mapping ruangan otomatis
             $ruanganMapping = [
-                'Dokter Umum' => 'Cluster 1',
-                'Dokter Gigi' => 'Cluster 2',
+                'Umum' => 'Cluster 1',
+                'Gilut' => 'Cluster 2',
             ];
 
             if (!empty($antrian->pelayanan)) {
@@ -59,13 +59,10 @@ class Antrian extends Model
         });
     }
 
-    /**
-     * Generate nomor antrian otomatis berdasarkan pelayanan
-     * Dokter Umum = A01, A02..., Dokter Gigi = B01, B02...
-     */
+    
     public static function generateNoAntrian(string $pelayanan): string
     {
-        $prefix = $pelayanan === 'Dokter Gigi' ? 'B' : 'A';
+        $prefix = $pelayanan === 'Gilut' ? 'B' : 'A';
 
         $lastNumber = self::whereDate('tanggal', today())
             ->where('pelayanan', $pelayanan)

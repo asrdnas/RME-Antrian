@@ -27,13 +27,6 @@ class Patient extends Model
         'umur_penanggung_jawab',
         'pekerjaan_penanggung_jawab',
         'hubungan_dengan_pasien',
-        'edukasi_diberikan',
-        'penerima_edukasi',
-        'bicara',
-        'serangan_awal_gangguan_bicara',
-        'bahasa_sehari_hari',
-        'perlu_penerjemah',
-        'bahasa_isyarat',
         'total_kunjungan',
     ];
 
@@ -63,4 +56,26 @@ class Patient extends Model
     {
         return strtoupper($value);
     }
+
+    public static function generateNoRme()
+    {
+        $year = now()->format('Y');
+
+        // cari no_rme terbesar di tahun ini
+        $lastPatient = self::whereYear('created_at', now()->year)
+            ->orderBy('no_rme', 'desc')
+            ->first();
+
+        if ($lastPatient) {
+            // ambil angka setelah tahun, contoh: 20250001 -> ambil 0001
+            $lastNumber = intval(substr($lastPatient->no_rme, -4));
+            $newNumber = $lastNumber + 1;
+        } else {
+            $newNumber = 1;
+        }
+
+        // format jadi misalnya: 20250001
+        return $year . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
+    }
+
 }

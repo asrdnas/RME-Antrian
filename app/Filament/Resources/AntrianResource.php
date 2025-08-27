@@ -6,6 +6,7 @@ use App\Filament\Resources\AntrianResource\Pages;
 use App\Models\Antrian;
 use App\Models\Patient;
 use App\Models\RiwayatAntrian;
+use App\Models\RekamMedis; // <-- Tambahkan model RekamMedis
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,6 +14,8 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Notifications\Notification;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Filament\Facades\Filament;
 
 class AntrianResource extends Resource
 {
@@ -57,12 +60,11 @@ class AntrianResource extends Resource
                                     $set('nama_pasien', null);
                                 } else {
                                     $ruanganMapping = [
-                                        'Dokter Umum' => 'Cluster 1',
-                                        'Dokter Gigi' => 'Cluster 2',
+                                        'Umum' => 'Cluster 1',
+                                        'Gilut' => 'Cluster 2',
                                     ];
                                     $set('ruangan', $ruanganMapping[$pelayanan]);
 
-                                    // Generate nomor otomatis jika kosong
                                     if (!$get('no_antrian')) {
                                         $set('no_antrian', self::generateNoAntrian($pelayanan));
                                     }
@@ -90,8 +92,8 @@ class AntrianResource extends Resource
             Forms\Components\Select::make('pelayanan')
                 ->label('Pelayanan')
                 ->options([
-                    'Dokter Umum' => 'Dokter Umum',
-                    'Dokter Gigi' => 'Dokter Gigi',
+                    'Umum' => 'Umum',
+                    'Gilut' => 'Gilut',
                 ])
                 ->required()
                 ->reactive()
@@ -103,7 +105,6 @@ class AntrianResource extends Resource
 
                     $oldPelayanan = $record?->pelayanan;
 
-                    // Cek apakah pasien sudah ada di antrian lain untuk pelayanan baru
                     $existing = Antrian::where('patient_id', $patient_id)
                         ->where('pelayanan', $state)
                         ->where('status', '!=', 'selesai')
@@ -115,26 +116,21 @@ class AntrianResource extends Resource
                             ->title('Pasien sudah ada di antrian untuk pelayanan ini!')
                             ->danger()
                             ->send();
-                        $set('pelayanan', $oldPelayanan); // Kembalikan ke pelayanan lama
+                        $set('pelayanan', $oldPelayanan);
                         return;
                     }
 
                     $ruanganMapping = [
-                        'Dokter Umum' => 'Cluster 1',
-                        'Dokter Gigi' => 'Cluster 2',
+                        'Umum' => 'Cluster 1',
+                        'Gilut' => 'Cluster 2',
                     ];
                     $set('ruangan', $ruanganMapping[$state] ?? null);
 
-                    // Jika terjadi perubahan pelayanan pada saat edit
                     if ($record && $oldPelayanan && $oldPelayanan !== $state) {
-                        // Kosongkan no_antrian saat berpindah pelayanan
                         $set('no_antrian', null);
-
-                        // Re-nomor antrian untuk pelayanan lama (setelah pasien ini pindah)
                         self::renumberAntrian($oldPelayanan);
                     }
 
-                    // Generate nomor antrian baru jika belum ada
                     $newNumber = self::generateNoAntrian($state);
                     $set('no_antrian', $newNumber);
                 }),
@@ -222,8 +218,8 @@ class AntrianResource extends Resource
                     'selesai' => 'Selesai',
                 ])->native(false),
                 Tables\Filters\SelectFilter::make('pelayanan')->options([
-                    'Dokter Umum' => 'Dokter Umum',
-                    'Dokter Gigi' => 'Dokter Gigi',
+                    'Umum' => 'Umum',
+                    'Gilut' => 'Gilut',
                 ])->native(false),
             ])
             ->headerActions([
@@ -238,25 +234,78 @@ class AntrianResource extends Resource
                     ->tooltip(fn() => Antrian::whereDate('tanggal', today())->where('status', '!=', 'selesai')->exists() ? 'Tidak bisa reset, ada pasien yang belum selesai' : null)
                     ->action(function () {
                         $now = Carbon::now();
-                        foreach (Antrian::whereDate('tanggal', today())->get() as $antrian) {
-                            RiwayatAntrian::create([
-                                'no_antrian' => $antrian->no_antrian,
-                                'no_rme' => $antrian->patient->no_rme ?? null,
-                                'nama_pasien' => $antrian->patient->nama_pasien ?? null,
-                                'alamat_pasien' => $antrian->patient->alamat_pasien ?? null,
-                                'status' => $antrian->status,
-                                'tanggal' => $antrian->tanggal,
-                                'tanggal_reset' => $now,
-                            ]);
+
+                        // Memuat relasi 'patient' di awal untuk menghindari N+1 query problem
+                        $antrians = Antrian::whereDate('tanggal', today())->with('patient')->get();
+
+                        foreach ($antrians as $antrian) {
+                            // Pastikan relasi patient tidak null sebelum mencoba mengaksesnya
+                            if ($antrian->patient) {
+                                RiwayatAntrian::create([
+                                    'no_antrian' => $antrian->no_antrian,
+                                    'no_rme' => $antrian->patient->no_rme,
+                                    'nama_pasien' => $antrian->patient->nama_pasien,
+                                    'alamat_pasien' => $antrian->patient->alamat_pasien,
+                                    'pelayanan' => $antrian->pelayanan,
+                                    'ruangan' => $antrian->ruangan,
+                                    'status' => $antrian->status,
+                                    'tanggal' => $antrian->created_at,
+                                    'tanggal_reset' => $now,
+                                    'waktu_mulai' => $antrian->waktu_mulai,
+                                    'waktu_selesai' => $antrian->waktu_selesai,
+                                ]);
+                            }
                         }
+
                         Antrian::whereDate('tanggal', today())->delete();
                         Notification::make()->title('Antrian hari ini berhasil di-backup dan di-reset.')->success()->send();
                     }),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\Action::make('panggilPasien')->label('Panggil')->icon('heroicon-o-megaphone')->color('warning')->outlined()->visible(fn($record) => $record->status === 'menunggu')->requiresConfirmation()->action(fn($record) => $record->update(['status' => 'dipanggil'])),
-                Tables\Actions\Action::make('tandaiSelesai')->label('Selesai')->icon('heroicon-o-check-circle')->color('success')->outlined()->visible(fn($record) => $record->status === 'dipanggil')->requiresConfirmation()->action(fn($record) => $record->update(['status' => 'selesai'])),
+                Tables\Actions\Action::make('panggilPasien')
+                    ->label('Panggil')
+                    ->icon('heroicon-o-megaphone')
+                    ->color('warning')
+                    ->outlined()
+                    ->visible(fn($record) => $record->status === 'menunggu')
+                    ->requiresConfirmation()
+                    ->action(function ($record) {
+                        $record->update([
+                            'status' => 'dipanggil',
+                            'waktu_mulai' => now(), // <-- Kolom 'waktu_mulai' diisi di sini
+                        ]);
+                    }),
+                Tables\Actions\Action::make('tandaiSelesai')
+                    ->label('Selesai')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->outlined()
+                    ->visible(fn($record) => $record->status === 'dipanggil')
+                    ->requiresConfirmation()
+                    ->action(function ($record) {
+                        $record->update([
+                            'status' => 'selesai',
+                            'waktu_selesai' => now(),
+                        ]);
+
+                        // --- LOGIKA BARU: BUAT REKAM MEDIS BARU ---
+                        RekamMedis::create([
+                            'tanggal' => $record->tanggal, // Mengambil tanggal dari antrian
+                            'patient_id' => $record->patient_id,
+                            'pelayanan' => $record->pelayanan,
+                            'waktu_kedatangan' => $record->created_at, // Menggunakan created_at dari antrian
+                            'waktu_mulai' => $record->waktu_mulai,
+                            'waktu_selesai' => $record->waktu_selesai,
+                            'status_rekam_medis' => 'pending',
+                            'dokter_id' => null,
+                        ]);
+
+                        Notification::make()
+                            ->title('Pasien telah selesai. Rekam medis baru telah dibuat.')
+                            ->success()
+                            ->send();
+                    }),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([Tables\Actions\DeleteBulkAction::make()]);
@@ -278,9 +327,8 @@ class AntrianResource extends Resource
 
     public static function generateNoAntrian(string $pelayanan): string
     {
-        $prefix = $pelayanan === 'Dokter Gigi' ? 'B' : 'A';
+        $prefix = $pelayanan === 'Gilut' ? 'B' : 'A';
 
-        // Pastikan hanya mengambil antrian yang masih aktif (belum selesai)
         $last = Antrian::whereDate('tanggal', today())
             ->where('pelayanan', $pelayanan)
             ->where('status', '!=', 'selesai')
@@ -296,10 +344,10 @@ class AntrianResource extends Resource
         $antrians = Antrian::where('pelayanan', $pelayanan)
             ->whereDate('tanggal', today())
             ->where('status', '!=', 'selesai')
-            ->orderBy('no_antrian') // Urutkan berdasarkan nomor antrian
+            ->orderBy('no_antrian')
             ->get();
 
-        $prefix = $pelayanan === 'Dokter Gigi' ? 'B' : 'A';
+        $prefix = $pelayanan === 'Gilut' ? 'B' : 'A';
         $counter = 1;
 
         foreach ($antrians as $a) {
@@ -308,5 +356,4 @@ class AntrianResource extends Resource
             $counter++;
         }
     }
-
 }
