@@ -8,7 +8,7 @@ use Filament\Resources\Pages\CreateRecord;
 
 class CreateRekamMedis extends CreateRecord
 {
-    protected static string $resource = RekamMedisTenagaMedisResource::class;
+    protected static string $resource = RekamMedisResource::class;
 
     protected function getRedirectUrl(): string
     {

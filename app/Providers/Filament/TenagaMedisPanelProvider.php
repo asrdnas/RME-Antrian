@@ -31,9 +31,8 @@ class TenagaMedisPanelProvider extends PanelProvider
                 'primary' => Color::Amber,
             ])
             ->discoverResources(in: app_path('Filament/TenagaMedis/Resources'), for: 'App\\Filament\\TenagaMedis\\Resources')
-            // inject RekamMedisTenagaMedisResource secara manual
             ->resources([
-                \App\Filament\TenagaMedis\Resources\RekamMedisTenagaMedisResource::class,
+                \App\Filament\TenagaMedis\Resources\RekamMedisResource::class,
             ])
             ->discoverPages(in: app_path('Filament/TenagaMedis/Pages'), for: 'App\\Filament\\TenagaMedis\\Pages')
             ->pages([

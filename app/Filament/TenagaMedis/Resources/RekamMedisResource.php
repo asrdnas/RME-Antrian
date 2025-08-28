@@ -12,7 +12,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class RekamMedisTenagaMedisResource extends Resource
+class RekamMedisResource extends Resource
 {
     protected static ?string $model = RekamMedis::class;
 
@@ -223,29 +223,40 @@ class RekamMedisTenagaMedisResource extends Resource
                             ->rows(2),
 
                         Forms\Components\Fieldset::make('Diagnosa ICD-10')
-                        ->schema([
-                        Forms\Components\TextInput::make('kode_icd10')
-                            ->label('Kode ICD-10')
-                            ->prefixIcon('heroicon-o-hashtag')
-                            ->reactive()
-                            ->afterStateUpdated(function ($state, callable $set) {
-                                    if ($state) {
-                                        $icd = \App\Models\IcdCode::where('code', $state)->first();
-                                        if ($icd) {
-                                            $set('deskripsi_icd10', $icd->description);
+                            ->schema([
+                                Forms\Components\Select::make('kode_icd10')
+                                    ->label('Kode ICD-10')
+                                    ->prefixIcon('heroicon-o-hashtag')
+                                    ->searchable()
+                                    ->getSearchResultsUsing(function (string $query) {
+                                        return \App\Models\IcdCode::query()
+                                            ->where('code', 'like', "%{$query}%")
+                                            ->limit(20)
+                                            ->pluck('code', 'code'); // hanya kode
+                                    })
+                                    ->getOptionLabelUsing(fn($value): ?string => $value)
+                                    ->reactive()
+                                    ->afterStateUpdated(function ($state, callable $set) {
+                                        if ($state) {
+                                            $icd = \App\Models\IcdCode::where('code', $state)->first();
+                                            $set('deskripsi_icd10', $icd?->description ?? 'Kode tidak ditemukan');
+                                            $set('deskripsi_icd10_view', $icd?->description ?? 'Kode tidak ditemukan');
                                         } else {
-                                            $set('deskripsi_icd10', 'Kode tidak ditemukan');
+                                            $set('deskripsi_icd10', null);
+                                            $set('deskripsi_icd10_view', null);
                                         }
-                                    } else {
-                                        $set('deskripsi_icd10', null);
-                                    }
-                                }),
-                        Forms\Components\Textarea::make('deskripsi_icd10')
-                            ->label('Deskripsi Diagnosa')
-                            ->rows(3)
-                            ->disabled(), // biar user tidak bisa ubah manual
-                                ])
-                                ->columns(2),
+                                    })
+                                    ->required(),
+
+                                Forms\Components\Hidden::make('deskripsi_icd10')
+                                    ->dehydrated(true), // ini yg masuk DB
+
+                                Forms\Components\Textarea::make('deskripsi_icd10_view')
+                                    ->label('Deskripsi Diagnosa')
+                                    ->rows(3)
+                                    ->readOnly(), // hanya tampil
+                            ])
+                            ->columns(2),
                     ])
                     ->extraAttributes([
                         'style' => 'background-color:#1e1e1e; border:1px solid #2e2e2e; border-radius:8px; padding:15px;'
@@ -263,110 +274,109 @@ class RekamMedisTenagaMedisResource extends Resource
                     ]),
             ]);
     }
-
     public static function table(Table $table): Table
-{
-    return $table
-        ->recordUrl(null) // <- ini bikin row tidak bisa diklik
-        ->striped() // baris selang-seling warna
-        ->columns([
-            Tables\Columns\TextColumn::make('patient.no_rme')
-                ->label('No RME')
-                ->searchable()
-                ->sortable()
-                ->copyable()
-                ->icon('heroicon-o-identification')
-                ->iconColor('primary')
-                ->alignCenter(),
+    {
+        return $table
+            ->recordUrl(null) // <- ini bikin row tidak bisa diklik
+            ->striped() // baris selang-seling warna
+            ->columns([
+                Tables\Columns\TextColumn::make('patient.no_rme')
+                    ->label('No RME')
+                    ->searchable()
+                    ->sortable()
+                    ->copyable()
+                    ->icon('heroicon-o-identification')
+                    ->iconColor('primary')
+                    ->alignCenter(),
 
                 Tables\Columns\TextColumn::make('patient.nama_pasien')
-                ->label('Nama Pasien')
-                ->searchable()
-                ->sortable()
-                ->icon('heroicon-o-user-circle')
-                ->iconColor('success')
-                ->weight('bold') // nama jadi tebal
-                ->wrap() // biar alamat panjang nggak kepotong
-                ->tooltip(fn ($record) => $record->patient->alamat_pasien ?? '-')
-                ->alignCenter(),
+                    ->label('Nama Pasien')
+                    ->searchable()
+                    ->sortable()
+                    ->icon('heroicon-o-user-circle')
+                    ->iconColor('success')
+                    ->weight('bold') // nama jadi tebal
+                    ->wrap() // biar alamat panjang nggak kepotong
+                    ->tooltip(fn($record) => $record->patient->alamat_pasien ?? '-')
+                    ->alignCenter(),
 
-            Tables\Columns\TextColumn::make('patient.total_kunjungan')
-                ->label('Total Kunjungan')
-                ->sortable()
-                ->badge()
-                ->color(fn ($state) => $state > 5 ? 'success' : 'warning')
-                ->icon('heroicon-o-chart-bar')
-                ->alignCenter(),
+                Tables\Columns\TextColumn::make('patient.total_kunjungan')
+                    ->label('Total Kunjungan')
+                    ->sortable()
+                    ->badge()
+                    ->color(fn($state) => $state > 5 ? 'success' : 'warning')
+                    ->icon('heroicon-o-chart-bar')
+                    ->alignCenter(),
 
-            Tables\Columns\TextColumn::make('pelayanan')
-                ->label('Pelayanan')
-                ->badge()
-                ->color('info')
-                ->icon('heroicon-o-briefcase')
-                ->alignCenter(),
+                Tables\Columns\TextColumn::make('pelayanan')
+                    ->label('Pelayanan')
+                    ->badge()
+                    ->color('info')
+                    ->icon('heroicon-o-briefcase')
+                    ->alignCenter(),
 
-            Tables\Columns\TextColumn::make('tanggal')
-                ->label('Tanggal')
-                ->dateTime('d/m/Y')
-                ->sortable()
-                ->icon('heroicon-o-calendar-days')
-                ->iconColor('warning')
-                ->alignCenter(),
+                Tables\Columns\TextColumn::make('tanggal')
+                    ->label('Tanggal')
+                    ->dateTime('d/m/Y')
+                    ->sortable()
+                    ->icon('heroicon-o-calendar-days')
+                    ->iconColor('warning')
+                    ->alignCenter(),
 
-            Tables\Columns\BadgeColumn::make('status_rekam_medis')
-                ->label('Status')
-                ->colors([
-                    'danger' => 'pending',
-                    'success' => 'approved',
-                ])
-                ->icons([
-                    'heroicon-o-clock' => 'pending',
-                    'heroicon-o-check-circle' => 'approved',
-                ])
-                ->formatStateUsing(fn($state) => ucfirst($state))
-                ->alignCenter(),
-        ])
-        ->filters([
-            Tables\Filters\SelectFilter::make('status_rekam_medis')
-                ->options([
-                    'pending' => 'Pending',
-                    'approved' => 'Approved',
-                ])
-                ->label('Status Rekam Medis')
-                ->native(false), // dropdown lebih modern
+                Tables\Columns\BadgeColumn::make('status_rekam_medis')
+                    ->label('Status')
+                    ->colors([
+                        'danger' => 'pending',
+                        'success' => 'approved',
+                    ])
+                    ->icons([
+                        'heroicon-o-clock' => 'pending',
+                        'heroicon-o-check-circle' => 'approved',
+                    ])
+                    ->formatStateUsing(fn($state) => ucfirst($state))
+                    ->alignCenter(),
+            ])
+            ->filters([
+                Tables\Filters\SelectFilter::make('status_rekam_medis')
+                    ->options([
+                        'pending' => 'Pending',
+                        'approved' => 'Approved',
+                    ])
+                    ->label('Status Rekam Medis')
+                    ->native(false), // dropdown lebih modern
 
-            Tables\Filters\Filter::make('tanggal')
-                ->form([
-                    Forms\Components\DatePicker::make('dari_tanggal')
-                        ->placeholder('Dari Tanggal')
-                        ->native(false),
-                    Forms\Components\DatePicker::make('sampai_tanggal')
-                        ->placeholder('Sampai Tanggal')
-                        ->native(false),
-                ])
-                ->query(function (Builder $query, array $data): Builder {
-                    return $query
-                        ->when(
-                            $data['dari_tanggal'],
-                            fn(Builder $query, $date): Builder => $query->whereDate('tanggal', '>=', $date),
-                        )
-                        ->when(
-                            $data['sampai_tanggal'],
-                            fn(Builder $query, $date): Builder => $query->whereDate('tanggal', '<=', $date),
-                        );
-                })
-                ->label('Filter Tanggal'),
-        ])
-        ->actions([
-            Tables\Actions\ViewAction::make(),
-            Tables\Actions\EditAction::make(),
-        ])
-        ->bulkActions([
-            Tables\Actions\BulkActionGroup::make([
-                Tables\Actions\DeleteBulkAction::make(),
-            ]),
-        ]);
-}
+                Tables\Filters\Filter::make('tanggal')
+                    ->form([
+                        Forms\Components\DatePicker::make('dari_tanggal')
+                            ->placeholder('Dari Tanggal')
+                            ->native(false),
+                        Forms\Components\DatePicker::make('sampai_tanggal')
+                            ->placeholder('Sampai Tanggal')
+                            ->native(false),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['dari_tanggal'],
+                                fn(Builder $query, $date): Builder => $query->whereDate('tanggal', '>=', $date),
+                            )
+                            ->when(
+                                $data['sampai_tanggal'],
+                                fn(Builder $query, $date): Builder => $query->whereDate('tanggal', '<=', $date),
+                            );
+                    })
+                    ->label('Filter Tanggal'),
+            ])
+            ->actions([
+                Tables\Actions\ViewAction::make(),
+                Tables\Actions\EditAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
+            ]);
+    }
     public static function getRelations(): array
     {
         return [

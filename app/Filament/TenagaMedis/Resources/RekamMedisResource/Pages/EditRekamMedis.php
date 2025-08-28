@@ -2,18 +2,25 @@
 
 namespace App\Filament\TenagaMedis\Resources\RekamMedisResource\Pages;
 
-use App\Filament\TenagaMedis\Resources\RekamMedisTenagaMedisResource;
+use App\Filament\TenagaMedis\Resources\RekamMedisResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
+use Filament\Notifications\Notification;
 
 class EditRekamMedis extends EditRecord
 {
-    protected static string $resource = RekamMedisTenagaMedisResource::class;
+    protected static string $resource = RekamMedisResource::class;
 
-    protected function getHeaderActions(): array
+    protected function getRedirectUrl(): string
     {
-        return [
-            Actions\DeleteAction::make(),
-        ];
+        return $this->getResource()::getUrl('index');
+    }
+
+    protected function afterSave(): void
+    {
+        Notification::make()
+            ->title('Rekam Medis berhasil diedit')
+            ->success()
+            ->send();
     }
 }
