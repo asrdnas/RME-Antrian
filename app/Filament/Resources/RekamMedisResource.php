@@ -256,35 +256,51 @@ class RekamMedisResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->striped() // baris selang-seling warna
             ->columns([
                 Tables\Columns\TextColumn::make('patient.no_rme')
                     ->label('No RME')
                     ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('patient.nama_pasien')
+                    ->sortable()
+                    ->copyable()
+                    ->icon('heroicon-o-identification')
+                    ->iconColor('primary')
+                    ->alignCenter(),
+
+                    Tables\Columns\TextColumn::make('patient.nama_pasien')
                     ->label('Nama Pasien')
                     ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('patient.alamat_pasien')
-                    ->label('Alamat Pasien')
-                    ->searchable()
                     ->sortable()
-                    ->limit(20)
-                    ->tooltip(fn($record) => $record->patient->alamat_pasien),
+                    ->icon('heroicon-o-user-circle')
+                    ->iconColor('success')
+                    ->weight('bold') // nama jadi tebal
+                    ->wrap() // biar alamat panjang nggak kepotong
+                    ->tooltip(fn ($record) => $record->patient->alamat_pasien ?? '-')
+                    ->alignCenter(),
+
                 Tables\Columns\TextColumn::make('patient.total_kunjungan')
                     ->label('Total Kunjungan')
-                    ->searchable()
                     ->sortable()
-                    ->limit(20)
-                    ->tooltip(fn($record) => $record->patient->total_kunjungan),
+                    ->badge()
+                    ->color(fn ($state) => $state > 5 ? 'success' : 'warning')
+                    ->icon('heroicon-o-chart-bar')
+                    ->alignCenter(),
+
                 Tables\Columns\TextColumn::make('pelayanan')
                     ->label('Pelayanan')
-                    ->searchable()
-                    ->sortable(),
+                    ->badge()
+                    ->color('info')
+                    ->icon('heroicon-o-briefcase')
+                    ->alignCenter(),
+
                 Tables\Columns\TextColumn::make('tanggal')
                     ->label('Tanggal')
                     ->dateTime('d/m/Y')
-                    ->sortable(),
+                    ->sortable()
+                    ->icon('heroicon-o-calendar-days')
+                    ->iconColor('warning')
+                    ->alignCenter(),
+
                 Tables\Columns\BadgeColumn::make('status_rekam_medis')
                     ->label('Status')
                     ->colors([
@@ -294,7 +310,9 @@ class RekamMedisResource extends Resource
                     ->icons([
                         'heroicon-o-clock' => 'pending',
                         'heroicon-o-check-circle' => 'approved',
-                    ]),
+                    ])
+                    ->formatStateUsing(fn($state) => ucfirst($state))
+                    ->alignCenter(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status_rekam_medis')
@@ -302,14 +320,17 @@ class RekamMedisResource extends Resource
                         'pending' => 'Pending',
                         'approved' => 'Approved',
                     ])
-                    ->label('Status Rekam Medis'),
+                    ->label('Status Rekam Medis')
+                    ->native(false), // dropdown lebih modern
 
                 Tables\Filters\Filter::make('tanggal')
                     ->form([
                         Forms\Components\DatePicker::make('dari_tanggal')
-                            ->placeholder('Dari Tanggal'),
+                            ->placeholder('Dari Tanggal')
+                            ->native(false),
                         Forms\Components\DatePicker::make('sampai_tanggal')
-                            ->placeholder('Sampai Tanggal'),
+                            ->placeholder('Sampai Tanggal')
+                            ->native(false),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
@@ -325,6 +346,7 @@ class RekamMedisResource extends Resource
                     ->label('Filter Tanggal'),
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
