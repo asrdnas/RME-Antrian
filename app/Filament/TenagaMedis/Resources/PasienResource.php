@@ -40,90 +40,113 @@ class PasienResource extends Resource
     }
 
     public static function table(Table $table): Table
-{
-    return $table
-        ->recordUrl(null) // <- ini bikin row tidak bisa diklik
-        ->columns([
-            Tables\Columns\TextColumn::make('nama_pasien')
-                ->label('Nama Pasien')
-                ->sortable()
-                ->searchable()
-                ->color('secondary')
-                ->alignCenter(), // rata tengah
+    {
+        return $table
+            ->heading('🧑‍⚕️ Data Pasien Klinik')
+            // ->description('Daftar pasien terbaru lengkap dengan status & riwayat kunjungan.')
+            ->striped()
+            ->defaultSort('nama_pasien')
+            ->searchPlaceholder('🔍 Cari pasien... (Nama, NIK, RME)')
+            ->columns([
 
-            Tables\Columns\TextColumn::make('nik')
-                ->label('NIK')
-                ->sortable()
-                ->searchable()
-                ->color('info')
-                ->alignCenter(),
+                Tables\Columns\TextColumn::make('nama_pasien')
+                    ->label('👤 Nama Pasien')
+                    ->sortable()
+                    ->searchable()
+                    ->weight('bold')
+                    ->color('primary')
+                    ->alignCenter(),
 
-            Tables\Columns\TextColumn::make('no_rme')
-                ->label('No RME')
-                ->sortable()
-                ->color('success')
-                ->alignCenter(),
+                Tables\Columns\TextColumn::make('nik')
+                    ->label('NIK')
+                    ->sortable()
+                    ->searchable()
+                    ->alignCenter(),
 
-            Tables\Columns\TextColumn::make('alamat_pasien')
-                ->label('Alamat')
-                ->limit(30)
-                ->color('secondary')
-                ->alignCenter(),
-
-            Tables\Columns\TextColumn::make('tempat_lahir')
-                    ->label('Tempat Lahir')
+                Tables\Columns\TextColumn::make('no_rme')
+                    ->label(' No RME')
+                    ->sortable()
                     ->alignCenter()
-                    ->limit(20),
+                    ->badge()
+                    ->color('info'),
 
-            Tables\Columns\TextColumn::make('tanggal_lahir')
-                ->label('Tanggal Lahir')
-                ->date('d M Y')
-                ->color('secondary')
-                ->alignCenter(),
+                Tables\Columns\TextColumn::make('alamat_pasien')
+                    ->label('Alamat')
+                    ->limit(25)
+                    ->tooltip(fn($record) => $record->alamat_pasien)
+                    ->alignCenter(),
 
-            Tables\Columns\TextColumn::make('jenis_kelamin')
-                ->label('Jenis Kelamin')
-                ->color('secondary')
-                ->alignCenter(),
+                Tables\Columns\TextColumn::make('tempat_lahir')
+                    ->label('Tempat Lahir')
+                    ->limit(20)
+                    ->alignCenter(),
 
-            Tables\Columns\TextColumn::make('no_tlp_pasien')
-                ->label('No Telepon')
-                ->color('secondary')
-                ->alignCenter(),
+                Tables\Columns\TextColumn::make('tanggal_lahir')
+                    ->label('Tanggal Lahir')
+                    ->date('d M Y')
+                    ->alignCenter(),
 
-            Tables\Columns\TextColumn::make('total_kunjungan')
-                ->label('Total Kunjungan')
-                ->badge()
-                ->color(fn ($state) => match (true) {
-                    $state == 0 => 'danger',
-                    $state > 0 && $state < 3 => 'warning',
-                    $state >= 3 => 'success',
-                })
-                ->sortable()
-                ->alignCenter(),
-        ])
-        ->filters([
-            Tables\Filters\SelectFilter::make('status_validasi')
-                ->label('Status Validasi')
-                ->options([
-                    'pending' => 'Pending',
-                    'approved' => 'Approved',
-                    'rejected' => 'Rejected',
-                ]),
-        ])
-        ->headerActions([
-            Action::make('exportExcel')
-                ->label('Export to Excel')
-                ->icon('heroicon-o-arrow-down-tray')
-                ->action(function () {
-                    return Excel::download(new PasiensExport, 'pasiens.xlsx');
-                }),
-        ])
-        ->bulkActions([
-            Tables\Actions\DeleteBulkAction::make(),
-        ])
-        ->recordClasses(fn ($record) => 'bg-white hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800');
-}
+                Tables\Columns\TextColumn::make('jenis_kelamin')
+                    ->label('Gender')
+                    ->badge()
+                    ->colors([
+                        'blue' => 'Laki-laki',
+                        'pink' => 'Perempuan',
+                    ])
+                    ->alignCenter(),
+
+                Tables\Columns\TextColumn::make('no_tlp_pasien')
+                    ->label('Telepon')
+                    ->alignCenter(),
+
+                Tables\Columns\TextColumn::make('total_kunjungan')
+                    ->label('Total Kunjungan')
+                    ->badge()
+                    ->alignCenter()
+                    ->sortable()
+                    ->color(fn ($state) => match (true) {
+                        $state == 0 => 'danger',
+                        $state > 0 && $state < 3 => 'warning',
+                        $state >= 3 => 'success',
+                    }),
+            ])
+
+            ->filters([
+                Tables\Filters\SelectFilter::make('status_validasi')
+                    ->label('📌 Status Validasi')
+                    ->options([
+                        'pending' => '⏳ Pending',
+                        'approved' => '✅ Approved',
+                        'rejected' => '❌ Rejected',
+                    ])
+                    ->native(false),
+            ])
+
+            ->headerActions([
+                Action::make('exportExcel')
+                    ->label('💾 Export Excel')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->color('success')
+                    ->outlined()
+                    ->action(fn () => Excel::download(new PasiensExport, 'pasiens.xlsx')),
+            ])
+
+            ->bulkActions([
+                Tables\Actions\DeleteBulkAction::make(),
+            ])
+
+            ->paginated([10, 25, 50])
+
+            ->recordClasses(fn ($record) =>
+                'bg-gradient-to-r from-white to-gray-50
+                 hover:from-indigo-50 hover:to-white
+                 dark:from-gray-900 dark:to-gray-800
+                 transition-all duration-200'
+            );
+
+
+        }
+
 
     public static function getRelations(): array
     {

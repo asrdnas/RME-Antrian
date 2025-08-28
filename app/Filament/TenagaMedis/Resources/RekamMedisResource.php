@@ -316,7 +316,7 @@ class RekamMedisResource extends Resource
                     ->alignCenter(),
 
                 Tables\Columns\TextColumn::make('tanggal')
-                    ->label('Tanggal')
+                    ->label('Tanggal Kunjungan')
                     ->dateTime('d/m/Y')
                     ->sortable()
                     ->icon('heroicon-o-calendar-days')
@@ -345,24 +345,18 @@ class RekamMedisResource extends Resource
                     ->label('Status Rekam Medis')
                     ->native(false), // dropdown lebih modern
 
-                Tables\Filters\Filter::make('tanggal')
+                    Tables\Filters\Filter::make('tanggal')
                     ->form([
-                        Forms\Components\DatePicker::make('dari_tanggal')
-                            ->placeholder('Dari Tanggal')
-                            ->native(false),
-                        Forms\Components\DatePicker::make('sampai_tanggal')
-                            ->placeholder('Sampai Tanggal')
+                        Forms\Components\DatePicker::make('tanggal')
+                            ->placeholder('Pilih Tanggal')
                             ->native(false),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
                             ->when(
-                                $data['dari_tanggal'],
-                                fn(Builder $query, $date): Builder => $query->whereDate('tanggal', '>=', $date),
-                            )
-                            ->when(
-                                $data['sampai_tanggal'],
-                                fn(Builder $query, $date): Builder => $query->whereDate('tanggal', '<=', $date),
+                                $data['tanggal'],
+                                fn (Builder $query, $date): Builder =>
+                                    $query->whereDate('tanggal', $date),
                             );
                     })
                     ->label('Filter Tanggal'),

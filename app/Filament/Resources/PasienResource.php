@@ -192,28 +192,32 @@ class PasienResource extends Resource
             ])
             ->headerActions([
                 Action::make('exportExcel')
-                    ->label('Export to Excel')
+                    ->label('Export Excel')
                     ->icon('heroicon-o-arrow-down-tray')
                     ->color('success')
                     ->outlined()
+                    ->button()
                     ->action(fn() => Excel::download(new PasiensExport, 'pasiens.xlsx')),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
+                    ->label('Edit')
+                    ->icon('heroicon-o-pencil-square')
+                    ->color('info')
                     ->button()
-                    ->color('info'),
+                    ->outlined(),
 
-                // Action 'tambahKeAntrian'
                 Action::make('tambahKeAntrian')
-                    ->label('Tambah ke Antrian')
+                    ->label('Tambah Antrian')
                     ->icon('heroicon-o-plus-circle')
                     ->color('primary')
+                    ->button()
                     ->outlined()
                     ->form([
                         Forms\Components\Select::make('pelayanan')
                             ->label('Pilih Pelayanan')
                             ->options([
-                                'Umum' => 'Umum',
+                                'Umum'  => 'Umum',
                                 'Gilut' => 'Gilut',
                             ])
                             ->required()
@@ -238,11 +242,11 @@ class PasienResource extends Resource
 
                         Antrian::create([
                             'patient_id' => $record->id,
-                            'pelayanan' => $pelayanan,
-                            'ruangan' => $pelayanan === 'Gilut' ? 'Cluster 2' : 'Cluster 1',
+                            'pelayanan'  => $pelayanan,
+                            'ruangan'    => $pelayanan === 'Gilut' ? 'Cluster 2' : 'Cluster 1',
                             'no_antrian' => \App\Filament\Resources\AntrianResource::generateNoAntrian($pelayanan),
-                            'status' => 'menunggu',
-                            'tanggal' => now(),
+                            'status'     => 'menunggu',
+                            'tanggal'    => now(),
                         ]);
 
                         Notification::make()
@@ -252,8 +256,11 @@ class PasienResource extends Resource
                     }),
 
                 Tables\Actions\DeleteAction::make()
+                    ->label('Hapus')
+                    ->icon('heroicon-o-trash')
+                    ->color('danger')
                     ->button()
-                    ->color('danger'),
+                    ->outlined(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
