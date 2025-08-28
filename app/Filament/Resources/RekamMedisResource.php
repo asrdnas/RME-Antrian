@@ -225,16 +225,30 @@ class RekamMedisResource extends Resource
                             ->label('Resep / Obat')
                             ->rows(2),
 
-                        Forms\Components\Fieldset::make('Diagnosa ICD-10')
+                            Forms\Components\Fieldset::make('Diagnosa ICD-10')
                             ->schema([
-                                Forms\Components\TextInput::make('kode_icd10')
-                                    ->label('Kode ICD-10')
-                                    ->prefixIcon('heroicon-o-hashtag'),
-
-                                Forms\Components\TextInput::make('deskripsi_icd10')
-                                    ->label('Deskripsi Diagnosa')
-                                    ->prefixIcon('heroicon-o-document-text'),
-                            ]),
+                            Forms\Components\TextInput::make('kode_icd10')
+                                ->label('Kode ICD-10')
+                                ->prefixIcon('heroicon-o-hashtag')
+                                ->reactive()
+                                ->afterStateUpdated(function ($state, callable $set) {
+                                        if ($state) {
+                                            $icd = \App\Models\IcdCode::where('code', $state)->first();
+                                            if ($icd) {
+                                                $set('deskripsi_icd10', $icd->description);
+                                            } else {
+                                                $set('deskripsi_icd10', 'Kode tidak ditemukan');
+                                            }
+                                        } else {
+                                            $set('deskripsi_icd10', null);
+                                        }
+                                    }),
+                            Forms\Components\Textarea::make('deskripsi_icd10')
+                                ->label('Deskripsi Diagnosa')
+                                ->rows(3)
+                                ->disabled(), // biar user tidak bisa ubah manual
+                                    ])
+                                    ->columns(2),
                     ])
                     ->extraAttributes([
                         'style' => 'background-color:#1e1e1e; border:1px solid #2e2e2e; border-radius:8px; padding:15px;'

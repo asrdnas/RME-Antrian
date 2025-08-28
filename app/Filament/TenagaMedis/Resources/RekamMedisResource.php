@@ -222,8 +222,8 @@ class RekamMedisTenagaMedisResource extends Resource
                             ->label('Resep / Obat')
                             ->rows(2),
 
-                            Forms\Components\Fieldset::make('Diagnosa ICD-10')
-                            ->schema([
+                        Forms\Components\Fieldset::make('Diagnosa ICD-10')
+                        ->schema([
                         Forms\Components\TextInput::make('kode_icd10')
                             ->label('Kode ICD-10')
                             ->prefixIcon('heroicon-o-hashtag')
