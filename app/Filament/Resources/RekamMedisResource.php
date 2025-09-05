@@ -195,75 +195,115 @@ class RekamMedisResource extends Resource
                         'style' => 'background-color:#1e1e1e; border:1px solid #2e2e2e; border-radius:8px; padding:15px;'
                     ]),
 
-                // Diagnosa & Terapi
+// Diagnosa & Terapi
                 Forms\Components\Fieldset::make('Diagnosa & Terapi')
                     ->schema([
-                        Forms\Components\Select::make('kasus_lama_baru')
-                            ->label('Kasus')
-                            ->prefixIcon('heroicon-o-clipboard')
-                            ->options([
-                                'Lama' => 'Lama',
-                                'Baru' => 'Baru',
-                            ])
-                            ->required(),
-
-                        Forms\Components\Select::make('status_pulang')
-                            ->label('Status Pulang')
-                            ->prefixIcon('heroicon-o-home')
-                            ->options([
-                                'Pulang' => 'Pulang',
-                                'Rujuk' => 'Rujuk',
-                                'Rawat Jalan' => 'Rawat Jalan',
-                            ])
-                            ->required(),
-
-                        Forms\Components\Textarea::make('terapi')
-                            ->label('Terapi')
-                            ->rows(3),
-
-                        Forms\Components\Textarea::make('resep')
-                            ->label('Resep / Obat')
-                            ->rows(2),
-
-                        Forms\Components\Fieldset::make('Diagnosa ICD-10')
-                            ->schema([
-                                Forms\Components\Select::make('kode_icd10')
-                                    ->label('Kode ICD-10')
-                                    ->prefixIcon('heroicon-o-hashtag')
-                                    ->searchable()
-                                    ->getSearchResultsUsing(function (string $query) {
-                                        return \App\Models\IcdCode::query()
-                                            ->where('code', 'like', "%{$query}%")
-                                            ->limit(20)
-                                            ->pluck('code', 'code'); // hanya kode
-                                    })
-                                    ->getOptionLabelUsing(fn($value): ?string => $value)
-                                    ->reactive()
-                                    ->afterStateUpdated(function ($state, callable $set) {
-                                        if ($state) {
-                                            $icd = \App\Models\IcdCode::where('code', $state)->first();
-                                            $set('deskripsi_icd10', $icd?->description ?? 'Kode tidak ditemukan');
-                                            $set('deskripsi_icd10_view', $icd?->description ?? 'Kode tidak ditemukan');
-                                        } else {
-                                            $set('deskripsi_icd10', null);
-                                            $set('deskripsi_icd10_view', null);
-                                        }
-                                    })
-                                    ->required(),
-
-                                Forms\Components\Hidden::make('deskripsi_icd10')
-                                    ->dehydrated(true), // ini yg masuk DB
-
-                                Forms\Components\Textarea::make('deskripsi_icd10_view')
-                                    ->label('Deskripsi Diagnosa')
-                                    ->rows(3)
-                                    ->readOnly(), // hanya tampil
-                            ])
-                            ->columns(2),
+                Forms\Components\Select::make('kasus_lama_baru')
+                    ->label('Kasus')
+                    ->prefixIcon('heroicon-o-clipboard')
+                    ->options([
+                        'Lama' => 'Lama',
+                        'Baru' => 'Baru',
                     ])
-                    ->extraAttributes([
-                        'style' => 'background-color:#1e1e1e; border:1px solid #2e2e2e; border-radius:8px; padding:15px;'
-                    ]),
+                    ->required(),
+                Forms\Components\Select::make('status_pulang')
+                    ->label('Status Pulang')
+                    ->prefixIcon('heroicon-o-home')
+                    ->options([
+                        'Pulang' => 'Pulang',
+                        'Rujuk' => 'Rujuk',
+                        'Rawat Jalan' => 'Rawat Jalan',
+                    ])
+                    ->required(),
+                Forms\Components\Textarea::make('terapi')
+                    ->label('Terapi')
+                    ->rows(3),
+
+                Forms\Components\Textarea::make('resep')
+                ->label('Resep / Obat')
+                ->rows(2),
+                ])
+                ->extraAttributes([
+                'style' => 'background-color:#1e1e1e; border:1px solid #2e2e2e; border-radius:8px; padding:15px;'
+                ]),
+
+// Diagnosa ICD-10 (dipisah)
+                Forms\Components\Fieldset::make('Diagnosa ICD-10')
+                    ->schema([
+                Forms\Components\Select::make('kode_icd10')
+                    ->label('Kode ICD-10')
+                    ->prefixIcon('heroicon-o-hashtag')
+                    ->searchable()
+                    ->getSearchResultsUsing(function (string $query) {
+                        return \App\Models\IcdCode::query()
+                            ->where('code', 'like', "%{$query}%")
+                            ->limit(20)
+                            ->pluck('code', 'code');
+                    })
+                    ->getOptionLabelUsing(fn($value): ?string => $value)
+                    ->reactive()
+                    ->afterStateUpdated(function ($state, callable $set) {
+                        if ($state) {
+                            $icd = \App\Models\IcdCode::where('code', $state)->first();
+                            $set('deskripsi_icd10', $icd?->description ?? 'Kode tidak ditemukan');
+                            $set('deskripsi_icd10_view', $icd?->description ?? 'Kode tidak ditemukan');
+                        } else {
+                            $set('deskripsi_icd10', null);
+                            $set('deskripsi_icd10_view', null);
+                        }
+                    })
+                    ->required(),
+                Forms\Components\Hidden::make('deskripsi_icd10')
+                    ->dehydrated(true), // ini masuk DB
+                Forms\Components\Textarea::make('deskripsi_icd10_view')
+                    ->label('Deskripsi Diagnosa')
+                    ->rows(3)
+                    ->readOnly(),
+                        ])
+                        ->columns(2)
+                        ->extraAttributes([
+                            'style' => 'background-color:#1e1e1e; border:1px solid #2e2e2e; border-radius:8px; padding:15px;'
+                        ]),
+
+// Odontogram
+                Forms\Components\Repeater::make('odontogram')
+                ->relationship('odontogram')
+                ->schema([
+                    Forms\Components\Grid::make(2)
+                        ->schema([
+                            Forms\Components\TextInput::make('kode_gigi')
+                                ->label('Kode Gigi')
+                                ->placeholder('contoh: 11, 21, 36')
+                                ->required(),
+
+                            Forms\Components\Select::make('kondisi')
+                                ->label('Kondisi Gigi')
+                                ->options([
+                                    'sehat' => 'Sehat',
+                                    'karies' => 'Karies',
+                                    'hilang' => 'Hilang',
+                                    'sisa_akar' => 'Sisa Akar',
+                                ])
+                                ->required(),
+                        ]),
+
+                    Forms\Components\Grid::make(2)
+                        ->schema([
+                            Forms\Components\TextInput::make('tindakan')
+                                ->label('Tindakan')
+                                ->placeholder('contoh: Penambalan, Pencabutan'),
+
+                            Forms\Components\Textarea::make('catatan')
+                                ->label('Catatan')
+                                ->rows(2)
+                                ->placeholder('Catatan tambahan jika ada'),
+                        ]),
+                ])
+                ->defaultItems(1) // Ini yang membuat satu form langsung muncul saat halaman dibuka
+                ->createItemButtonLabel('Tambah Gigi')
+                ->columns(2)
+                ->columnSpan(2)
+                ->visible(fn ($get) => $get('pelayanan') === 'Gilut'),
 
                 // Keterangan Tambahan
                 Forms\Components\Fieldset::make('Keterangan Tambahan')

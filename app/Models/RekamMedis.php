@@ -29,7 +29,7 @@ class RekamMedis extends Model
         'status_pulang',
         'terapi',
         'kasus_lama_baru',
-        'kode_icd10',       
+        'kode_icd10',
         'deskripsi_icd10',
         'status_rekam_medis',
     ];
@@ -43,6 +43,12 @@ class RekamMedis extends Model
     {
         return $this->belongsTo(TenagaMedis::class, 'dokter_id');
     }
+
+    public function odontogram()
+    {
+        return $this->hasMany(Odontogram::class);
+    }
+
 
     protected static function booted()
     {
