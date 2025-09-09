@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\Admin;
 use App\Models\TenagaMedis;
+use App\Models\SuperAdmin;
 
 class DatabaseSeeder extends Seeder
 {
@@ -16,6 +17,20 @@ class DatabaseSeeder extends Seeder
         User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
+        ]);
+
+        SuperAdmin::create([
+            'username' => 'superadmin1',
+            'name' => 'Super Administrator Satu',
+            'email' => 'superadmin1@example.com',
+            'password' => Hash::make('password123'),
+        ]);
+
+        SuperAdmin::create([
+            'username' => 'superadmin2',
+            'name' => 'Super Administrator Dua',
+            'email' => 'superadmin2@example.com',
+            'password' => Hash::make('password123'),
         ]);
 
         // Seeder Admin (minimal 2)
@@ -47,5 +62,6 @@ class DatabaseSeeder extends Seeder
             'email' => 'perawat1@example.com',
             'password' => Hash::make('perawat123'),
         ]);
+
     }
 }

@@ -52,6 +52,12 @@ return [
             'driver' => 'session',
             'provider' => 'tenaga_medis',
         ],
+
+        // guard untuk superadmin
+        'superadmin' => [
+            'driver' => 'session',
+            'provider' => 'superadmins',
+        ],
     ],
 
     /*
@@ -81,7 +87,7 @@ return [
         //     'driver' => 'database',
         //     'table' => 'users',
         // ],
-        
+
         'admins' => [
             'driver' => 'eloquent',
             'model' => App\Models\Admin::class,
@@ -90,6 +96,11 @@ return [
         'tenaga_medis' => [
             'driver' => 'eloquent',
             'model' => App\Models\TenagaMedis::class,
+        ],
+
+        'superadmins' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\SuperAdmin::class,
         ],
     ],
 

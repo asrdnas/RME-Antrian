@@ -18,28 +18,25 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
-class TenagaMedisPanelProvider extends PanelProvider
+class SuperadminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
         return $panel
-            ->id('tenaga-medis')
-            ->path('tenaga-medis')
+            ->id('superadmin')
+            ->path('superadmin')
             ->login()
-            ->brandName('Tenaga Medis Panel')
-            ->authGuard('tenaga_medis')
+            ->authGuard('superadmin')
+            ->brandName('Super Admin Panel')
             ->colors([
                 'primary' => Color::Amber,
             ])
-            ->discoverResources(in: app_path('Filament/TenagaMedis/Resources'), for: 'App\\Filament\\TenagaMedis\\Resources')
-            ->resources([
-                \App\Filament\TenagaMedis\Resources\RekamMedisResource::class,
-            ])
-            ->discoverPages(in: app_path('Filament/TenagaMedis/Pages'), for: 'App\\Filament\\TenagaMedis\\Pages')
+            ->discoverResources(in: app_path('Filament/Superadmin/Resources'), for: 'App\\Filament\\Superadmin\\Resources')
+            ->discoverPages(in: app_path('Filament/Superadmin/Pages'), for: 'App\\Filament\\Superadmin\\Pages')
             ->pages([
                 Pages\Dashboard::class,
             ])
-            ->discoverWidgets(in: app_path('Filament/TenagaMedis/Widgets'), for: 'App\\Filament\\TenagaMedis\\Widgets')
+            ->discoverWidgets(in: app_path('Filament/Superadmin/Widgets'), for: 'App\\Filament\\Superadmin\\Widgets')
             ->widgets([
                 Widgets\AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,

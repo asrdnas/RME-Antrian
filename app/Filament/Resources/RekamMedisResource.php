@@ -32,7 +32,7 @@ class RekamMedisResource extends Resource
                 // Patient Information section
                 Forms\Components\Fieldset::make('Informasi Pasien')
                     ->schema([
-                        Forms\Components\Grid::make(2)
+                        Forms\Components\Grid::make(3)
                             ->schema([
                                 Forms\Components\TextInput::make('no_rme')
                                     ->label('No. RME')
@@ -51,19 +51,7 @@ class RekamMedisResource extends Resource
                                         fn($set, $record) =>
                                         $set('nama_pasien', $record?->patient?->nama_pasien)
                                     ),
-                            ]),
-
-                        Forms\Components\Grid::make(2)
-                            ->schema([
-                                Forms\Components\TextInput::make('total_kunjungan')
-                                    ->label('Total Kunjungan')
-                                    ->disabled()
-                                    ->dehydrated(false)
-                                    ->afterStateHydrated(
-                                        fn($set, $record) =>
-                                        $set('total_kunjungan', $record?->patient?->total_kunjungan)
-                                    ),
-                                // Bidang untuk jenis pelayanan, dibuat disabled saat mengedit
+                                 // Bidang untuk jenis pelayanan, dibuat disabled saat mengedit
                                 Forms\Components\Select::make('pelayanan')
                                     ->label('Pelayanan')
                                     ->prefixIcon('heroicon-o-building-library')
@@ -341,14 +329,6 @@ class RekamMedisResource extends Resource
                     ->weight('bold') // nama jadi tebal
                     ->wrap() // biar alamat panjang nggak kepotong
                     ->tooltip(fn($record) => $record->patient->alamat_pasien ?? '-')
-                    ->alignCenter(),
-
-                Tables\Columns\TextColumn::make('patient.total_kunjungan')
-                    ->label('Total Kunjungan')
-                    ->sortable()
-                    ->badge()
-                    ->color(fn($state) => $state > 5 ? 'success' : 'warning')
-                    ->icon('heroicon-o-chart-bar')
                     ->alignCenter(),
 
                 Tables\Columns\TextColumn::make('pelayanan')

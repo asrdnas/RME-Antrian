@@ -40,7 +40,6 @@ class AntrianResource extends Resource
             ->recordUrl(null) // row tidak bisa diklik
             ->poll('2s')
             ->striped()
-            ->heading('📋 Daftar Antrian Pasien')
             ->defaultSort('tanggal', 'desc')
             ->paginated([10, 25, 50])
             ->searchPlaceholder('Cari nama, RME, atau no antrian...')
@@ -133,7 +132,6 @@ class AntrianResource extends Resource
             ])
 
             ->actions([
-                Tables\Actions\ActionGroup::make([
                     Tables\Actions\Action::make('panggilPasien')
                         ->label('Panggil')
                         ->icon('heroicon-o-megaphone')
@@ -233,10 +231,6 @@ class AntrianResource extends Resource
                                 ->success()
                                 ->send();
                         }),
-                ])
-                    ->label('Aksi')
-                    ->icon('heroicon-o-ellipsis-horizontal')
-                    ->color('primary')
             ])
 
             ->bulkActions([

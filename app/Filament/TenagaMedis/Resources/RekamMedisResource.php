@@ -30,7 +30,7 @@ class RekamMedisResource extends Resource
                 // Patient Information section
                 Forms\Components\Fieldset::make('Informasi Pasien')
                     ->schema([
-                        Forms\Components\Grid::make(2)
+                        Forms\Components\Grid::make(3)
                             ->schema([
                                 Forms\Components\TextInput::make('no_rme')
                                     ->label('No. RME')
@@ -49,20 +49,7 @@ class RekamMedisResource extends Resource
                                         fn($set, $record) =>
                                         $set('nama_pasien', $record?->patient?->nama_pasien)
                                     ),
-                            ]),
-
-                        Forms\Components\Grid::make(2)
-                            ->schema([
-                                Forms\Components\TextInput::make('total_kunjungan')
-                                    ->label('Total Kunjungan')
-                                    ->disabled()
-                                    ->dehydrated(false)
-                                    ->afterStateHydrated(
-                                        fn($set, $record) =>
-                                        $set('total_kunjungan', $record?->patient?->total_kunjungan)
-                                    ),
-                                // Bidang untuk jenis pelayanan, dibuat disabled saat mengedit
-                                Forms\Components\Select::make('pelayanan')
+                                 Forms\Components\Select::make('pelayanan')
                                     ->label('Pelayanan')
                                     ->prefixIcon('heroicon-o-building-library')
                                     ->options([
@@ -271,7 +258,6 @@ class RekamMedisResource extends Resource
                     ->schema([
                         Forms\Components\TextInput::make('kode_gigi')
                             ->label('Kode Gigi')
-                            ->placeholder('contoh: 11, 21, 36')
                             ->required(),
 
                         Forms\Components\Select::make('kondisi')
@@ -343,14 +329,6 @@ class RekamMedisResource extends Resource
                     ->wrap()
                     ->tooltip(fn ($record) => $record->patient->alamat_pasien ?? 'Alamat tidak tersedia')
                     ->alignStart(), // Sebaiknya alignStart untuk teks agar mudah dibaca
-
-                Tables\Columns\TextColumn::make('patient.total_kunjungan')
-                    ->label('Total Kunjungan')
-                    ->sortable()
-                    ->badge()
-                    ->color(fn($state) => $state > 5 ? 'success' : 'warning')
-                    ->icon('heroicon-o-chart-bar')
-                    ->alignCenter(),
 
                 Tables\Columns\TextColumn::make('pelayanan')
                     ->label('Pelayanan')

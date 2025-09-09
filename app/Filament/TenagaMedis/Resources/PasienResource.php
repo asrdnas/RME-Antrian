@@ -42,11 +42,9 @@ class PasienResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->heading('🧑‍⚕️ Data Pasien Klinik')
             // ->description('Daftar pasien terbaru lengkap dengan status & riwayat kunjungan.')
             ->striped()
             ->defaultSort('nama_pasien')
-            ->searchPlaceholder('🔍 Cari pasien... (Nama, NIK, RME)')
             ->columns([
 
                 Tables\Columns\TextColumn::make('nama_pasien')
@@ -120,15 +118,6 @@ class PasienResource extends Resource
                         'rejected' => '❌ Rejected',
                     ])
                     ->native(false),
-            ])
-
-            ->headerActions([
-                Action::make('exportExcel')
-                    ->label('💾 Export Excel')
-                    ->icon('heroicon-o-arrow-down-tray')
-                    ->color('success')
-                    ->outlined()
-                    ->action(fn () => Excel::download(new PasiensExport, 'pasiens.xlsx')),
             ])
 
             ->bulkActions([
