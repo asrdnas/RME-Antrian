@@ -23,7 +23,29 @@ class AdminResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\TextInput::make('username')
+                    ->label('Username')
+                    ->required()
+                    ->unique(ignoreRecord: true)
+                    ->maxLength(50),
+
+                Forms\Components\TextInput::make('name')
+                    ->label('Nama Lengkap')
+                    ->required()
+                    ->maxLength(100),
+
+                Forms\Components\TextInput::make('email')
+                    ->label('Email')
+                    ->email()
+                    ->required()
+                    ->unique(ignoreRecord: true),
+
+                Forms\Components\TextInput::make('password')
+                    ->label('Password')
+                    ->password()
+                    ->revealable()
+                    ->required(fn(string $context): bool => $context === 'create')
+                    ->maxLength(255),
             ]);
     }
 
@@ -31,7 +53,30 @@ class AdminResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('username')
+                    ->label('Username')
+                    ->searchable()
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('name')
+                    ->label('Nama')
+                    ->searchable()
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('email')
+                    ->label('Email')
+                    ->searchable()
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Dibuat')
+                    ->dateTime('d M Y H:i')
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Diupdate')
+                    ->dateTime('d M Y H:i')
+                    ->sortable(),
             ])
             ->filters([
                 //

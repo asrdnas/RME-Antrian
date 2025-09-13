@@ -188,7 +188,6 @@ class AntrianResource extends Resource
         return $table
             ->recordUrl(null)
             ->poll('2s')
-            ->query(Antrian::whereDate('tanggal', today())->orderBy('no_antrian'))
             ->columns([
                 Tables\Columns\TextColumn::make('no_antrian')->label('No Antrian')->alignCenter()->badge()->color('primary'),
                 Tables\Columns\TextColumn::make('patient.no_rme')->label('No RME')->copyable()->icon('heroicon-o-identification')->color('info')->alignCenter(),
@@ -224,22 +223,23 @@ class AntrianResource extends Resource
             ])
             ->headerActions([
                 Tables\Actions\Action::make('resetAntrian')
-                    ->label('Reset & Backup Antrian Hari Ini')
+                    ->label('Reset & Backup Antrian')
                     ->icon('heroicon-o-archive-box')
                     ->color('success')
                     ->outlined()
                     ->button()
                     ->requiresConfirmation()
-                    ->disabled(fn() => Antrian::whereDate('tanggal', today())->where('status', '!=', 'selesai')->exists())
-                    ->tooltip(fn() => Antrian::whereDate('tanggal', today())->where('status', '!=', 'selesai')->exists() ? 'Tidak bisa reset, ada pasien yang belum selesai' : null)
+                    ->disabled(fn() => Antrian::where('status', '!=', 'selesai')->exists())
+                    ->tooltip(fn() => Antrian::where('status', '!=', 'selesai')->exists() ? 'Tidak bisa reset, ada pasien yang belum selesai' : null)
                     ->action(function () {
                         $now = Carbon::now();
 
-                        // Memuat relasi 'patient' di awal untuk menghindari N+1 query problem
-                        $antrians = Antrian::whereDate('tanggal', today())->with('patient')->get();
+                        // Ambil semua antrian sampai hari ini
+                        $antrians = Antrian::whereDate('tanggal', '<=', today())
+                            ->with('patient')
+                            ->get();
 
                         foreach ($antrians as $antrian) {
-                            // Pastikan relasi patient tidak null sebelum mencoba mengaksesnya
                             if ($antrian->patient) {
                                 RiwayatAntrian::create([
                                     'no_antrian' => $antrian->no_antrian,
@@ -257,10 +257,16 @@ class AntrianResource extends Resource
                             }
                         }
 
-                        Antrian::whereDate('tanggal', today())->delete();
-                        Notification::make()->title('Antrian hari ini berhasil di-backup dan di-reset.')->success()->send();
+                        // Hapus semua antrian sampai hari ini
+                        Antrian::whereDate('tanggal', '<=', today())->delete();
+
+                        Notification::make()
+                            ->title('Semua antrian (hari ini & sebelumnya) berhasil di-backup dan di-reset.')
+                            ->success()
+                            ->send();
                     }),
             ])
+
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\Action::make('panggilPasien')
