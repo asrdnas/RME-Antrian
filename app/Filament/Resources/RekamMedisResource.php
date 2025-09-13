@@ -329,7 +329,7 @@ class RekamMedisResource extends Resource
                     ->weight('bold') // nama jadi tebal
                     ->wrap() // biar alamat panjang nggak kepotong
                     ->tooltip(fn($record) => $record->patient->alamat_pasien ?? '-')
-                    ->alignCenter(),
+                    ->alignStart(),
 
                 Tables\Columns\TextColumn::make('pelayanan')
                     ->label('Pelayanan')

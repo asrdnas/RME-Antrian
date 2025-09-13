@@ -107,7 +107,8 @@ class PasienResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->weight('bold')
-                    ->icon('heroicon-o-user'),
+                    ->icon('heroicon-o-user')
+                    ->alignStart(),
 
                 Tables\Columns\TextColumn::make('nik')
                     ->label('NIK')

@@ -53,7 +53,7 @@ class PasienResource extends Resource
                     ->searchable()
                     ->weight('bold')
                     ->color('primary')
-                    ->alignCenter(),
+                    ->alignStart(),
 
                 Tables\Columns\TextColumn::make('nik')
                     ->label('NIK')
