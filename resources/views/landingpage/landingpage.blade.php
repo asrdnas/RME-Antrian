@@ -1,241 +1,143 @@
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Formulir Pendaftaran Pasien - Klinik Tirta Amerta</title>
-    <link rel="stylesheet" href="{{ asset('asset/css/style.css') }}" />
-    <link rel="icon" type="image/png" href="{{ asset('asset/logo TA/LOGO KLINIK PRATAMA TIRTA AMERTA NEW.png') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Klinik Tirta Amerta - Klinik Gigi dan Umum</title>
+  <link rel="stylesheet" href="{{ asset('asset/css/klinik tirta amerta.css') }}">
+<link rel="icon" type="image/png" href="{{ asset('asset/logo TA/LOGO KLINIK PRATAMA TIRTA AMERTA NEW.png') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
-
 <body>
-    <div class="container">
-        <div class="header">
-            <img src="{{ asset('asset/logo TA/LOGO KLINIK PRATAMA TIRTA AMERTA NEW.png') }}"
-                alt="Logo Klinik Tirta Amerta" />
-            <h1>Klinik Tirta Amerta</h1>
-        </div>
 
-        <h1>Formulir Pendaftaran Pasien</h1>
-        <p class="form-subtitle">Mohon isi semua bagian formulir di bawah ini dengan teliti.</p>
-
-        <form id="screeningForm" method="POST" action="{{ route('patients.store') }}">
-            @csrf
-
-            {{-- 1. Data Pribadi Pasien --}}
-            <h2>1. Data Pribadi Pasien</h2>
-            <div class="form-group">
-                <label for="nama_pasien" class="required">Nama Lengkap</label>
-                <input type="text" id="nama_pasien" name="nama_pasien" required />
-            </div>
-            <div class="form-group">
-                <label for="nik" class="required">Nomor KTP</label>
-                <input type="text" id="nik" name="nik" pattern="\d{16}" title="Harap masukkan 16 digit angka"
-                    required />
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="tempat_lahir" class="required">Tempat Lahir</label>
-                    <input type="text" id="tempat_lahir" name="tempat_lahir" required />
-                </div>
-                <div class="form-group">
-                    <label for="tanggal_lahir" class="required">Tanggal Lahir</label>
-                    <input type="date" id="tanggal_lahir" name="tanggal_lahir" required />
-                </div>
-                <div class="form-group">
-                    <label for="umur_pasien" class="required">Umur</label>
-                    <input type="number" id="umur_pasien" name="umur_pasien" required />
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group form-group-alamat">
-                    <label for="alamat_pasien">Alamat</label>
-                    <textarea id="alamat_pasien" name="alamat_pasien" rows="3"></textarea>
-                </div>
-                <div class="form-group form-group-telepon">
-                    <label for="no_tlp_pasien">Nomor Telepon</label>
-                    <input type="number" id="no_tlp_pasien" name="no_tlp_pasien" />
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label class="required">Jenis Kelamin</label>
-                <div class="radio-group">
-                    <label><input type="radio" name="jenis_kelamin" value="laki-laki" required /> Laki-Laki</label>
-                    <label><input type="radio" name="jenis_kelamin" value="perempuan" /> Perempuan</label>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label class="required">Status Perkawinan</label>
-                <div class="radio-group">
-                    <label><input type="radio" name="status_perkawinan_pasien" value="menikah" required />
-                        Menikah</label>
-                    <label><input type="radio" name="status_perkawinan_pasien" value="belum_menikah" /> Belum
-                        Menikah</label>
-                    <label><input type="radio" name="status_perkawinan_pasien" value="janda" /> Janda</label>
-                    <label><input type="radio" name="status_perkawinan_pasien" value="duda" /> Duda</label>
-                </div>
-            </div>
-
-            {{-- Pekerjaan --}}
-            <div class="form-group">
-                <label class="required">Pekerjaan</label>
-                <div class="radio-group" id="pekerjaan-radio-group">
-                    <label><input type="radio" name="pekerjaan_pasien" value="pns" required /> PNS</label>
-                    <label><input type="radio" name="pekerjaan_pasien" value="tni" /> TNI</label>
-                    <label><input type="radio" name="pekerjaan_pasien" value="polisi" /> Polisi</label>
-                    <label><input type="radio" name="pekerjaan_pasien" value="bumn" /> BUMN</label>
-                    <label><input type="radio" name="pekerjaan_pasien" value="bumd" /> BUMD</label>
-                    <label><input type="radio" name="pekerjaan_pasien" value="karyawan_swasta" /> Karyawan
-                        Swasta</label>
-                    <label><input type="radio" name="pekerjaan_pasien" value="petani" /> Petani</label>
-                    <label><input type="radio" name="pekerjaan_pasien" value="pedagang" /> Pedagang</label>
-                    <label><input type="radio" name="pekerjaan_pasien" value="lain-lain" /> Lain-lain</label>
-                </div>
-                <input type="text" id="pekerjaan_pasien_lain" name="pekerjaan_pasien_lain"
-                    placeholder="Sebutkan pekerjaan lain..." style="display:none;margin-top:10px;" />
-            </div>
-
-            {{-- Pendidikan --}}
-            <div class="form-group">
-                <label class="required">Pendidikan</label>
-                <div class="radio-group" id="pendidikan-radio-group">
-                    <label><input type="radio" name="pendidikan_pasien" value="tidak_lulus" required /> Tidak
-                        Lulus</label>
-                    <label><input type="radio" name="pendidikan_pasien" value="sd" /> SD</label>
-                    <label><input type="radio" name="pendidikan_pasien" value="smp" /> SMP</label>
-                    <label><input type="radio" name="pendidikan_pasien" value="sma" /> SMA</label>
-                    <label><input type="radio" name="pendidikan_pasien" value="slta" /> SLTA</label>
-                    <label><input type="radio" name="pendidikan_pasien" value="s1" /> Sarjana S1</label>
-                    <label><input type="radio" name="pendidikan_pasien" value="s2" /> S2</label>
-                    <label><input type="radio" name="pendidikan_pasien" value="s3" /> S3</label>
-                    <label><input type="radio" name="pendidikan_pasien" value="lain-lain" /> Lain-lain</label>
-                </div>
-                <input type="text" id="pendidikan_pasien_lain" name="pendidikan_pasien_lain"
-                    placeholder="Sebutkan pendidikan lain..." style="display:none;margin-top:10px;" />
-            </div>
-
-            <hr>
-
-            {{-- 2. Data Penanggung Jawab --}}
-            <h2>2. Data Penanggung Jawab</h2>
-            <div class="form-group">
-                <label for="nama_penanggung_jawab" class="required">Nama Penanggung Jawab</label>
-                <input type="text" id="nama_penanggung_jawab" name="nama_penanggung_jawab" required />
-            </div>
-            <div class="form-group">
-                <label for="umur_penanggung_jawab" class="required">Umur Penanggung Jawab</label>
-                <input type="number" id="umur_penanggung_jawab" name="umur_penanggung_jawab" required />
-            </div>
-            <div class="form-group">
-                <label class="required">Pekerjaan Penanggung Jawab</label>
-                <div class="radio-group" id="pekerjaan-pj-radio-group">
-                    <label><input type="radio" name="pekerjaan_penanggung_jawab" value="pns" required /> PNS</label>
-                    <label><input type="radio" name="pekerjaan_penanggung_jawab" value="tni" /> TNI</label>
-                    <label><input type="radio" name="pekerjaan_penanggung_jawab" value="polisi" /> Polisi</label>
-                    <label><input type="radio" name="pekerjaan_penanggung_jawab" value="bumn" /> BUMN</label>
-                    <label><input type="radio" name="pekerjaan_penanggung_jawab" value="bumd" /> BUMD</label>
-                    <label><input type="radio" name="pekerjaan_penanggung_jawab" value="karyawan_swasta" /> Karyawan
-                        Swasta</label>
-                    <label><input type="radio" name="pekerjaan_penanggung_jawab" value="petani" /> Petani</label>
-                    <label><input type="radio" name="pekerjaan_penanggung_jawab" value="pedagang" /> Pedagang</label>
-                    <label><input type="radio" name="pekerjaan_penanggung_jawab" value="lain-lain" /> Lain-lain</label>
-                </div>
-                <input type="text" id="pekerjaan_pj_lain" name="pekerjaan_pj_lain"
-                    placeholder="Sebutkan pekerjaan lain..." style="display:none;margin-top:10px;" />
-            </div>
-
-            <div class="form-group">
-                <label class="required">Hubungan Dengan Pasien</label>
-                <div class="radio-group" id="hubungan-radio-group">
-                    <label><input type="radio" name="hubungan_dengan_pasien" value="suami" required /> Suami</label>
-                    <label><input type="radio" name="hubungan_dengan_pasien" value="istri" /> Istri</label>
-                    <label><input type="radio" name="hubungan_dengan_pasien" value="ibu" /> Ibu</label>
-                    <label><input type="radio" name="hubungan_dengan_pasien" value="ayah" /> Ayah</label>
-                    <label><input type="radio" name="hubungan_dengan_pasien" value="lain-lain" /> Lain-lain</label>
-                </div>
-                <input type="text" id="hubungan_pasien_lain" name="hubungan_pasien_lain"
-                    placeholder="Sebutkan hubungan lain..." style="display:none;margin-top:10px;" />
-            </div>
-
-            <hr>
-
-            {{-- 3. Persetujuan --}}
-            <h2>3. Persetujuan</h2>
-            <div class="form-group">
-                <p>
-                    Saya menyatakan data yang saya berikan benar dan memberikan persetujuan
-                    untuk penyimpanan serta penggunaan permanen oleh Klinik Tirta Amerta
-                    dalam keperluan rekam medis dan administrasi.
-                </p>
-
-                <div class="checkbox-group">
-                    <label><input type="checkbox" name="persetujuan" required /> Saya menyetujui</label>
-                </div>
-            </div>
-
-            <button type="submit" class="btn-submit">Kirim Formulir</button>
-        </form>
+  <header class="main-header">
+    <div class="header-container">
+      <a href="#" class="logo-link">
+        <img src="{{ asset('asset/logo TA/LOGO KLINIK PRATAMA TIRTA AMERTA NEW.png') }}" alt="Logo Klinik Tirta Amerta" class="logo-img">
+        <span class="logo-text">Klinik Tirta Amerta</span>
+      </a>
+      <nav class="main-nav">
+        <ul>
+          <li><a href="#beranda">Beranda</a></li>
+          <li><a href="#layanan">Layanan</a></li>
+          <li><a href="#dokter">Dokter</a></li>
+          <li><a href="#kontak">Kontak</a></li>
+          <li><a href="#Lokasi">Lokasi</a></li>
+          <li><a href="/pendaftaran-patient-klinik-tirta-amerta" class="btn-primary">Daftar Pasien</a></li>
+        </ul>
+      </nav>
+      <button class="menu-toggle"><i class="fas fa-bars"></i></button>
     </div>
+  </header>
 
-    {{-- Pop-up sukses yang terikat dengan session Laravel --}}
-    @if(session('success'))
-        <div class="overlay" id="successOverlay" style="display: flex;">
-            <div class="popup">
-                <i class="fas fa-check-circle popup-icon"></i>
-                <h3>Data berhasil dikirim</h3>
-                <p>{{ session('success') }}</p>
-                <button class="btn-ok" id="closePopup">Oke</button>
-            </div>
+  <section id="beranda" class="hero-section">
+  <!-- Background image -->
+  <img src="{{ asset('asset/logo TA/bg.jpg') }}" alt="Background" class="hero-bg">
+
+  <!-- Overlay -->
+  <div class="overlay"></div>
+
+  <!-- Content -->
+  <div class="container">
+    <h1>Klinik Tirta Amerta: <span>Kesehatan Anda Prioritas Kami</span></h1>
+    <p>Didukung oleh tim dokter ahli dan teknologi terkini untuk Anda dan keluarga.</p>
+    <div class="hero-buttons">
+      <a href="#layanan" class="btn btn-secondary">Lihat Layanan Kami</a>
+      <a href="/pendaftaran-patient-klinik-tirta-amerta" class="btn btn-cta">Daftar Pasien Sekarang</a>
+    </div>
+  </div>
+</section>
+
+
+
+  <section id="layanan" class="services-section">
+    <div class="container">
+      <h2 class="section-title">Layanan Kami</h2>
+      <p class="section-subtitle">Kami menyediakan berbagai layanan kesehatan untuk memenuhi kebutuhan Anda.</p>
+      <div class="service-list">
+        <div class="service-item">
+          <i class="fas fa-stethoscope"></i>
+          <h3>Pemeriksaan Umum</h3>
+          <p>Layanan konsultasi dan pemeriksaan untuk berbagai keluhan penyakit umum.</p>
         </div>
-    @endif
+        <div class="service-item">
+          <i class="fas fa-tooth"></i>
+          <h3>Poli Gigi</h3>
+          <p>Perawatan gigi lengkap mulai dari pembersihan, penambalan, hingga pencabutan.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Fungsi untuk mengelola input 'lain-lain' pada radio button
-            const setupOtherInput = (radioGroupName, otherInputId) => {
-                const radios = document.querySelectorAll(`input[name="${radioGroupName}"]`);
-                const otherInput = document.getElementById(otherInputId);
+  <section id="dokter" class="doctors-section">
+    <div class="container">
+      <h2 class="section-title">Dokter Kami</h2>
+      <p class="section-subtitle">Didukung oleh tim dokter berpengalaman dan profesional.</p>
+      <div class="doctor-list">
+        <div class="doctor-card">
+          <img src="default-avatar-icon-of-social-media-user-vector.jpg" alt="Foto Dokter Andi" class="doctor-photo">
+          <h3>dr. Andi Pratama</h3>
+        </div>
+        <div class="doctor-card">
+          <img src="default-avatar-icon-of-social-media-user-vector.jpg" alt="Foto Dokter Rina" class="doctor-photo">
+          <h3>drg. Rina Lestari</h3>
+        </div>
+        <div class="doctor-card">
+          <img src="default-avatar-icon-of-social-media-user-vector.jpg" alt="Foto Dokter Budi" class="doctor-photo">
+          <h3>dr. Budi Santoso</h3>
+        </div>
+      </div>
+    </div>
+  </section>
 
-                radios.forEach(radio => {
-                    radio.addEventListener('change', () => {
-                        if (radio.value === 'lain-lain') {
-                            otherInput.style.display = 'block';
-                            otherInput.focus();
-                        } else {
-                            otherInput.style.display = 'none';
-                            otherInput.value = '';
-                        }
-                    });
-                });
-            };
+  <section id="kontak" class="contact-section">
+    <div class="container">
+      <h2 class="section-title">Hubungi Kami</h2>
+      <p class="section-subtitle">Silakan hubungi kami untuk pertanyaan atau membuat janji temu.</p>
+      <div class="contact-info">
+        <div class="contact-item">
+          <i class="fas fa-map-marker-alt"></i>
+          <h4>Alamat</h4>
+          <p>Jl. Adirasa No.15, Kothe, Kolor, Kec. Kota Sumenep, Kabupaten Sumenep, Jawa Timur 69417, Indonesia</p>
+        </div>
+        <div class="contact-item">
+          <i class="fas fa-phone-alt"></i>
+          <h4>Telepon</h4>
+          <p>+62 812 3456 7890</p>
+        </div>
+        <div class="contact-item">
+          <i class="fas fa-envelope"></i>
+          <h4>Email</h4>
+          <p>info@kliniktirtaamerta.com</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-            // Menerapkan fungsi ke semua grup radio yang membutuhkan input 'lain-lain'
-            setupOtherInput('pekerjaan_pasien', 'pekerjaan_pasien_lain');
-            setupOtherInput('pendidikan_pasien', 'pendidikan_pasien_lain');
-            setupOtherInput('pekerjaan_penanggung_jawab', 'pekerjaan_pj_lain');
-            setupOtherInput('hubungan_dengan_pasien', 'hubungan_pasien_lain');
+    <section class="map-section" id="Lokasi">
+    <div class="container">
+      <h2 class="section-title">Lokasi Kami</h2>
+      <div class="map-container">
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3959.8789702994354!2d113.8702668!3d-7.023509999999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dd9e5f3e264765f%3A0x5543b950859f0f3a!2sKlinik%20TIRTA%20AMERTA!5e0!3m2!1sid!2sid!4v1758011331935!5m2!1sid!2sid" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      </div>
+    </div>
+  </section>
 
-            // Pop-up hanya ada jika session 'success' ada, jadi kita tambahkan listener di sini
-            const overlay = document.getElementById('successOverlay');
-            if (overlay) {
-                // Atur timer untuk menyembunyikan pop-up setelah 5 detik
-                setTimeout(() => {
-                    overlay.style.display = 'none';
-                }, 5000);
+  <footer class="main-footer">
+    <div class="container">
+      <div class="footer-nav">
+        <ul>
+          <li><a href="#beranda">Beranda</a></li>
+          <li><a href="#layanan">Layanan</a></li>
+          <li><a href="#dokter">Dokter</a></li>
+          <li><a href="#kontak">Kontak</a></li>
+          <li><a href="#Lokasi">Lokasi</a></li>
+          <li><a href="https://wa.me/6282335389877?text=Halo%20Klinik%20Tirta%20Amerta,%20saya%20ingin%20bertanya%20mengenai%20layanan%20Anda." target="_blank" class="footer-wa">Hubungi via WhatsApp</a></li>
+        </ul>
+      </div>
+      <p>© 2025 Klinik Tirta Amerta. Hak Cipta Dilindungi.</p>
+    </div>
+  </footer>
 
-                // Event listener untuk tombol 'Oke' di dalam pop-up
-                document.getElementById('closePopup').addEventListener('click', function () {
-                    overlay.style.display = 'none';
-                });
-            }
-        });
-    </script>
 </body>
-
 </html>
