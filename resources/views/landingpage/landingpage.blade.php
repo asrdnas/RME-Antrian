@@ -75,15 +75,15 @@
       <p class="section-subtitle">Didukung oleh tim dokter berpengalaman dan profesional.</p>
       <div class="doctor-list">
         <div class="doctor-card">
-          <img src="default-avatar-icon-of-social-media-user-vector.jpg" alt="Foto Dokter Andi" class="doctor-photo">
+          <img src="{{ asset('asset/logo TA/default-avatar-icon-of-social-media-user-vector.jpg') }}" alt="Foto Dokter Andi" class="doctor-photo">
           <h3>dr. Andi Pratama</h3>
         </div>
         <div class="doctor-card">
-          <img src="default-avatar-icon-of-social-media-user-vector.jpg" alt="Foto Dokter Rina" class="doctor-photo">
+          <img src="{{ asset('asset/logo TA/default-avatar-icon-of-social-media-user-vector.jpg') }}" alt="Foto Dokter Rina" class="doctor-photo">
           <h3>drg. Rina Lestari</h3>
         </div>
         <div class="doctor-card">
-          <img src="default-avatar-icon-of-social-media-user-vector.jpg" alt="Foto Dokter Budi" class="doctor-photo">
+          <img src="{{ asset('asset/logo TA/default-avatar-icon-of-social-media-user-vector.jpg') }}" alt="Foto Dokter Budi" class="doctor-photo">
           <h3>dr. Budi Santoso</h3>
         </div>
       </div>
