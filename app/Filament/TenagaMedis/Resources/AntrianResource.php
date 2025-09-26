@@ -147,7 +147,7 @@ class AntrianResource extends Resource
                                 ->send();
 
                             $livewire->js(<<<JS
-                                let text = `Atas nama {$record->patient->nama_pasien}, dengan nomor antrian {$record->no_antrian}, silakan masuk ruangan {$record->ruangan}.`;
+                                let text = `Atas nama {$record->patient->nama_pasien}, alamat {$record->patient->alamat_pasien}, dengan nomor antrian {$record->no_antrian}, silakan masuk ruangan {$record->ruangan}.`;
                                 text = text.replace(/kluster/gi, "cluster");
 
                                 const utterance = new SpeechSynthesisUtterance(text);
@@ -178,7 +178,7 @@ class AntrianResource extends Resource
                         ->visible(fn($record) => $record->status === 'dipanggil')
                         ->action(function ($record, $livewire) {
                             $livewire->js(<<<JS
-                                let text = `Satu kali lagi. Atas nama {$record->patient->nama_pasien}, dengan nomor antrian {$record->no_antrian}, silakan masuk ruangan {$record->ruangan}.`;
+                                let text = `Satu kali lagi. Atas nama {$record->patient->nama_pasien}, alamat {$record->patient->alamat_pasien}, dengan nomor antrian {$record->no_antrian}, silakan masuk ruangan {$record->ruangan}.`;
                                 text = text.replace(/kluster/gi, "cluster");
 
                                 const utterance = new SpeechSynthesisUtterance(text);
