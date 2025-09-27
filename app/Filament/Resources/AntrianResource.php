@@ -60,8 +60,8 @@ class AntrianResource extends Resource
                                     $set('nama_pasien', null);
                                 } else {
                                     $ruanganMapping = [
-                                        'Umum' => 'Cluster 1',
-                                        'Gilut' => 'Cluster 2',
+                                        'Umum' => 'Cluster 3',
+                                        'Gilut' => 'Cluster 4',
                                     ];
                                     $set('ruangan', $ruanganMapping[$pelayanan]);
 
@@ -121,8 +121,8 @@ class AntrianResource extends Resource
                     }
 
                     $ruanganMapping = [
-                        'Umum' => 'Cluster 1',
-                        'Gilut' => 'Cluster 2',
+                        'Umum' => 'Cluster 3',
+                        'Gilut' => 'Cluster 4',
                     ];
                     $set('ruangan', $ruanganMapping[$state] ?? null);
 

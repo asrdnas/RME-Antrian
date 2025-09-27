@@ -82,7 +82,7 @@ class ValidasiPasienResource extends Resource
                         Antrian::create([
                             'patient_id' => $record->id,
                             'pelayanan' => $data['pelayanan'],
-                            'ruangan' => $data['pelayanan'] === 'Gilut' ? 'Cluster 2' : 'Cluster 1',
+                            'ruangan' => $data['pelayanan'] === 'Gilut' ? 'Cluster 4' : 'Cluster 3',
                             'no_antrian' => AntrianResource::generateNoAntrian($data['pelayanan']),
                             'status' => 'menunggu',
                             'tanggal' => now(),

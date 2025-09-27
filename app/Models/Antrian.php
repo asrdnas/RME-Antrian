@@ -27,8 +27,8 @@ class Antrian extends Model
         static::creating(function ($antrian) {
             // Mapping ruangan otomatis
             $ruanganMapping = [
-                'Umum' => 'Cluster 1',
-                'Gilut' => 'Cluster 2',
+                'Umum' => 'Cluster 3',
+                'Gilut' => 'Cluster 4',
             ];
 
             if (!empty($antrian->pelayanan)) {
