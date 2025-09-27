@@ -132,73 +132,154 @@ class AntrianResource extends Resource
             ])
 
             ->actions([
-                    Tables\Actions\Action::make('panggilPasien')
-                        ->label('Panggil')
-                        ->icon('heroicon-o-megaphone')
-                        ->color('warning')
-                        ->visible(fn($record) => $record->status === 'menunggu')
-                        ->requiresConfirmation()
-                        ->action(function ($record, $livewire) {
-                            $record->update(['status' => 'dipanggil']);
+                Tables\Actions\Action::make('panggilPasien')
+    ->label('Panggil')
+    ->icon('heroicon-o-megaphone')
+    ->color('warning')
+    ->visible(fn($record) => $record->status === 'menunggu')
+    ->requiresConfirmation()
+    ->action(function ($record, $livewire) {
+        $record->update(['status' => 'dipanggil']);
 
-                            Notification::make()
-                                ->title('Pasien ' . $record->patient->nama_pasien . ' dipanggil.')
-                                ->success()
-                                ->send();
+        Notification::make()
+            ->title('Pasien ' . $record->patient->nama_pasien . ' dipanggil.')
+            ->success()
+            ->send();
 
-                            $livewire->js(<<<JS
-                                let text = `Atas nama {$record->patient->nama_pasien}, alamat {$record->patient->alamat_pasien}, dengan nomor antrian {$record->no_antrian}, silakan masuk ruangan {$record->ruangan}.`;
-                                text = text.replace(/kluster/gi, "cluster");
+        // ✅ Rapikan nama pasien (singkatan tetap uppercase)
+        $formatNamaPasien = function ($nama) {
+            if ($nama === strtoupper($nama)) {
+                $nama = strtolower($nama);
+            }
+            $parts = explode(' ', $nama);
+            $result = [];
+            foreach ($parts as $word) {
+                if (strlen($word) <= 3) {
+                    $result[] = strtoupper($word); // singkatan tetap besar
+                } else {
+                    $result[] = ucfirst(strtolower($word));
+                }
+            }
+            return implode(' ', $result);
+        };
 
-                                const utterance = new SpeechSynthesisUtterance(text);
-                                utterance.lang = "id-ID";
+        // Data pasien
+        $namaPasien   = $formatNamaPasien($record->patient->nama_pasien);
+        $alamatPasien = $record->patient->alamat_pasien;
+        $noAntrian    = $record->no_antrian;
+        $ruangan      = $record->ruangan;
 
-                                const voices = window.speechSynthesis.getVoices();
-                                const femaleVoice = voices.find(v =>
-                                    v.lang.startsWith("id") &&
-                                    (v.name.toLowerCase().includes("female") ||
-                                    v.name.toLowerCase().includes("woman") ||
-                                    v.name.toLowerCase().includes("google"))
-                                );
-                                if (femaleVoice) utterance.voice = femaleVoice;
+        $livewire->js(<<<JS
+            let text = `Atas nama {$namaPasien}, alamat {$alamatPasien}, dengan nomor antrian {$noAntrian}, silakan masuk ruangan {$ruangan}.`;
+            text = text.replace(/kluster/gi, "cluster");
 
-                                utterance.rate   = 0.95;
-                                utterance.pitch  = 1.1;
-                                utterance.volume = 1;
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = "id-ID";
 
-                                window.speechSynthesis.cancel();
-                                window.speechSynthesis.speak(utterance);
-                            JS);
-                        }),
+            function setVoice() {
+                const voices = window.speechSynthesis.getVoices();
 
-                    Tables\Actions\Action::make('ulangPanggilan')
+                // ✅ Prioritas utama: Google Bahasa Indonesia (female voice di Chrome/Edge)
+                const googleIndo = voices.find(v =>
+                    v.name.includes("Google Bahasa Indonesia")
+                );
+
+                if (googleIndo) {
+                    utterance.voice = googleIndo;
+                } else {
+                    // ✅ Fallback ke voice lain bahasa Indonesia
+                    const fallbackVoice = voices.find(v => v.lang.startsWith("id"));
+                    if (fallbackVoice) {
+                        utterance.voice = fallbackVoice;
+                    } else {
+                        console.warn("Tidak ada voice Indonesia, gunakan default voice browser.");
+                    }
+                }
+
+                utterance.rate   = 0.95;
+                utterance.pitch  = 1.1;
+                utterance.volume = 1;
+
+                window.speechSynthesis.cancel();
+                window.speechSynthesis.speak(utterance);
+            }
+
+            if (speechSynthesis.getVoices().length === 0) {
+                speechSynthesis.onvoiceschanged = setVoice;
+            } else {
+                setVoice();
+            }
+        JS);
+    }),
+
+
+
+                        Tables\Actions\Action::make('ulangPanggilan')
                         ->label('Ulang')
                         ->icon('heroicon-o-speaker-wave')
                         ->color('secondary')
                         ->visible(fn($record) => $record->status === 'dipanggil')
                         ->action(function ($record, $livewire) {
+
+                            // Fungsi rapikan nama pasien (singkatan tetap uppercase)
+                            $formatNamaPasien = function ($nama) {
+                                if ($nama === strtoupper($nama)) {
+                                    $nama = strtolower($nama);
+                                }
+                                $parts = explode(' ', $nama);
+                                $result = [];
+                                foreach ($parts as $word) {
+                                    if (strlen($word) <= 3) {
+                                        $result[] = strtoupper($word); // singkatan tetap besar
+                                    } else {
+                                        $result[] = ucfirst(strtolower($word));
+                                    }
+                                }
+                                return implode(' ', $result);
+                            };
+
+                            // Rapikan data pasien
+                            $namaPasien   = $formatNamaPasien($record->patient->nama_pasien);
+                            $alamatPasien = $record->patient->alamat_pasien;
+                            $noAntrian    = $record->no_antrian;
+                            $ruangan      = $record->ruangan;
+
                             $livewire->js(<<<JS
-                                let text = `Satu kali lagi. Atas nama {$record->patient->nama_pasien}, alamat {$record->patient->alamat_pasien}, dengan nomor antrian {$record->no_antrian}, silakan masuk ruangan {$record->ruangan}.`;
+                                let text = `Satu kali lagi. Atas nama {$namaPasien}, alamat {$alamatPasien}, dengan nomor antrian {$noAntrian}, silakan masuk ruangan {$ruangan}.`;
                                 text = text.replace(/kluster/gi, "cluster");
 
                                 const utterance = new SpeechSynthesisUtterance(text);
                                 utterance.lang = "id-ID";
 
-                                const voices = window.speechSynthesis.getVoices();
-                                const femaleVoice = voices.find(v =>
-                                    v.lang.startsWith("id") &&
-                                    (v.name.toLowerCase().includes("female") ||
-                                    v.name.toLowerCase().includes("woman") ||
-                                    v.name.toLowerCase().includes("google"))
-                                );
-                                if (femaleVoice) utterance.voice = femaleVoice;
+                                function setVoice() {
+                                    const voices = window.speechSynthesis.getVoices();
 
-                                utterance.rate   = 0.95;
-                                utterance.pitch  = 1.1;
-                                utterance.volume = 1;
+                                    // Lock voice ke Google Bahasa Indonesia
+                                    const indoVoice = voices.find(v =>
+                                        v.name.includes("Google Bahasa Indonesia")
+                                    );
 
-                                window.speechSynthesis.cancel();
-                                window.speechSynthesis.speak(utterance);
+                                    if (indoVoice) {
+                                        utterance.voice = indoVoice;
+                                    } else {
+                                        // fallback kalau nggak ada
+                                        const fallbackVoice = voices.find(v => v.lang.startsWith("id"));
+                                        if (fallbackVoice) utterance.voice = fallbackVoice;
+                                    }
+
+                                    utterance.rate   = 0.95;
+                                    utterance.pitch  = 1.1;
+                                    utterance.volume = 1;
+
+                                    window.speechSynthesis.cancel();
+                                    window.speechSynthesis.speak(utterance);
+                                }
+
+                                if (speechSynthesis.getVoices().length === 0) {
+                                    speechSynthesis.onvoiceschanged = setVoice;
+                                } else {
+                                    setVoice();
+                                }
                             JS);
                         }),
 

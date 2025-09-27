@@ -30,7 +30,7 @@ body {
     line-height: 1.7;
     background-color: var(--bg-light);
     overflow-x: hidden;
-    
+
     /* SCROLL SNAP */
     scroll-snap-type: y mandatory;
 }
@@ -43,11 +43,11 @@ body {
 
 .section {
     overflow: hidden;
-    
+
     /* SCROLL SNAP POINT */
     scroll-snap-align: start;
     min-height: 100vh;
-    
+
     /* Offset untuk header yang fixed/sticky */
     scroll-padding-top: 80px;
 }
@@ -222,15 +222,33 @@ body {
   overflow: hidden;
 }
 
+.hero-section::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.35); /* lapisan hitam tipis */
+    z-index: -1; /* tetap di bawah teks, di atas foto */
+  }
+
+
+
 .hero-section .hero-bg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* biar nggak ketarik */
-  z-index: -2;
-}
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 58%;  /* X = 50% (tengah horizontal), Y = 20% (geser fokus ke atas) */
+    z-index: -2;
+  }
+
+
+
+
 
 .hero-section .overlay {
   position: absolute;
@@ -510,7 +528,7 @@ body {
     overflow: hidden;
     width: 100%;
     /* Rasio aspek 16:9 */
-    padding-top: 56.25%; 
+    padding-top: 56.25%;
     box-shadow: var(--shadow-heavy);
     border-radius: var(--border-radius-md);
 }
@@ -554,7 +572,7 @@ body {
     .logo-text {
         font-size: 1.4rem;
     }
-    
+
     .main-nav {
         display: none;
         width: 100%;
@@ -567,7 +585,7 @@ body {
         padding-bottom: 10px;
         border-top: 1px solid #eee;
     }
-    
+
     .main-nav.active {
         display: block;
     }
@@ -604,7 +622,7 @@ body {
         gap: 15px;
     }
     .hero-buttons .btn {
-        width: 80%;
+        width: 43%;
         margin: 0 auto;
     }
 
@@ -615,7 +633,7 @@ body {
         margin: 0 auto;
         max-width: 350px;
     }
-    
+
     .section {
         padding: 60px 0;
         scroll-padding-top: 60px;
@@ -655,6 +673,6 @@ body {
         font-size: 1rem;
     }
     .hero-buttons .btn {
-        width: 95%;
+        width: 80%;
     }
 }

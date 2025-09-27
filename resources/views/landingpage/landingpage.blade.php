@@ -32,7 +32,7 @@
 
   <section id="beranda" class="hero-section">
   <!-- Background image -->
-  <img src="{{ asset('asset/logo TA/bg.jpg') }}" alt="Background" class="hero-bg">
+  <img src="{{ asset('asset/logo TA/foto_bersama.jpg') }}" alt="Background" class="hero-bg">
 
   <!-- Overlay -->
   <div class="overlay"></div>
@@ -42,8 +42,8 @@
     <h1>Klinik Tirta Amerta: <span>Kesehatan Anda Prioritas Kami</span></h1>
     <p>Didukung oleh tim dokter ahli dan teknologi terkini untuk Anda dan keluarga.</p>
     <div class="hero-buttons">
-      <a href="#layanan" class="btn btn-secondary">Lihat Layanan Kami</a>
-      <a href="/pendaftaran-patient-klinik-tirta-amerta" class="btn btn-cta">Daftar Pasien Sekarang</a>
+      {{-- <a href="#layanan" class="btn btn-secondary">Lihat Layanan Kami</a>
+      <a href="/pendaftaran-patient-klinik-tirta-amerta" class="btn btn-cta">Daftar Pasien Sekarang</a> --}}
     </div>
   </div>
 </section>
@@ -138,6 +138,7 @@
       <p>© 2025 Klinik Tirta Amerta. Hak Cipta Dilindungi.</p>
     </div>
   </footer>
+
 
 </body>
 </html>
