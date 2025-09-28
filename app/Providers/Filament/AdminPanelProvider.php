@@ -28,7 +28,9 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->authGuard('admin')
             ->login()
-            ->brandName('Admin Panel')
+            ->favicon(asset('image.png'))
+            // ->brandName('Admin Panel')
+            ->brandName('Panel Admin')
             ->colors([
                 'primary' => Color::Amber,
             ])

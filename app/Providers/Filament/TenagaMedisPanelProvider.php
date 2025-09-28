@@ -26,7 +26,8 @@ class TenagaMedisPanelProvider extends PanelProvider
             ->id('tenaga-medis')
             ->path('tenaga-medis')
             ->login()
-            ->brandName('Tenaga Medis Panel')
+            ->brandName('Panel Tenaga Medis')
+            ->favicon(asset('image.png'))
             ->authGuard('tenaga_medis')
             ->colors([
                 'primary' => Color::Amber,

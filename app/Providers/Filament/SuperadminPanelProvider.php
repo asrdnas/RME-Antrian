@@ -28,6 +28,7 @@ class SuperadminPanelProvider extends PanelProvider
             ->login()
             ->authGuard('superadmin')
             ->brandName('Super Admin Panel')
+            ->favicon(asset('image.png'))
             ->colors([
                 'primary' => Color::Amber,
             ])
