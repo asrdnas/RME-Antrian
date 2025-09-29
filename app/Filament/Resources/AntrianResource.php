@@ -187,7 +187,7 @@ class AntrianResource extends Resource
     {
         return $table
             ->recordUrl(null)
-            ->poll('1s')
+            ->poll('2s')
             ->columns([
                 Tables\Columns\TextColumn::make('no_antrian')->label('No Antrian')->alignCenter()->badge()->color('primary'),
                 Tables\Columns\TextColumn::make('patient.no_rme')->label('No RME')->copyable()->icon('heroicon-o-identification')->color('info')->alignCenter(),

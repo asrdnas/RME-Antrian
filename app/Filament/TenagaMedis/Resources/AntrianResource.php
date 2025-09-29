@@ -38,7 +38,7 @@ class AntrianResource extends Resource
     {
         return $table
             ->recordUrl(null) // row tidak bisa diklik
-            ->poll('1s')
+            ->poll('2s')
             ->striped()
             ->defaultSort('tanggal', 'desc')
             ->paginated([10, 25, 50])

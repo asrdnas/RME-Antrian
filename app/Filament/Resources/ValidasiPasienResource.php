@@ -25,7 +25,7 @@ class ValidasiPasienResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-        ->poll('1s')
+        ->poll('2s')
             ->query(
                 Patient::query()->where('status_validasi', 'pending')
             )
