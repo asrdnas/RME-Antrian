@@ -8,7 +8,7 @@ class DashboardTenagaMedis extends Page
 {
     protected static ?string $navigationIcon = 'heroicon-o-home';
     protected static string $view = 'filament.tenaga-medis.pages.dashboard-tenaga-medis';
-    protected static ?string $title = 'Statistik Antrian';
+    protected static ?string $title = 'Dashboard Dokter';
     protected static ?string $navigationLabel = 'Dashboard';
     protected static ?string $slug = 'dashboard-tenaga-medis';
 

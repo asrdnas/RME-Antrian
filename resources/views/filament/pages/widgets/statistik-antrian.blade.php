@@ -1,7 +1,7 @@
 <x-filament-widgets::widget>
     <x-filament::card>
         <div class="flex justify-between items-center mb-4">
-            <h2 class="text-lg font-bold">📊 Statistik Antrian</h2>
+            <h2 class="text-lg font-bold">Statistik Antrian</h2>
 
             {{-- Filter Poli --}}
             <select id="filter-poli" class="border rounded-lg px-2 py-1 text-sm dark:bg-gray-800 dark:text-white">

@@ -1,0 +1,149 @@
+:root {
+    --red-main: #E74C3C;
+    --red-light: #FADBD8;
+    --blue-main: #3498DB;
+    --blue-light: #D6EAF8;
+    --dark-text: #2C3E50;
+    --light-text: #ECF0F1;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f0f2f5;
+    color: var(--dark-text);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 10px; /* Menambah padding untuk tampilan yang lebih lega */
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px; /* Perlebar container utama */
+    text-align: center;
+}
+
+.subtitle {
+    font-size: 1.5rem; /* Perbesar subjudul */
+    font-weight: 400;
+    color: #7f8c8d;
+    margin-bottom: 50px;
+}
+
+.queue-board {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* Menambah jarak antar kartu antrian */
+    justify-content: center;
+}
+
+.queue-card {
+    flex: 1;
+    min-width: 1200px; /* Perlebar lebar minimum kartu */
+    background-color: #fff;
+    border-radius: 20px; /* Sedikit lebih melengkung */
+    box-shadow: 0 15px 30px var(--shadow-color); /* Bayangan lebih dalam */
+    padding: 35px; /* Menambah padding internal */
+    transition: transform 0.3s ease;
+}
+
+.queue-card:hover {
+    transform: translateY(-10px);
+}
+
+.card-title {
+    font-size: 2.5rem; /* Perbesar judul kartu */
+    font-weight: 600;
+    margin-bottom: 30px;
+    color: var(--dark-text);
+}
+
+/* Warna untuk tema merah (Gilut) */
+.red-theme .card-title {
+    color: var(--red-main);
+}
+.red-theme .queue-number {
+    background-color: var(--red-main);
+    color: var(--light-text);
+}
+
+
+.current-queue {
+    margin-bottom: 25px;
+}
+
+.queue-label {
+    font-size: 1.2rem;
+    color: #7f8c8d;
+}
+
+.queue-number {
+    font-size: 5rem; /* Perbesar nomor antrian */
+    font-weight: 700;
+    display: block;
+    padding: 15px 30px;
+    border-radius: 15px;
+    margin-top: 15px;
+    box-shadow: 0 5px 10px var(--shadow-color);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.remaining-queue {
+    font-size: 1.3rem; /* Perbesar sisa antrian */
+    color: #7f8c8d;
+    margin-bottom: 40px;
+}
+
+.remaining-queue span {
+    font-weight: 600;
+    color: var(--dark-text);
+}
+
+.queue-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.queue-table th, .queue-table td {
+    padding: 20px 25px; /* Perbesar padding sel tabel */
+    border-bottom: 1px solid #EAECEE;
+    font-size: 1.2rem; /* Perbesar font di dalam tabel */
+}
+
+.queue-table th {
+    background-color: #F8F9F9;
+    font-weight: 600;
+    color: #5D6D7E;
+}
+
+.queue-table td:nth-child(2) { /* Target kolom nama pasien */
+    font-weight: 600;
+    color: var(--dark-text);
+}
+
+.status-served {
+    font-weight: 700; /* Lebih tebal */
+    color: var(--red-main);
+}
+
+/* Responsif untuk layar kecil */
+@media (max-width: 1200px) {
+    .queue-card {
+        min-width: unset;
+        width: 100%;
+    }
+    .queue-board {
+        flex-direction: column;
+        gap: 20px;
+    }
+}

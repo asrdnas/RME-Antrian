@@ -8,7 +8,7 @@ class DashboardUtama extends Page
 {
     protected static ?string $navigationIcon = 'heroicon-o-home';
     protected static string $view = 'filament.pages.dashboard-utama';
-    protected static ?string $title = 'Statistik Antrian';
+    protected static ?string $title = 'Dashboard Admin';
     protected static ?string $navigationLabel = 'Dashboard';
     protected static ?string $slug = 'dashboard'; // ganti dashboard default
 
