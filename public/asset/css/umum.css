@@ -1,0 +1,159 @@
+:root {
+    --red-main: #E74C3C;
+    --red-light: #FADBD8;
+    --blue-main: #3498DB; /* BIRU UTAMA */
+    --blue-light: #D6EAF8; /* BIRU TERANG */
+    --dark-text: #2C3E50;
+    --light-text: #ECF0F1;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f0f2f5;
+    color: var(--dark-text);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 10px;
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    text-align: center;
+}
+
+.subtitle {
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: #7f8c8d;
+    margin-bottom: 50px;
+}
+
+.queue-board {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+.queue-card {
+    flex: 1;
+    min-width: 1200px; /* Dipertahankan dari permintaan terakhir */
+    background-color: #fff;
+    border-radius: 20px;
+    box-shadow: 0 15px 30px var(--shadow-color);
+    padding: 35px;
+    transition: transform 0.3s ease;
+}
+
+.queue-card:hover {
+    transform: translateY(-10px);
+}
+
+.card-title {
+    font-size: 2.5rem;
+    font-weight: 600;
+    margin-bottom: 30px;
+    color: var(--dark-text);
+}
+
+/* MODIFIKASI: Menerapkan tema BIRU */
+.blue-theme .card-title {
+    color: var(--blue-main); /* Judul menggunakan Biru Utama */
+}
+.blue-theme .queue-number {
+    background-color: var(--blue-main); /* Nomor antrian menggunakan Biru Utama */
+    color: var(--light-text);
+}
+/* Akhir MODIFIKASI tema Biru */
+
+/* Menghapus atau mengganti tema merah menjadi biru jika kelas red-theme masih digunakan di HTML */
+.red-theme .card-title {
+    color: var(--blue-main);
+}
+.red-theme .queue-number {
+    background-color: var(--blue-main);
+    color: var(--light-text);
+}
+
+
+.current-queue {
+    margin-bottom: 25px;
+}
+
+.queue-label {
+    font-size: 1.2rem;
+    color: #7f8c8d;
+}
+
+.queue-number {
+    font-size: 5rem;
+    font-weight: 700;
+    display: block;
+    padding: 15px 30px;
+    border-radius: 15px;
+    margin-top: 15px;
+    box-shadow: 0 5px 10px var(--shadow-color);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.remaining-queue {
+    font-size: 1.3rem;
+    color: #7f8c8d;
+    margin-bottom: 40px;
+}
+
+.remaining-queue span {
+    font-weight: 600;
+    color: var(--dark-text);
+}
+
+.queue-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.queue-table th, .queue-table td {
+    padding: 20px 25px;
+    border-bottom: 1px solid #EAECEE;
+    font-size: 1.2rem;
+}
+
+.queue-table th {
+    background-color: var(--blue-light); /* Header tabel menggunakan Biru Terang */
+    font-weight: 600;
+    color: var(--dark-text); /* Warna teks header diubah ke dark-text */
+}
+
+.queue-table td:nth-child(2) {
+    font-weight: 600;
+    color: var(--dark-text);
+}
+
+.status-served {
+    font-weight: 700;
+    color: var(--blue-main); /* Status sedang dilayani menggunakan Biru Utama */
+}
+
+/* Responsif untuk layar kecil */
+@media (max-width: 1200px) {
+    .queue-card {
+        min-width: unset;
+        width: 100%;
+    }
+    .queue-board {
+        flex-direction: column;
+        gap: 20px;
+    }
+}
