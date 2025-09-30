@@ -25,7 +25,7 @@ class ValidasiPasienResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-        ->poll('2s')
+            ->poll('2s')
             ->query(
                 Patient::query()->where('status_validasi', 'pending')
             )
@@ -109,7 +109,7 @@ class ValidasiPasienResource extends Resource
             'index' => Pages\ListValidasiPasiens::route('/'),
         ];
     }
-    
+
     // Catatan: Fungsi ini sudah dipindahkan ke AntrianResource
     public static function generateNoAntrian(string $pelayanan)
     {
@@ -249,4 +249,17 @@ class ValidasiPasienResource extends Resource
             ])->columns(2),
         ];
     }
+    public static function getNavigationBadge(): ?string
+    {
+        // Hitung pasien dengan status pending
+        $count = Patient::where('status_validasi', 'pending')->count();
+
+        return $count > 0 ? (string) $count : null;
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return 'danger'; // bisa 'primary', 'success', 'warning', 'danger'
+    }
+
 }
