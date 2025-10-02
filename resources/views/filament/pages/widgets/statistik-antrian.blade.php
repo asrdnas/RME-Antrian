@@ -22,7 +22,7 @@
         let chart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: ['Harian', 'Mingguan', 'Bulanan'],
+                labels: ['Harian', 'Bulanan', 'Bulanan'],
                 datasets: [{
                     label: 'Jumlah Antrian',
                     data: @json(app(\App\Filament\Widgets\StatistikAntrian::class)->getData()),
