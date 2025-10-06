@@ -12,12 +12,16 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Hash;
 
 class TenagaMedisResource extends Resource
 {
     protected static ?string $model = TenagaMedis::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-users';
+    protected static ?string $navigationLabel = 'Tenaga Medis';
+    protected static ?string $navigationGroup = 'Role Management Klinik';
+    protected static ?string $pluralModelLabel = 'List Data Tenaga Medis';
 
     public static function form(Form $form): Form
     {
@@ -41,11 +45,11 @@ class TenagaMedisResource extends Resource
                     ->unique(ignoreRecord: true),
 
                 Forms\Components\TextInput::make('password')
-                    ->label('Password')
                     ->password()
                     ->revealable()
-                    ->required(fn(string $context): bool => $context === 'create')
-                    ->maxLength(255),
+                    ->label('Password')
+                    ->dehydrateStateUsing(fn($state) => filled($state) ? Hash::make($state) : null)
+                    ->dehydrated(fn($state) => filled($state)),
             ]);
 
     }
@@ -84,6 +88,7 @@ class TenagaMedisResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

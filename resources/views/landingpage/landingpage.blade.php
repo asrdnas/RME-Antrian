@@ -76,18 +76,18 @@
             <div class="doctor-list">
                 <div class="doctor-card">
                     <img src="{{ asset('asset/logo TA/default-avatar-icon-of-social-media-user-vector.jpg') }}" alt="Foto Dokter Andi" class="doctor-photo">
-                    <h3>dr. Andi Pratama</h3>
+                    <h3>dr. Niken Tri Utami</h3>
                     <p class="specialization">Dokter Umum</p>
                 </div>
                 <div class="doctor-card">
                     <img src="{{ asset('asset/logo TA/default-avatar-icon-of-social-media-user-vector.jpg') }}" alt="Foto Dokter Rina" class="doctor-photo">
-                    <h3>drg. Rina Lestari</h3>
+                    <h3>drg. Kholisa</h3>
                     <p class="specialization">Dokter Gigi</p>
                 </div>
                 <div class="doctor-card">
                     <img src="{{ asset('asset/logo TA/default-avatar-icon-of-social-media-user-vector.jpg') }}" alt="Foto Dokter Budi" class="doctor-photo">
-                    <h3>dr. Budi Santoso</h3>
-                    <p class="specialization">Dokter Umum</p>
+                    <h3>drg. Firdaus Fatahillah</h3>
+                    <p class="specialization">Dokter Gigi</p>
                 </div>
             </div>
         </div>
@@ -106,12 +106,12 @@
                 <div class="contact-item">
                     <i class="fas fa-phone-alt"></i>
                     <h4>Telepon</h4>
-                    <p>+62 812 3456 7890</p>
+                    <p>+62 812 4934 0040</p>
                 </div>
                 <div class="contact-item">
                     <i class="fas fa-envelope"></i>
                     <h4>Email</h4>
-                    <p>info@kliniktirtaamerta.com</p>
+                    <p>tirtaamerta4@gmail.com</p>
                 </div>
             </div>
         </div>
@@ -135,7 +135,7 @@
                     <li><a href="#dokter">Dokter</a></li>
                     <li><a href="#kontak">Kontak</a></li>
                     <li><a href="#Lokasi">Lokasi</a></li>
-                    <li><a href="https://wa.me/6282335389877?text=Halo%20Klinik%20Tirta%20Amerta,%20saya%20ingin%20bertanya%20mengenai%20layanan%20Anda." target="_blank" class="footer-wa">Hubungi via WhatsApp</a></li>
+                    <li><a href="https://wa.me/6281259340040?text=Halo%20Klinik%20Tirta%20Amerta,%20saya%20ingin%20bertanya%20mengenai%20layanan%20Anda." target="_blank" class="footer-wa">Hubungi via WhatsApp</a></li>
                 </ul>
             </div>
             <p>© 2025 Klinik Tirta Amerta. Hak Cipta Dilindungi.</p>

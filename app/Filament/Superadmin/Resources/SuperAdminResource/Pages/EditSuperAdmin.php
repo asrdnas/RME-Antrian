@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Filament\Superadmin\Resources\AdminResource\Pages;
+namespace App\Filament\Superadmin\Resources\SuperAdminResource\Pages;
 
-use App\Filament\Superadmin\Resources\AdminResource;
+use App\Filament\Superadmin\Resources\SuperAdminResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Notifications\Notification;
 
-class EditAdmin extends EditRecord
+class EditSuperAdmin extends EditRecord
 {
-    protected static string $resource = AdminResource::class;
+    protected static string $resource = SuperAdminResource::class;
 
-     protected function getRedirectUrl(): string
+   protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('index');
     }
@@ -23,5 +23,4 @@ class EditAdmin extends EditRecord
             ->success()
             ->send();
     }
-
 }

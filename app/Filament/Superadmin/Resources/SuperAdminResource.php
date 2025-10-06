@@ -2,9 +2,9 @@
 
 namespace App\Filament\Superadmin\Resources;
 
-use App\Filament\Superadmin\Resources\AdminResource\Pages;
-use App\Filament\Superadmin\Resources\AdminResource\RelationManagers;
-use App\Models\Admin;
+use App\Filament\Superadmin\Resources\SuperAdminResource\Pages;
+use App\Filament\Superadmin\Resources\SuperAdminResource\RelationManagers;
+use App\Models\SuperAdmin;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -14,17 +14,17 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Hash;
 
-class AdminResource extends Resource
+class SuperAdminResource extends Resource
 {
-    protected static ?string $model = Admin::class;
+    protected static ?string $model = SuperAdmin::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-users';
+     protected static ?string $navigationIcon = 'heroicon-o-users';
     
-    protected static ?string $navigationLabel = 'Admin';
+    protected static ?string $navigationLabel = 'Super Admin';
 
     protected static ?string $navigationGroup = 'Role Management Klinik';
 
-    protected static ?string $pluralModelLabel = 'List Data Admin';
+    protected static ?string $pluralModelLabel = 'List Data Super Admin';
 
     public static function form(Form $form): Form
     {
@@ -109,9 +109,9 @@ class AdminResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListAdmins::route('/'),
-            'create' => Pages\CreateAdmin::route('/create'),
-            'edit' => Pages\EditAdmin::route('/{record}/edit'),
+            'index' => Pages\ListSuperAdmins::route('/'),
+            'create' => Pages\CreateSuperAdmin::route('/create'),
+            'edit' => Pages\EditSuperAdmin::route('/{record}/edit'),
         ];
     }
 }
