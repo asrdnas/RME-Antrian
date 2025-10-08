@@ -84,11 +84,6 @@
                     <h3>drg. Kholisa</h3>
                     <p class="specialization">Dokter Gigi</p>
                 </div>
-                <div class="doctor-card">
-                    <img src="{{ asset('asset/logo TA/default-avatar-icon-of-social-media-user-vector.jpg') }}" alt="Foto Dokter Budi" class="doctor-photo">
-                    <h3>drg. Firdaus Fatahillah</h3>
-                    <p class="specialization">Dokter Gigi</p>
-                </div>
             </div>
         </div>
     </section>
@@ -135,7 +130,7 @@
                     <li><a href="#dokter">Dokter</a></li>
                     <li><a href="#kontak">Kontak</a></li>
                     <li><a href="#Lokasi">Lokasi</a></li>
-                    <li><a href="https://wa.me/6281259340040?text=Halo%20Klinik%20Tirta%20Amerta,%20saya%20ingin%20bertanya%20mengenai%20layanan%20Anda." target="_blank" class="footer-wa">Hubungi via WhatsApp</a></li>
+                    <li><a href="https://wa.me/6281249340040?text=Halo%20Klinik%20Tirta%20Amerta,%20saya%20ingin%20bertanya%20mengenai%20layanan%20Anda." target="_blank" class="footer-wa">Hubungi via WhatsApp</a></li>
                 </ul>
             </div>
             <p>© 2025 Klinik Tirta Amerta. Hak Cipta Dilindungi.</p>
