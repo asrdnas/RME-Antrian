@@ -75,13 +75,23 @@
             <p class="section-subtitle">Didukung oleh tim dokter berpengalaman dan profesional.</p>
             <div class="doctor-list">
                 <div class="doctor-card">
-                    <img src="{{ asset('asset/logo TA/default-avatar-icon-of-social-media-user-vector.jpg') }}" alt="Foto Dokter Andi" class="doctor-photo">
+                    <img src="{{ asset('asset/logo TA/dr.niken.jpg') }}" alt="Foto Dokter Andi" class="doctor-photo">
                     <h3>dr. Niken Tri Utami</h3>
                     <p class="specialization">Dokter Umum</p>
                 </div>
                 <div class="doctor-card">
-                    <img src="{{ asset('asset/logo TA/default-avatar-icon-of-social-media-user-vector.jpg') }}" alt="Foto Dokter Rina" class="doctor-photo">
+                    <img src="{{ asset('asset/logo TA/drg. kholisa.jpg') }}" alt="Foto Dokter Rina" class="doctor-photo">
                     <h3>drg. Kholisa</h3>
+                    <p class="specialization">Dokter Gigi</p>
+                </div>
+                <div class="doctor-card">
+                    <img src="{{ asset('asset/logo TA/dokter.jpg') }}" alt="Foto Dokter Rina" class="doctor-photo">
+                    <h3>Drg. Yusron Haries</h3>
+                    <p class="specialization">Dokter Gigi</p>
+                </div>
+                <div class="doctor-card">
+                    <img src="{{ asset('asset/logo TA/drg.firdaus.jpg') }}" alt="Foto Dokter Rina" class="doctor-photo">
+                    <h3>Drg. firdaus fatahillah</h3>
                     <p class="specialization">Dokter Gigi</p>
                 </div>
             </div>
