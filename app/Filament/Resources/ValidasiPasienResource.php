@@ -145,10 +145,6 @@ class ValidasiPasienResource extends Resource
                 Forms\Components\DatePicker::make('tanggal_lahir')
                     ->label('Tanggal Lahir')
                     ->required(),
-                Forms\Components\TextInput::make('umur_pasien')
-                    ->label('Umur')
-                    ->numeric()
-                    ->required(),
                 Forms\Components\Radio::make('jenis_kelamin')
                     ->label('Jenis Kelamin')
                     ->options([
@@ -162,6 +158,8 @@ class ValidasiPasienResource extends Resource
                 Forms\Components\TextInput::make('no_tlp_pasien')
                     ->label('Nomor Telepon')
                     ->numeric(),
+                Forms\Components\TextInput::make('agama_pasien')
+                    ->label('Agama'),
                 Forms\Components\Radio::make('status_perkawinan_pasien')
                     ->label('Status Perkawinan')
                     ->options([
@@ -170,8 +168,6 @@ class ValidasiPasienResource extends Resource
                         'janda' => 'Janda',
                         'duda' => 'Duda',
                     ]),
-                Forms\Components\TextInput::make('agama_pasien')
-                    ->label('Agama'),
                 Forms\Components\Radio::make('pekerjaan_pasien')
                     ->label('Pekerjaan')
                     ->options([
@@ -212,10 +208,9 @@ class ValidasiPasienResource extends Resource
                 Forms\Components\TextInput::make('nama_penanggung_jawab')
                     ->label('Nama Penanggung Jawab')
                     ->required(),
-                Forms\Components\TextInput::make('umur_penanggung_jawab')
-                    ->label('Umur Penanggung Jawab')
-                    ->numeric()
-                    ->required(),
+                Forms\Components\TextInput::make('no_tlp_pasien')
+                    ->label('Nomor Telepon Penanggung Jawab')
+                    ->numeric(),
                 Forms\Components\Radio::make('pekerjaan_penanggung_jawab')
                     ->label('Pekerjaan Penanggung Jawab')
                     ->options([

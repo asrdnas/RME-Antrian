@@ -16,7 +16,6 @@ class PatientController extends Controller
             'no_rme' => 'nullable|string|unique:patients,no_rme',
             'tempat_lahir' => 'required|string',
             'tanggal_lahir' => 'required|date',
-            'umur_pasien' => 'required|integer',
             'jenis_kelamin' => 'required|string',
             'alamat_pasien' => 'nullable|string',
             'no_tlp_pasien' => 'nullable|string',
@@ -25,7 +24,7 @@ class PatientController extends Controller
             'pekerjaan_pasien' => 'nullable|string',
             'pendidikan_pasien' => 'nullable|string',
             'nama_penanggung_jawab' => 'required|string',
-            'umur_penanggung_jawab' => 'required|integer',
+            'no_tlp_penanggung_jawab' => 'nullable|string',
             'pekerjaan_penanggung_jawab' => 'nullable|string',
             'hubungan_dengan_pasien' => 'nullable|string',
         ]);

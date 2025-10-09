@@ -20,8 +20,6 @@ return new class extends Migration
             // Pisahkan tempat dan tanggal lahir
             $table->string('tempat_lahir');
             $table->date('tanggal_lahir');
-
-            $table->integer('umur_pasien');
             $table->string('jenis_kelamin');
             $table->text('alamat_pasien');
             $table->string('no_tlp_pasien')->nullable();
@@ -33,7 +31,7 @@ return new class extends Migration
             $table->string('status_pasien')->nullable();
 
             $table->string('nama_penanggung_jawab')->nullable();
-            $table->integer('umur_penanggung_jawab')->nullable();
+            $table->string('no_tlp_penanggung_jawab')->nullable();
             $table->string('pekerjaan_penanggung_jawab')->nullable();
             $table->string('hubungan_dengan_pasien')->nullable();
 

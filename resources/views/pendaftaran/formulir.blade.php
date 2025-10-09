@@ -45,20 +45,16 @@
                     <label for="tanggal_lahir" class="required">Tanggal Lahir</label>
                     <input type="date" id="tanggal_lahir" name="tanggal_lahir" required />
                 </div>
-                <div class="form-group">
-                    <label for="umur_pasien" class="required">Umur</label>
-                    <input type="number" id="umur_pasien" name="umur_pasien" required />
-                </div>
             </div>
 
             <div class="form-row">
                 <div class="form-group form-group-alamat">
-                    <label for="alamat_pasien">Alamat</label>
-                    <textarea id="alamat_pasien" name="alamat_pasien" rows="3"></textarea>
+                    <label for="alamat_pasien" class="required">Alamat</label>
+                    <textarea id="alamat_pasien" name="alamat_pasien" rows="3" required></textarea>
                 </div>
                 <div class="form-group form-group-telepon">
-                    <label for="no_tlp_pasien">Nomor Telepon</label>
-                    <input type="number" id="no_tlp_pasien" name="no_tlp_pasien" />
+                    <label for="no_tlp_pasien" class="required">Nomor Telepon</label>
+                    <input type="number" id="no_tlp_pasien" name="no_tlp_pasien" required/>
                 </div>
             </div>
 
@@ -128,10 +124,10 @@
                 <label for="nama_penanggung_jawab" class="required">Nama Penanggung Jawab</label>
                 <input type="text" id="nama_penanggung_jawab" name="nama_penanggung_jawab" required />
             </div>
-            <div class="form-group">
-                <label for="umur_penanggung_jawab" class="required">Umur Penanggung Jawab</label>
-                <input type="number" id="umur_penanggung_jawab" name="umur_penanggung_jawab" required />
-            </div>
+            <div class="form-group form-group-telepon">
+                    <label for="no_tlp_penanggung_jawab" class="required">Nomor Telepon Penanggung Jawab</label>
+                    <input type="number" id="no_tlp_penanggung_jawab" name="no_tlp_penanggung_jawab" required/>
+                </div>
             <div class="form-group">
                 <label class="required">Pekerjaan Penanggung Jawab</label>
                 <div class="radio-group" id="pekerjaan-pj-radio-group">
