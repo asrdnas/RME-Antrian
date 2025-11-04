@@ -80,12 +80,12 @@
                     <p class="specialization">Dokter Umum</p>
                 </div>
                 <div class="doctor-card">
-                    <img src="{{ asset('asset/logo TA/drg.firdaus.jpg') }}" alt="Foto Dokter Rina" class="doctor-photo">
+                    <img src="{{ asset('asset/logo TA/drg.firdaus.jpg') }}" alt="Foto Dokter Andi" class="doctor-photo">
                     <h3>Drg. firdaus fatahillah</h3>
-                    <p class="specialization">Dokter Gigi</p>
+                    <p class="specialization">Dokter Gigi</p>   
                 </div>
                 <div class="doctor-card">
-                    <img src="{{ asset('asset/logo TA/drg.kholisa.jpg') }}" alt="Foto Dokter Rina" class="doctor-photo">
+                    <img src="{{ asset('asset/logo TA/drg.kholisa.jpg') }}" alt="Foto Dokter Andi" class="doctor-photo">
                     <h3>drg. Kholisa</h3>
                     <p class="specialization">Dokter Gigi</p>
                 </div>
@@ -144,7 +144,6 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            // --- 1. LOGIKA MENU TOGGLE ---
             const menuToggle = document.querySelector(".menu-toggle");
             const mainNav = document.querySelector(".main-nav");
 
@@ -153,7 +152,6 @@
                     mainNav.classList.toggle("active");
                 });
 
-                // Tutup menu saat link diklik (khusus mobile)
                 document.querySelectorAll('.main-nav a').forEach(link => {
                     link.addEventListener('click', () => {
                         if (window.innerWidth <= 768) {
@@ -162,39 +160,26 @@
                     });
                 });
             }
-
-            // --- 2. LOGIKA SCROLL REVEAL (Animasi) ---
-
-            // Pilih semua elemen yang akan dianimasikan
             const elementsToAnimate = document.querySelectorAll('.service-item, .doctor-card, .contact-item');
-
-            // 2a. Beri kelas awal 'reveal-hidden' ke semua elemen dan tambahkan delay
             elementsToAnimate.forEach((element, index) => {
                 element.classList.add('reveal-hidden');
-                // Tambahkan delay agar munculnya berurutan di dalam grid
-                element.style.transitionDelay = `${index % 3 * 150}ms`; // Menggunakan modulo 3 agar delay berulang di setiap baris grid
+                element.style.transitionDelay = `${index % 3 * 150}ms`;
             });
-
-            // 2b. Buat Intersection Observer
             const observerOptions = {
-                root: null, // Mengamati viewport
-                rootMargin: '0px 0px -100px 0px', // Memuat 100px sebelum mencapai bawah viewport
-                threshold: 0.1 // Mulai animasi ketika 10% elemen terlihat
+                root: null,
+                rootMargin: '0px 0px -100px 0px',
+                threshold: 0.1
             };
 
             const scrollObserver = new IntersectionObserver((entries, observer) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
-                        // Ketika elemen masuk viewport, tambahkan kelas 'reveal-show'
                         entry.target.classList.add('reveal-show');
-
-                        // Berhenti mengamati elemen yang sudah muncul
                         observer.unobserve(entry.target);
                     }
                 });
             }, observerOptions);
 
-            // 2c. Mulai mengamati setiap elemen
             elementsToAnimate.forEach(element => {
                 scrollObserver.observe(element);
             });

@@ -30,8 +30,6 @@ body {
     line-height: 1.7;
     background-color: var(--bg-light);
     overflow-x: hidden;
-
-    /* SCROLL SNAP */
     scroll-snap-type: y mandatory;
 }
 
@@ -43,16 +41,12 @@ body {
 
 .section {
     overflow: hidden;
-
-    /* SCROLL SNAP POINT */
     scroll-snap-align: start;
     min-height: 100vh;
-
-    /* Offset untuk header yang fixed/sticky */
     scroll-padding-top: 80px;
 }
 
-/* Penyesuaian khusus untuk section-section tertentu */
+
 #beranda {
     padding-top: 0;
     padding-bottom: 0;
@@ -229,8 +223,8 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.35); /* lapisan hitam tipis */
-    z-index: -1; /* tetap di bawah teks, di atas foto */
+    background: rgba(0,0,0,0.35);
+    z-index: -1;
 }
 
 
@@ -252,7 +246,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.4); /* transparan hitam */
+    background: rgba(0,0,0,0.4);
     z-index: -1;
 }
 
@@ -328,7 +322,7 @@ body {
     box-shadow: var(--shadow-light);
     border-bottom: 4px solid var(--primary-color);
 
-    /* Gabungan transisi untuk hover dan animasi reveal */
+
     transition: var(--transition-ease), opacity 0.8s ease-out, transform 0.8s ease-out;
 }
 
@@ -379,7 +373,16 @@ body {
     box-shadow: var(--shadow-light);
     border-top: 4px solid var(--secondary-color);
 
-    /* Gabungan transisi untuk hover dan animasi reveal */
+    width: 100%;
+  max-width: 320px;
+  margin: 0 auto;
+  min-height: 340px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+
     transition: var(--transition-ease), opacity 0.8s ease-out, transform 0.8s ease-out;
 }
 
@@ -394,7 +397,7 @@ body {
     height: 160px;
     border-radius: 60%;
     object-fit: cover;
-    object-position: center 10%; /* geser gambar ke bawah */
+    object-position: center 10%;
     border: 4px solid var(--primary-color);
     margin-bottom: 20px;
     box-shadow: 0 0 15px rgba(0, 123, 255, 0.2);
@@ -445,7 +448,7 @@ body {
     border-radius: var(--border-radius-md);
     box-shadow: var(--shadow-light);
 
-    /* Gabungan transisi untuk hover dan animasi reveal */
+
     transition: var(--transition-ease), opacity 0.8s ease-out, transform 0.8s ease-out;
 }
 
@@ -511,7 +514,7 @@ body {
 }
 
 .footer-wa {
-    color: #25D366; /* Warna ikon WhatsApp */
+    color: #25D366;
     font-weight: bold;
 }
 
@@ -529,7 +532,6 @@ body {
     position: relative;
     overflow: hidden;
     width: 100%;
-    /* Rasio aspek 16:9 */
     padding-top: 56.25%;
     box-shadow: var(--shadow-heavy);
     border-radius: var(--border-radius-md);
@@ -544,22 +546,17 @@ body {
     border-radius: var(--border-radius-md);
 }
 
-/* --- ANIMASI SCROLL REVEAL (Tambahan Baru) --- */
-
-/* 1. Kondisi Awal: Sembunyikan elemen dan geser ke bawah */
 .reveal-hidden {
     opacity: 0;
-    transform: translateY(30px); /* Geser ke bawah 30px */
-    transition: opacity 0.8s ease-out, transform 0.8s ease-out; /* Transisi untuk animasi */
+    transform: translateY(30px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
 }
 
-/* 2. Kondisi Akhir: Tampilkan elemen di posisi aslinya */
 .reveal-show {
     opacity: 1;
     transform: translateY(0);
 }
 
-/* RESPONSIVE DESIGN */
 @media (max-width: 992px) {
     .section-title {
         font-size: 2.2rem;
@@ -591,7 +588,7 @@ body {
     }
 
     .main-nav {
-        display: none; /* awalnya disembunyikan di mobile */
+        display: none;
         position: absolute;
         top: 70px;
         right: 20px;
@@ -679,7 +676,7 @@ body {
         gap: 10px;
     }
     .map-container {
-        padding-top: 75%; /* Rasio aspek 4:3 untuk layar yang lebih kecil */
+        padding-top: 75%;
     }
 }
 
