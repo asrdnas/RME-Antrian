@@ -29,6 +29,11 @@ return new class extends Migration
             $table->string('pekerjaan_pasien')->nullable();
             $table->string('pendidikan_pasien')->nullable();
             $table->string('status_pasien')->nullable();
+            
+            $table->string('nama_penanggung_jawab')->nullable();
+            $table->string('no_tlp_penanggung_jawab')->nullable();
+            $table->string('pekerjaan_penanggung_jawab')->nullable();
+            $table->string('hubungan_dengan_pasien')->nullable();
 
             $table->enum('status_validasi', ['pending', 'approved', 'rejected'])->default('pending');
             $table->unsignedInteger('total_kunjungan')->default(0);

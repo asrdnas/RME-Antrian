@@ -23,6 +23,10 @@ class PatientController extends Controller
             'agama_pasien' => 'nullable|string',
             'pekerjaan_pasien' => 'nullable|string',
             'pendidikan_pasien' => 'nullable|string',
+            'nama_penanggung_jawab' => 'required|string',
+            'no_tlp_penanggung_jawab' => 'nullable|string',
+            'pekerjaan_penanggung_jawab' => 'nullable|string',
+            'hubungan_dengan_pasien' => 'nullable|string',
         ]);
 
         $data['status_pasien'] = 'pending';

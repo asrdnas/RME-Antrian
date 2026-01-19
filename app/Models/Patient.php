@@ -23,6 +23,10 @@ class Patient extends Model
         'pendidikan_pasien',
         'status_pasien',
         'total_kunjungan',
+        'nama_penanggung_jawab',
+        'no_tlp_penanggung_jawab',
+        'pekerjaan_penanggung_jawab',
+        'hubungan_dengan_pasien',
     ];
 
     public function antrians()

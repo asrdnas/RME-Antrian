@@ -203,19 +203,46 @@ class ValidasiPasienResource extends Resource
                     ->label('Pendidikan Lainnya')
                     ->visible(fn($get) => $get('pendidikan_pasien') === 'lain-lain'),
             ])->columns(2),
+
+              Forms\Components\Section::make('Data Penanggung Jawab')->schema([
+                Forms\Components\TextInput::make('nama_penanggung_jawab')
+                    ->label('Nama Penanggung Jawab')
+                    ->required(),
+                Forms\Components\TextInput::make('no_tlp_pasien')
+                    ->label('Nomor Telepon Penanggung Jawab')
+                    ->numeric(),
+                Forms\Components\Radio::make('pekerjaan_penanggung_jawab')
+                    ->label('Pekerjaan Penanggung Jawab')
+                    ->options([
+                        'pns' => 'PNS',
+                        'tni' => 'TNI',
+                        'polisi' => 'Polisi',
+                        'bumn' => 'BUMN',
+                        'bumd' => 'BUMD',
+                        'karyawan_swasta' => 'Karyawan Swasta',
+                        'petani' => 'Petani',
+                        'pedagang' => 'Pedagang',
+                        'lain-lain' => 'Lain-lain',
+                    ])
+                    ->reactive(),
+                Forms\Components\TextInput::make('pekerjaan_penanggung_jawab_lain')
+                    ->label('Pekerjaan Lainnya')
+                    ->visible(fn($get) => $get('pekerjaan_penanggung_jawab') === 'lain-lain'),
+                Forms\Components\Radio::make('hubungan_dengan_pasien')
+                    ->label('Hubungan Dengan Pasien')
+                    ->options([
+                        'suami' => 'Suami',
+                        'istri' => 'Istri',
+                        'ibu' => 'Ibu',
+                        'ayah' => 'Ayah',
+                        'lain-lain' => 'Lain-lain',
+                    ])
+                    ->reactive(),
+                Forms\Components\TextInput::make('hubungan_dengan_pasien_lain')
+                    ->label('Hubungan Lainnya')
+                    ->visible(fn($get) => $get('hubungan_dengan_pasien') === 'lain-lain'),
+            ])->columns(2),
         ];
-    }
-    public static function getNavigationBadge(): ?string
-    {
-        // Hitung pasien dengan status pending
-        $count = Patient::where('status_validasi', 'pending')->count();
-
-        return $count > 0 ? (string) $count : null;
-    }
-
-    public static function getNavigationBadgeColor(): ?string
-    {
-        return 'danger'; // bisa 'primary', 'success', 'warning', 'danger'
     }
 
 }
