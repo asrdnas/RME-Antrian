@@ -22,10 +22,6 @@ class Patient extends Model
         'pekerjaan_pasien',
         'pendidikan_pasien',
         'status_pasien',
-        'nama_penanggung_jawab',
-        'no_tlp_penanggung_jawab',
-        'pekerjaan_penanggung_jawab',
-        'hubungan_dengan_pasien',
         'total_kunjungan',
     ];
 

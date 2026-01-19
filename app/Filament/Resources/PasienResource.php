@@ -23,7 +23,7 @@ class PasienResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-identification';
 
-    protected static ?string $navigationGroup = 'Manajemen Klinik';
+    protected static ?string $navigationGroup = 'Master Data Klinik';
 
     protected static ?string $navigationLabel = 'Pasien';
 

@@ -62,7 +62,7 @@ class Antrian extends Model
     
     public static function generateNoAntrian(string $pelayanan): string
     {
-        $prefix = $pelayanan === 'Gilut' ? 'B' : 'A';
+        $prefix = $pelayanan === 'Gilut' ? 'KG-' : 'KU-';
 
         $lastNumber = self::whereDate('tanggal', today())
             ->where('pelayanan', $pelayanan)

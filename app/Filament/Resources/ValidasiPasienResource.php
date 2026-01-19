@@ -25,7 +25,7 @@ class ValidasiPasienResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->poll('2s')
+            ->poll('5s')
             ->query(
                 Patient::query()->where('status_validasi', 'pending')
             )
@@ -116,7 +116,7 @@ class ValidasiPasienResource extends Resource
         $count = Antrian::whereDate('tanggal', today())
             ->where('pelayanan', $pelayanan)
             ->count() + 1;
-        $prefix = $pelayanan === 'Gilut' ? 'B' : 'A';
+        $prefix = $pelayanan === 'Gilut' ? 'KG' : 'KU';
         return $prefix . str_pad($count, 2, '0', STR_PAD_LEFT);
     }
 
@@ -202,45 +202,6 @@ class ValidasiPasienResource extends Resource
                 Forms\Components\TextInput::make('pendidikan_pasien_lain')
                     ->label('Pendidikan Lainnya')
                     ->visible(fn($get) => $get('pendidikan_pasien') === 'lain-lain'),
-            ])->columns(2),
-
-            Forms\Components\Section::make('Data Penanggung Jawab')->schema([
-                Forms\Components\TextInput::make('nama_penanggung_jawab')
-                    ->label('Nama Penanggung Jawab')
-                    ->required(),
-                Forms\Components\TextInput::make('no_tlp_pasien')
-                    ->label('Nomor Telepon Penanggung Jawab')
-                    ->numeric(),
-                Forms\Components\Radio::make('pekerjaan_penanggung_jawab')
-                    ->label('Pekerjaan Penanggung Jawab')
-                    ->options([
-                        'pns' => 'PNS',
-                        'tni' => 'TNI',
-                        'polisi' => 'Polisi',
-                        'bumn' => 'BUMN',
-                        'bumd' => 'BUMD',
-                        'karyawan_swasta' => 'Karyawan Swasta',
-                        'petani' => 'Petani',
-                        'pedagang' => 'Pedagang',
-                        'lain-lain' => 'Lain-lain',
-                    ])
-                    ->reactive(),
-                Forms\Components\TextInput::make('pekerjaan_penanggung_jawab_lain')
-                    ->label('Pekerjaan Lainnya')
-                    ->visible(fn($get) => $get('pekerjaan_penanggung_jawab') === 'lain-lain'),
-                Forms\Components\Radio::make('hubungan_dengan_pasien')
-                    ->label('Hubungan Dengan Pasien')
-                    ->options([
-                        'suami' => 'Suami',
-                        'istri' => 'Istri',
-                        'ibu' => 'Ibu',
-                        'ayah' => 'Ayah',
-                        'lain-lain' => 'Lain-lain',
-                    ])
-                    ->reactive(),
-                Forms\Components\TextInput::make('hubungan_dengan_pasien_lain')
-                    ->label('Hubungan Lainnya')
-                    ->visible(fn($get) => $get('hubungan_dengan_pasien') === 'lain-lain'),
             ])->columns(2),
         ];
     }

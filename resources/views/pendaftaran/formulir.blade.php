@@ -118,51 +118,8 @@
 
             <hr>
 
-            {{-- 2. Data Penanggung Jawab --}}
-            <h2>2. Data Penanggung Jawab</h2>
-            <div class="form-group">
-                <label for="nama_penanggung_jawab" class="required">Nama Penanggung Jawab</label>
-                <input type="text" id="nama_penanggung_jawab" name="nama_penanggung_jawab" required />
-            </div>
-            <div class="form-group form-group-telepon">
-                    <label for="no_tlp_penanggung_jawab" class="required">Nomor Telepon Penanggung Jawab</label>
-                    <input type="number" id="no_tlp_penanggung_jawab" name="no_tlp_penanggung_jawab" required/>
-                </div>
-            <div class="form-group">
-                <label class="required">Pekerjaan Penanggung Jawab</label>
-                <div class="radio-group" id="pekerjaan-pj-radio-group">
-                    <label><input type="radio" name="pekerjaan_penanggung_jawab" value="pns" required /> PNS</label>
-                    <label><input type="radio" name="pekerjaan_penanggung_jawab" value="tni" /> TNI</label>
-                    <label><input type="radio" name="pekerjaan_penanggung_jawab" value="polisi" /> Polisi</label>
-                    <label><input type="radio" name="pekerjaan_penanggung_jawab" value="bumn" /> BUMN</label>
-                    <label><input type="radio" name="pekerjaan_penanggung_jawab" value="bumd" /> BUMD</label>
-                    <label><input type="radio" name="pekerjaan_penanggung_jawab" value="karyawan_swasta" /> Karyawan
-                        Swasta</label>
-                    <label><input type="radio" name="pekerjaan_penanggung_jawab" value="petani" /> Petani</label>
-                    <label><input type="radio" name="pekerjaan_penanggung_jawab" value="pedagang" /> Pedagang</label>
-                    <label><input type="radio" name="pekerjaan_penanggung_jawab" value="lain-lain" /> Lain-lain</label>
-                </div>
-                <input type="text" id="pekerjaan_pj_lain" name="pekerjaan_pj_lain"
-                    placeholder="Sebutkan pekerjaan lain..." style="display:none;margin-top:10px;" />
-            </div>
-
-            <div class="form-group">
-                <label class="required">Hubungan Dengan Pasien</label>
-                <div class="radio-group" id="hubungan-radio-group">
-                    <label><input type="radio" name="hubungan_dengan_pasien" value="suami" required /> Suami</label>
-                    <label><input type="radio" name="hubungan_dengan_pasien" value="istri" /> Istri</label>
-                    <label><input type="radio" name="hubungan_dengan_pasien" value="ibu" /> Ibu</label>
-                    <label><input type="radio" name="hubungan_dengan_pasien" value="ayah" /> Ayah</label>
-                    <label><input type="radio" name="hubungan_dengan_pasien" value="lain-lain" /> Lain-lain</label>
-                </div>
-                <input type="text" id="hubungan_pasien_lain" name="hubungan_pasien_lain"
-                    placeholder="Sebutkan hubungan lain..." style="display:none;margin-top:10px;" />
-            </div>
-
-            <hr>
-
             {{-- 3. Persetujuan --}}
-            <h2>3. Persetujuan</h2>
+            <h2>2. Persetujuan</h2>
             <div class="form-group">
                 <p>
                     Saya menyatakan data yang saya berikan benar dan memberikan persetujuan

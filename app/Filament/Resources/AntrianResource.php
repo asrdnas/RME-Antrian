@@ -187,7 +187,7 @@ class AntrianResource extends Resource
     {
         return $table
             ->recordUrl(null)
-            ->poll('2s')
+            ->poll('5s')
             ->columns([
                 Tables\Columns\TextColumn::make('no_antrian')->label('No Antrian')->alignCenter()->badge()->color('primary'),
                 Tables\Columns\TextColumn::make('patient.no_rme')->label('No RME')->copyable()->icon('heroicon-o-identification')->color('info')->alignCenter(),
@@ -333,7 +333,7 @@ class AntrianResource extends Resource
 
     public static function generateNoAntrian(string $pelayanan): string
     {
-        $prefix = $pelayanan === 'Gilut' ? 'B' : 'A';
+        $prefix = $pelayanan === 'Gilut' ? 'KG-' : 'KU-';
 
         $last = Antrian::whereDate('tanggal', today())
             ->where('pelayanan', $pelayanan)
@@ -353,7 +353,7 @@ class AntrianResource extends Resource
             ->orderBy('no_antrian')
             ->get();
 
-        $prefix = $pelayanan === 'Gilut' ? 'B' : 'A';
+        $prefix = $pelayanan === 'Gilut' ? 'KG-' : 'KU-';
         $counter = 1;
 
         foreach ($antrians as $a) {
