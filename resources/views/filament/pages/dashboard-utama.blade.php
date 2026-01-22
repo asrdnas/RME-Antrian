@@ -1,4 +1,23 @@
-<x-filament-panels::page>
+<x-filament-panels::page
+    x-data
+    x-init="setTimeout(() => runDashboardAnimations(), 80)"
+>
+<script>
+    function runDashboardAnimations() {
+        document.querySelectorAll('.animate-bounce-in, .animate-fade-glow').forEach(el => {
+            el.classList.remove('animate-bounce-in', 'animate-fade-glow');
+            void el.offsetWidth; // reflow
+            el.classList.add('animate-bounce-in', 'animate-fade-glow');
+        });
+    }
+
+    document.addEventListener('livewire:load', () => {
+        Livewire.hook('message.processed', () => {
+            runDashboardAnimations();
+        });
+    });
+</script>
+
     {{-- Selamat Datang --}}
     <div class="mb-8 animate-bounce-in">
         <h1 class="text-3xl font-extrabold text-gray-800 dark:text-gray-100 relative inline-block">
@@ -7,7 +26,7 @@
             </span>
         </h1>
         <p class="mt-1 text-gray-500 dark:text-gray-400">
-            Semoga harimu menyenangkan 
+            Semoga harimu menyenangkan
         </p>
     </div>
 
@@ -91,41 +110,44 @@
     </div>
 
 
-    {{-- Custom Animations (TETAP) --}}
-    <style>
-        /* Bounce masuk */
-        @keyframes bounce-in {
-            0% { opacity: 0; transform: scale(0.8) translateY(-20px); }
-            50% { opacity: 1; transform: scale(1.05) translateY(10px); }
-            100% { transform: scale(1) translateY(0); }
-        }
-        .animate-bounce-in { animation: bounce-in 1s ease-out forwards; }
+{{-- Custom Animations --}}
+<style>
+    /* Bounce masuk */
+    @keyframes bounce-in {
+        0% { opacity: 0; transform: scale(0.8) translateY(-20px); }
+        50% { opacity: 1; transform: scale(1.05) translateY(10px); }
+        100% { transform: scale(1) translateY(0); }
+    }
+    .animate-bounce-in {
+        animation: bounce-in 1s ease-out forwards;
+    }
 
-        /* Typing effect */
-        .typing-text {
-            display: inline-block;
-            white-space: nowrap;
-            overflow: hidden;
-            border-right: 3px solid currentColor;
-            animation: typing 3s steps(30, end), blink 0.8s step-end infinite;
-        }
-        @keyframes typing {
-            from { width: 0; }
-            to { width: 100%; }
-        }
-        @keyframes blink {
-            50% { border-color: transparent; }
-        }
+    /* Typing effect */
+    .typing-text {
+        display: inline-block;
+        white-space: nowrap;
+        overflow: hidden;
+        border-right: 3px solid currentColor;
+        animation: typing 3s steps(30, end), blink 0.8s step-end infinite;
+    }
+    @keyframes typing {
+        from { width: 0; }
+        to { width: 100%; }
+    }
+    @keyframes blink {
+        50% { border-color: transparent; }
+    }
 
-        /* Fade glow untuk card */
-        @keyframes fade-glow {
-            0% { opacity: 0; transform: translateY(20px) scale(0.95); }
-            100% { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        .animate-fade-glow {
-            animation: fade-glow 1s ease-out forwards;
-        }
-        .delay-200 { animation-delay: 0.2s; }
-        .delay-400 { animation-delay: 0.4s; }
-    </style>
+    /* Fade glow */
+    @keyframes fade-glow {
+        0% { opacity: 0; transform: translateY(20px) scale(0.95); }
+        100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .animate-fade-glow {
+        animation: fade-glow 1s ease-out forwards;
+    }
+
+    .delay-200 { animation-delay: 0.2s; }
+    .delay-400 { animation-delay: 0.4s; }
+</style>
 </x-filament-panels::page>

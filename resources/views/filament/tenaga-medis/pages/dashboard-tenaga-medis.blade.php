@@ -1,4 +1,23 @@
-<x-filament-panels::page>
+<x-filament-panels::page
+    x-data
+    x-init="setTimeout(() => runDashboardAnimations(), 80)"
+>
+<script>
+    function runDashboardAnimations() {
+        document.querySelectorAll('.animate-bounce-in, .animate-fade-glow').forEach(el => {
+            el.classList.remove('animate-bounce-in', 'animate-fade-glow');
+            void el.offsetWidth; // reflow
+            el.classList.add('animate-bounce-in', 'animate-fade-glow');
+        });
+    }
+
+    document.addEventListener('livewire:load', () => {
+        Livewire.hook('message.processed', () => {
+            runDashboardAnimations();
+        });
+    });
+</script>
+
     {{-- Selamat Datang --}}
     <div class="mb-8 animate-bounce-in">
         <h1 class="text-3xl font-extrabold text-gray-800 dark:text-gray-100 relative inline-block">
@@ -7,7 +26,7 @@
             </span>
         </h1>
         <p class="mt-1 text-gray-500 dark:text-gray-400">
-            Semoga harimu menyenangkan 
+            Semoga harimu menyenangkan
         </p>
     </div>
 
