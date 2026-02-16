@@ -24,3 +24,14 @@ Route::get('/monitor/antrian-gilut', [MonitorGilutController::class, 'index'])
 // Route Monitor Antrian Umum
 Route::get('/monitor/antrian-umum', [MonitorUmumController::class, 'index'])
     ->name('monitor.antrianumum');
+
+    Route::get('/cek-limit', function () {
+    return response()->json(
+        config('livewire.temporary_file_upload')
+    );
+});
+
+Route::get('/cek-config-path', function () {
+    return base_path('config/livewire.php');
+});
+

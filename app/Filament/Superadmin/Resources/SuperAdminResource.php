@@ -18,7 +18,7 @@ class SuperAdminResource extends Resource
 {
     protected static ?string $model = SuperAdmin::class;
 
-     protected static ?string $navigationIcon = 'heroicon-o-users';
+    protected static ?string $navigationIcon = 'heroicon-o-users';
     
     protected static ?string $navigationLabel = 'Super Admin';
 

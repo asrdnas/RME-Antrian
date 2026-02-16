@@ -17,6 +17,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->string('password');
+            $table->string('photo')->nullable(); 
+            $table->enum('jenis_dokter', ['Umum', 'Gigi']);
             $table->timestamps();
         });
     }

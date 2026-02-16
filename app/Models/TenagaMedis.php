@@ -11,7 +11,9 @@ class TenagaMedis extends Authenticatable
     protected $guard = 'tenaga_medis';
 
     protected $fillable = [
-        'username', 'name', 'email', 'password',
+        'username', 'name', 'email', 'password','photo',
+        'jenis_dokter',
+
     ];
 
     protected $hidden = [
@@ -23,4 +25,10 @@ class TenagaMedis extends Authenticatable
     {
         return $this->hasMany(RekamMedis::class, 'dokter_id');
     }
+    
+    public function jadwalDokter()
+    {
+    return $this->hasMany(JadwalDokter::class);
+    }
+
 }
