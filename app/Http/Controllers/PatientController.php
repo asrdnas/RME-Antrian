@@ -14,6 +14,8 @@ class PatientController extends Controller
         'nama_kk' => 'required|string|max:255',
         'nama_pasien' => 'required|string|max:255',
         'jenis_kelamin' => 'required|string',
+        'tempat_lahir' => 'required|string',
+        'tanggal_lahir' => 'required|date',
         'alamat_pasien' => 'required|string',
         'no_tlp_pasien' => 'required|string',
         'pekerjaan_pasien' => 'required|string',

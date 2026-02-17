@@ -3,23 +3,25 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ValidasiPasienResource\Pages;
-use App\Models\Patient;
 use App\Models\Antrian;
+use App\Models\Patient;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Table;
-use Filament\Tables\Filters\SelectFilter;
-use Filament\Notifications\Notification;
 use Filament\Tables\Actions\Action;
-use Illuminate\Database\Eloquent\Builder;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
 
 class ValidasiPasienResource extends Resource
 {
     protected static ?string $model = Patient::class;
+
     protected static ?string $navigationIcon = 'heroicon-o-check-circle';
+
     protected static ?string $navigationLabel = 'Validasi Pasien';
+
     protected static ?string $navigationGroup = 'Manajemen Klinik';
 
     public static function table(Table $table): Table
@@ -30,17 +32,38 @@ class ValidasiPasienResource extends Resource
                 Patient::query()->where('status_validasi', 'pending')
             )
             ->columns([
+                Tables\Columns\TextColumn::make('no_rme')
+                    ->label('No RME'),
+
+                Tables\Columns\TextColumn::make('nama_kk')
+                    ->label('Nama Kepala Keluarga (KK)')
+                    ->searchable(),
+
                 Tables\Columns\TextColumn::make('nama_pasien')
                     ->label('Nama Pasien')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('nik')
-                    ->label('NIK')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('no_rme')
-                    ->label('No RME'),
+
+                Tables\Columns\TextColumn::make('umur')
+                    ->label('Umur')
+                    ->icon('heroicon-o-clock')
+                    ->alignCenter()
+                    ->getStateUsing(function ($record) {
+
+                        if (! $record->tanggal_lahir) {
+                            return '-';
+                        }
+
+                        $lahir = Carbon::parse($record->tanggal_lahir);
+                        $diff = $lahir->diff(now());
+
+                        return "{$diff->y} Th {$diff->m} Bln {$diff->d} Hr";
+                    }),
+
+
                 Tables\Columns\TextColumn::make('alamat_pasien')
                     ->label('Alamat')
                     ->limit(30),
+
                 Tables\Columns\BadgeColumn::make('status_validasi')
                     ->label('Status Validasi')
                     ->colors([
@@ -63,8 +86,8 @@ class ValidasiPasienResource extends Resource
                 Action::make('validasi')
                     ->label('Validasi')
                     ->color('success')
-                    ->visible(fn($record) => $record->status_validasi === 'pending')
                     ->icon('heroicon-o-check')
+                    ->visible(fn ($record) => $record->status_validasi === 'pending')
                     ->form([
                         Forms\Components\Select::make('pelayanan')
                             ->label('Pilih Pelayanan')
@@ -75,15 +98,19 @@ class ValidasiPasienResource extends Resource
                             ->required(),
                     ])
                     ->action(function ($record, array $data) {
+
                         // Update status validasi
-                        $record->status_validasi = 'approved';
-                        $record->save();
+                        $record->update([
+                            'status_validasi' => 'approved',
+                        ]);
 
                         // Buat antrian baru
                         Antrian::create([
                             'patient_id' => $record->id,
                             'pelayanan' => $data['pelayanan'],
-                            'ruangan' => $data['pelayanan'] === 'Gilut' ? 'Cluster 4' : 'Cluster 3',
+                            'ruangan' => $data['pelayanan'] === 'Gilut'
+                                ? 'Cluster 4'
+                                : 'Cluster 3',
                             'no_antrian' => AntrianResource::generateNoAntrian($data['pelayanan']),
                             'status' => 'menunggu',
                             'tanggal' => now(),
@@ -94,6 +121,7 @@ class ValidasiPasienResource extends Resource
                             ->success()
                             ->send();
                     }),
+
                 Tables\Actions\DeleteAction::make(),
             ]);
     }
@@ -110,139 +138,95 @@ class ValidasiPasienResource extends Resource
         ];
     }
 
-    // Catatan: Fungsi ini sudah dipindahkan ke AntrianResource
-    public static function generateNoAntrian(string $pelayanan)
-    {
-        $count = Antrian::whereDate('tanggal', today())
-            ->where('pelayanan', $pelayanan)
-            ->count() + 1;
-        $prefix = $pelayanan === 'Gilut' ? 'KG' : 'KU';
-        return $prefix . str_pad($count, 2, '0', STR_PAD_LEFT);
-    }
-
     private static function getFormSchema(): array
     {
         return [
-            // Memanggil metode statis dari model Patient
             Forms\Components\Hidden::make('no_rme')
-                ->default(fn() => Patient::generateNoRme()),
+                ->default(fn () => Patient::generateNoRme()),
 
-            Forms\Components\Section::make('Data Pribadi Pasien')->schema([
-                Forms\Components\TextInput::make('nama_pasien')
-                    ->label('Nama Lengkap')
-                    ->required()
-                    ->afterStateUpdated(fn($state, callable $set) => $set('nama_pasien', strtoupper($state))),
-                Forms\Components\TextInput::make('nik')
-                    ->label('Nomor KTP')
-                    ->required()
-                    ->numeric()
-                    ->length(16)
-                    ->unique(Patient::class, 'nik'),
-                Forms\Components\TextInput::make('tempat_lahir')
-                    ->label('Tempat Lahir')
-                    ->required()
-                    ->afterStateUpdated(fn($state, callable $set) => $set('tempat_lahir', strtoupper($state))),
-                Forms\Components\DatePicker::make('tanggal_lahir')
-                    ->label('Tanggal Lahir')
-                    ->required(),
-                Forms\Components\Radio::make('jenis_kelamin')
-                    ->label('Jenis Kelamin')
-                    ->options([
-                        'laki-laki' => 'Laki-laki',
-                        'perempuan' => 'Perempuan',
-                    ])
-                    ->required(),
-                Forms\Components\Textarea::make('alamat_pasien')
-                    ->label('Alamat')
-                    ->required(),
-                Forms\Components\TextInput::make('no_tlp_pasien')
-                    ->label('Nomor Telepon')
-                    ->numeric(),
-                Forms\Components\TextInput::make('agama_pasien')
-                    ->label('Agama'),
-                Forms\Components\Radio::make('status_perkawinan_pasien')
-                    ->label('Status Perkawinan')
-                    ->options([
-                        'menikah' => 'Menikah',
-                        'belum_menikah' => 'Belum Menikah',
-                        'janda' => 'Janda',
-                        'duda' => 'Duda',
-                    ]),
-                Forms\Components\Radio::make('pekerjaan_pasien')
-                    ->label('Pekerjaan')
-                    ->options([
-                        'pns' => 'PNS',
-                        'tni' => 'TNI',
-                        'polisi' => 'Polisi',
-                        'bumn' => 'BUMN',
-                        'bumd' => 'BUMD',
-                        'karyawan_swasta' => 'Karyawan Swasta',
-                        'petani' => 'Petani',
-                        'pedagang' => 'Pedagang',
-                        'lain-lain' => 'Lain-lain',
-                    ])
-                    ->reactive(),
-                Forms\Components\TextInput::make('pekerjaan_pasien_lain')
-                    ->label('Pekerjaan Lainnya')
-                    ->visible(fn($get) => $get('pekerjaan_pasien') === 'lain-lain'),
-                Forms\Components\Radio::make('pendidikan_pasien')
-                    ->label('Pendidikan')
-                    ->options([
-                        'tidak_lulus' => 'Tidak Lulus',
-                        'sd' => 'SD',
-                        'smp' => 'SMP',
-                        'sma' => 'SMA',
-                        'slta' => 'SLTA',
-                        's1' => 'Sarjana S1',
-                        's2' => 'S2',
-                        's3' => 'S3',
-                        'lain-lain' => 'Lain-lain',
-                    ])
-                    ->reactive(),
-                Forms\Components\TextInput::make('pendidikan_pasien_lain')
-                    ->label('Pendidikan Lainnya')
-                    ->visible(fn($get) => $get('pendidikan_pasien') === 'lain-lain'),
-            ])->columns(2),
+            Forms\Components\Section::make('Data Pribadi Pasien')
+                ->schema([
 
-              Forms\Components\Section::make('Data Penanggung Jawab')->schema([
-                Forms\Components\TextInput::make('nama_penanggung_jawab')
-                    ->label('Nama Penanggung Jawab')
-                    ->required(),
-                Forms\Components\TextInput::make('no_tlp_pasien')
-                    ->label('Nomor Telepon Penanggung Jawab')
-                    ->numeric(),
-                Forms\Components\Radio::make('pekerjaan_penanggung_jawab')
-                    ->label('Pekerjaan Penanggung Jawab')
-                    ->options([
-                        'pns' => 'PNS',
-                        'tni' => 'TNI',
-                        'polisi' => 'Polisi',
-                        'bumn' => 'BUMN',
-                        'bumd' => 'BUMD',
-                        'karyawan_swasta' => 'Karyawan Swasta',
-                        'petani' => 'Petani',
-                        'pedagang' => 'Pedagang',
-                        'lain-lain' => 'Lain-lain',
-                    ])
-                    ->reactive(),
-                Forms\Components\TextInput::make('pekerjaan_penanggung_jawab_lain')
-                    ->label('Pekerjaan Lainnya')
-                    ->visible(fn($get) => $get('pekerjaan_penanggung_jawab') === 'lain-lain'),
-                Forms\Components\Radio::make('hubungan_dengan_pasien')
-                    ->label('Hubungan Dengan Pasien')
-                    ->options([
-                        'suami' => 'Suami',
-                        'istri' => 'Istri',
-                        'ibu' => 'Ibu',
-                        'ayah' => 'Ayah',
-                        'lain-lain' => 'Lain-lain',
-                    ])
-                    ->reactive(),
-                Forms\Components\TextInput::make('hubungan_dengan_pasien_lain')
-                    ->label('Hubungan Lainnya')
-                    ->visible(fn($get) => $get('hubungan_dengan_pasien') === 'lain-lain'),
-            ])->columns(2),
+                    Forms\Components\TextInput::make('nama_kk')
+                        ->label('Nama Kepala Keluarga')
+                        ->required(),
+
+                    Forms\Components\TextInput::make('nama_pasien')
+                        ->label('Nama Lengkap')
+                        ->required()
+                        ->afterStateUpdated(
+                            fn ($state, callable $set) => $set('nama_pasien', strtoupper($state))
+                        ),
+
+                    Forms\Components\TextInput::make('tempat_lahir')
+                        ->label('Tempat Lahir')
+                        ->required()
+                        ->afterStateUpdated(
+                            fn ($state, callable $set) => $set('tempat_lahir', strtoupper($state))
+                        ),
+
+                    Forms\Components\DatePicker::make('tanggal_lahir')
+                        ->label('Tanggal Lahir')
+                        ->required(),
+
+                    Forms\Components\Placeholder::make('umur')
+                        ->label('Umur')
+                        ->content(function ($get) {
+
+                            $tanggalLahir = $get('tanggal_lahir');
+
+                            if (! $tanggalLahir) {
+                                return '-';
+                            }
+
+                            $lahir = Carbon::parse($tanggalLahir);
+                            $now = Carbon::now();
+
+                            $diff = $lahir->diff($now);
+
+                            return "{$diff->y} Tahun {$diff->m} Bulan {$diff->d} Hari";
+                        })
+                        ->reactive(),
+
+                    Forms\Components\Radio::make('jenis_kelamin')
+                        ->label('Jenis Kelamin')
+                        ->options([
+                            'laki-laki' => 'Laki-laki',
+                            'perempuan' => 'Perempuan',
+                        ])
+                        ->required(),
+
+                    Forms\Components\Textarea::make('alamat_pasien')
+                        ->label('Alamat')
+                        ->required(),
+
+                    Forms\Components\TextInput::make('no_tlp_pasien')
+                        ->label('Nomor Telepon')
+                        ->numeric(),
+
+                    Forms\Components\Radio::make('pekerjaan_pasien')
+                        ->label('Pekerjaan')
+                        ->options([
+                            'dibawah_umur' => 'Di Bawah Umur',
+                            'pelajar' => 'Pelajar',
+                            'mahasiswa' => 'Mahasiswa',
+                            'pns' => 'PNS',
+                            'tni' => 'TNI',
+                            'polisi' => 'Polisi',
+                            'bumn' => 'BUMN',
+                            'bumd' => 'BUMD',
+                            'karyawan_swasta' => 'Karyawan Swasta',
+                            'petani' => 'Petani',
+                            'pedagang' => 'Pedagang',
+                            'lain-lain' => 'Lain-lain',
+                        ])
+                        ->reactive(),
+
+                    Forms\Components\TextInput::make('pekerjaan_pasien_lain')
+                        ->label('Pekerjaan Lainnya')
+                        ->visible(fn ($get) => $get('pekerjaan_pasien') === 'lain-lain'
+                        ),
+                ]),
         ];
     }
-
 }

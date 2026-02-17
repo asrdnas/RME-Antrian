@@ -10,6 +10,7 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Carbon\Carbon;
 use Filament\Tables\Table;
 use Filament\Tables\Actions\Action;
 use Filament\Notifications\Notification;
@@ -48,72 +49,99 @@ class PasienResource extends Resource
             ->striped()
             ->defaultSort('nama_pasien')
             ->columns([
+                Tables\Columns\TextColumn::make('no_rme')
+                    ->label('No RME')
+                    ->sortable()
+                    ->badge()
+                    ->color('primary')
+                    ->alignCenter(),
 
-                Tables\Columns\TextColumn::make('nama_pasien')
-                    ->label('👤 Nama Pasien')
+                Tables\Columns\TextColumn::make('nama_kk')
+                    ->label('Nama Kepala Keluarga (KK)')
                     ->sortable()
                     ->searchable()
                     ->weight('bold')
-                    ->color('primary')
+                    ->icon('heroicon-o-user')
                     ->alignStart(),
 
-                Tables\Columns\TextColumn::make('nik')
-                    ->label('NIK')
+                Tables\Columns\TextColumn::make('nama_pasien')
+                    ->label('Nama Pasien')
                     ->sortable()
                     ->searchable()
-                    ->alignCenter(),
-
-                Tables\Columns\TextColumn::make('no_rme')
-                    ->label(' No RME')
-                    ->sortable()
-                    ->alignCenter()
-                    ->badge()
-                    ->color('info'),
+                    ->weight('bold')
+                    ->icon('heroicon-o-user')
+                    ->alignStart(),
 
                 Tables\Columns\TextColumn::make('alamat_pasien')
                     ->label('Alamat')
-                    ->limit(25)
-                    ->tooltip(fn($record) => $record->alamat_pasien)
-                    ->alignCenter(),
+                    ->alignCenter()
+                    ->limit(30)
+                    ->tooltip(fn ($record) => $record->alamat_pasien)
+                    ->icon('heroicon-o-map-pin'),
 
                 Tables\Columns\TextColumn::make('tempat_lahir')
                     ->label('Tempat Lahir')
-                    ->limit(20)
-                    ->alignCenter(),
+                    ->alignCenter()
+                    ->limit(20),
 
                 Tables\Columns\TextColumn::make('tanggal_lahir')
                     ->label('Tanggal Lahir')
-                    ->date('d M Y')
+                    ->date('d/m/Y')
+                    ->icon('heroicon-o-calendar')
                     ->alignCenter(),
 
+                Tables\Columns\TextColumn::make('umur')
+                    ->label('Umur')
+                    ->icon('heroicon-o-clock')
+                    ->alignCenter()
+                    ->getStateUsing(function ($record) {
+
+                        if (! $record->tanggal_lahir) {
+                            return '-';
+                        }
+
+                        $lahir = Carbon::parse($record->tanggal_lahir);
+                        $diff = $lahir->diff(now());
+
+                        return "{$diff->y} Th {$diff->m} Bln {$diff->d} Hr";
+                    }),
+
                 Tables\Columns\TextColumn::make('jenis_kelamin')
-                    ->label('Gender')
+                    ->label('Jenis Kelamin')
                     ->badge()
                     ->colors([
-                        'blue' => 'Laki-laki',
                         'pink' => 'Perempuan',
+                        'blue' => 'Laki-laki',
+                    ])
+                    ->icons([
+                        'heroicon-o-female' => 'Perempuan',
+                        'heroicon-o-user' => 'Laki-laki',
                     ])
                     ->alignCenter(),
 
                 Tables\Columns\TextColumn::make('no_tlp_pasien')
-                    ->label('Telepon')
+                    ->label('No Telepon')
+                    ->icon('heroicon-o-phone')
                     ->alignCenter(),
+
+                Tables\Columns\TextColumn::make('pekerjaan_pasien')
+                    ->label('Pekerjaan')
+                    ->alignCenter()
+                    ->limit(20),
 
                 Tables\Columns\TextColumn::make('total_kunjungan')
                     ->label('Total Kunjungan')
-                    ->badge()
-                    ->alignCenter()
                     ->sortable()
-                    ->color(fn ($state) => match (true) {
-                        $state == 0 => 'danger',
-                        $state > 0 && $state < 3 => 'warning',
-                        $state >= 3 => 'success',
-                    }),
+                    ->badge()
+                    ->color('success')
+                    ->alignCenter(),
+
+                
             ])
 
             ->filters([
                 Tables\Filters\SelectFilter::make('status_validasi')
-                    ->label('📌 Status Validasi')
+                    ->label('Status Validasi')
                     ->options([
                         'pending' => 'Pending',
                         'approved' => 'Approved',

@@ -7,7 +7,7 @@ use App\Http\Controllers\MonitorGilutController;
 use App\Http\Controllers\MonitorUmumController;
 
 // Halaman Form Skrining
-Route::get('/pendaftaran-patient-klinik-tirta-amerta', function () {
+Route::get('/pendaftaran-patient-dokter-donny', function () {
     return view('pendaftaran.formulir');
 })->name('pendaftaran.form');
 

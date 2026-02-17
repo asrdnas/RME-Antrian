@@ -1,0 +1,371 @@
+/* ============================================================
+   ROOT & GLOBAL
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+
+/* --- WELCOME SCREEN STYLES --- */
+#welcome-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    transition: transform 0.8s cubic-bezier(0.86, 0, 0.07, 1), opacity 0.6s ease;
+}
+
+/* Efek geser ke atas saat selesai */
+body.loaded #welcome-screen {
+    transform: translateY(-100%);
+    opacity: 0;
+}
+
+.welcome-content {
+    text-align: center;
+}
+
+.logo-animation {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.circle-loader {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 4px solid rgba(31, 181, 173, 0.1);
+    border-top: 4px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+}
+
+.welcome-icon {
+    font-size: 40px;
+    color: var(--primary-color);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.reveal-text {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: var(--dark-text);
+    margin-bottom: 5px;
+    text-transform: uppercase;
+}
+
+.reveal-text span {
+    color: var(--cyan-accent);
+}
+
+.reveal-subtext {
+    font-size: 14px;
+    color: var(--light-text);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    opacity: 0.8;
+}
+
+.progress-container {
+    width: 180px;
+    height: 3px;
+    background: #eee;
+    margin: 25px auto 0;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    width: 0%;
+    height: 100%;
+    background: var(--gradient-main);
+    animation: loadingFill 1.8s ease-in-out forwards;
+}
+:root {
+    --primary-color: #1FB5AD;
+    --dark-text: #2d3436;
+    --light-text: #636e72;
+    --bg-body: #f0f7f7;
+    --gradient-main: linear-gradient(135deg, #1FB5AD 0%, #007bff 100%);
+    --cyan-accent: #00D9D9;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* === KEYFRAMES ANIMATIONS === */
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.15);
+        opacity: 0.7;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes loadingFill {
+    from {
+        width: 0%;
+    }
+    to {
+        width: 100%;
+    }
+}
+
+
+:root {
+    --primary-color: #1FB5AD;
+    --dark-text: #2d3436;
+    --light-text: #636e72;
+    --bg-body: #f0f7f7;
+    --gradient-main: linear-gradient(135deg, #28e2d9, #1fbdb5);;
+    --cyan-accent: #00D9D9;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+body {
+    background-color: var(--bg-body);
+}
+
+/* ============================================================
+   SECTION & CONTAINER
+   ============================================================ */
+.ly-section {
+    padding: 100px 20px;
+}
+
+.ly-container {
+    max-width: 1140px;
+    margin: 0 auto;
+}
+
+.ly-header-box {
+    text-align: center;
+    margin-bottom: 80px;
+}
+
+.ly-subtitle {
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 4px;
+    color: var(--primary-color);
+    margin-bottom: 15px;
+}
+
+.ly-title {
+    font-size: 45px;
+    font-weight: 800;
+    color: var(--dark-text);
+    line-height: 1.2;
+}
+
+.ly-highlight {
+    background: var(--gradient-main);
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+
+/* ============================================================
+   CARD LAYOUT
+   ============================================================ */
+.ly-list-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+.ly-card {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border-radius: 40px;
+    box-shadow: 0 20px 40px rgba(0,0,0,.04);
+    border: 1px solid rgba(31,181,173,.05);
+    transition: all .4s ease;
+    position: relative;
+    overflow: visible; /* desktop */
+}
+
+.ly-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 30px 60px rgba(31,181,173,.12);
+}
+
+.ly-card:nth-child(odd) {
+    flex-direction: row-reverse;
+}
+
+
+/* ============================================================
+   IMAGE
+   ============================================================ */
+.ly-image-wrapper {
+    position: relative;
+    flex: 0 0 45%;
+    padding: 20px;
+    z-index: 1;
+}
+
+.ly-image-wrapper img {
+    width: 100%;
+    height: 100%;
+    border-radius: 30px;
+    object-fit: cover;
+    transition: all .4s ease;
+    background: #fff;
+}
+
+/* Decorative corner */
+.ly-image-wrapper::before,
+.ly-image-wrapper::after {
+    content: '';
+    position: absolute;
+    left: 20px;
+    bottom: 20px;
+    border-radius: 20px;
+    z-index: 2;
+}
+
+.ly-image-wrapper::before {
+    width: 8px;
+    height: 100px;
+}
+
+.ly-image-wrapper::after {
+    width: 100px;
+    height: 8px;
+}
+
+.ly-card:hover .ly-image-wrapper img {
+    transform: scale(1.05);
+    box-shadow: 0 10px 30px rgba(0,0,0,.15);
+}
+
+
+/* ============================================================
+   CONTENT
+   ============================================================ */
+.ly-content {
+    flex: 1;
+    padding: 50px 60px;
+    z-index: 3;
+    position: relative;
+}
+
+.ly-card-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--primary-color);
+    background: linear-gradient(135deg,
+        rgba(31,181,173,.1),
+        rgba(0,123,255,.1));
+    border-radius: 20px;
+    margin-bottom: 15px;
+}
+
+.ly-card-title {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--dark-text);
+    margin-bottom: 18px;
+}
+
+.ly-card-text {
+    font-size: 17px;
+    color: var(--light-text);
+    line-height: 1.8;
+}
+
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+/* Tablet & Mobile (Combined) */
+@media (max-width: 768px) {
+    .ly-section {
+        padding: 70px 15px;
+    }
+
+    .ly-header-box {
+        margin: 20px 0;
+    }
+
+    .ly-title {
+        font-size: 28px; /* Ukuran tengah agar tidak terlalu besar di HP */
+    }
+
+    .ly-card {
+        flex-direction: column !important;
+        overflow: hidden;
+    }
+
+    .ly-image-wrapper {
+        width: 100%;
+        padding: 12px;
+    }
+
+    /* Mematikan dekorasi agar lebih bersih di layar kecil */
+    .ly-image-wrapper::before,
+    .ly-image-wrapper::after {
+        display: none;
+    }
+
+    .ly-content {
+        padding: 0px 20px 30px;
+        text-align: center;
+    }
+
+    .ly-card-tag {
+        margin: 0 auto ;
+    }
+
+    .ly-card-title {
+        font-size: 22px;
+    }
+
+    .ly-card-text {
+        font-size: 14px;
+        line-height: 1.6;
+    }
+}

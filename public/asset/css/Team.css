@@ -1,0 +1,771 @@
+/* team kami  */
+/* Reset & Base Style */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif; /* Pastikan import Google Fonts */
+    background-color: #ffffff;
+    color: #333;
+}
+
+/* 1. Section Header */
+.team-section {
+    padding: 80px 0;
+}
+.container {
+    max-width: 100%;
+    margin: 0 100px;
+}
+.section-header {
+    text-align: center;
+    margin-bottom: 70px;
+    padding: 0 20px;
+}
+
+/* 1. Badge di atas judul (Gaya Glassmorphism) */
+.header-badge {
+    display: inline-block;
+    padding: 8px 20px;
+    background: rgba(0, 206, 209, 0.1);
+    color: #008b8b;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border-radius: 50px;
+    border: 1px solid rgba(0, 206, 209, 0.2);
+    margin-bottom: 20px;
+}
+
+/* 2. Judul dengan Split Color */
+.section-header h2 {
+    font-size: 3rem;
+    color: #1a1a1a; /* Warna gelap utama */
+    font-weight: 900;
+    line-height: 1.2;
+    margin-bottom: 20px;
+    letter-spacing: -1.5px;
+}
+
+/* Warna aksen untuk kata di dalam span */
+.section-header h2 span {
+    color: #00ced1; /* Warna Cyan/Teal */
+    position: relative;
+    display: inline-block;
+}
+
+/* Aksen lingkaran/dekorasi halus di belakang kata kunci */
+.section-header h2 span::after {
+    content: '';
+    position: absolute;
+    width: 110%;
+    height: 15px;
+    background: rgba(0, 206, 209, 0.15);
+    bottom: 5px;
+    left: -5%;
+    z-index: -1;
+    border-radius: 10px;
+}
+
+/* 3. Deskripsi dengan Typography yang lebih lega */
+.section-header p {
+    color: #6c757d;
+    font-size: 1.15rem;
+    max-width: 650px;
+    margin: 0 auto;
+    line-height: 1.8;
+    font-weight: 400;
+}
+
+/* 2. Team Hero (Foto Grup) */
+.team-hero {
+    margin-bottom: 40px;
+}
+
+.group-photo-wrapper {
+    position: relative;
+    border-radius: 25px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+
+.group-photo-wrapper img {
+    width: 100%;
+    height: 500px;
+    object-fit: cover;
+    display: block;
+}
+
+.group-photo-wrapper {
+    position: relative;
+    border-radius: 25px;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+/* 1. Ubah state awal .photo-overlay */
+.photo-overlay {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    padding: 30px;
+    
+    /* Efek Kaca (Glassmorphism) */
+    background: rgba(87, 77, 15, 0.15); 
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    color: white;
+    
+    /* --- PERUBAHAN DI SINI --- */
+    transform: translateY(0); /* Ubah dari 30px ke 0 agar posisi normal */
+    opacity: 1;               /* Ubah dari 0 ke 1 agar langsung terlihat */
+    /* ------------------------- */
+    
+    transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* 2. Opsional: Tambahkan sedikit efek saat hover agar tetap interaktif */
+.group-photo-wrapper:hover .photo-overlay {
+    background: rgba(87, 77, 15, 0.25); /* Sedikit lebih gelap saat hover */
+    transform: scale(1.02);             /* Sedikit membesar */
+}
+
+.photo-overlay h3 {
+    font-size: 1.8rem;
+    margin-bottom: 5px;
+    font-weight: 700;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+.photo-overlay p {
+    font-size: 1rem;
+    font-weight: 300;
+    opacity: 0.9;
+}
+
+/* 3. Divider */
+.divider {
+    border: 0;
+    height: 1px;
+    background: #eee;
+}
+
+/* 4. Team Grid (Kartu Dokter) */
+/* Container Grid */
+.team-grid {
+    display: grid;
+    /* Mengunci tampilan menjadi 3 kolom pada layar laptop/desktop */
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 25px; /* Jarak antar card diperkecil agar pas */
+    padding: 20px 0;
+    max-width: 1200px; /* Membatasi lebar total grid agar tidak melar */
+    margin: 0 auto; /* Menjaga grid tetap di tengah */
+}
+
+/* Card Utama */
+.team-item {
+    position: relative;
+    width: 100%;
+    max-width: 320px; /* Memperkecil lebar kartu (sebelumnya 320px) */
+    border-radius: 20px; /* Sudut sedikit lebih tegas tapi tetap modern */
+    overflow: hidden;
+    background: #fff;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+    margin: 0 auto; /* Menjaga kartu di tengah kolomnya */
+}
+
+/* Efek Hover: Kartu Terangkat & Shadow Menguat */
+.team-item:hover {
+    transform: translateY(-15px);
+    box-shadow: 0 25px 50px rgba(0, 77, 77, 0.15);
+}
+
+/* Konsep Split Color Background pada Bagian Gambar */
+.team-image {
+    position: relative;
+    height: 250px; /* Kembali ke tinggi semula agar proporsional */
+    background: linear-gradient(135deg, #e0ffff 50%, #f0fdfd 50%); 
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end; /* Foto menempel di bawah agar tidak melayang */
+    justify-content: center;
+}
+
+.team-image img {
+    height: 100%;
+    width: auto;
+    object-fit: contain;
+    transition: transform 0.6s ease;
+    filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
+    object-position: center; 
+    transform: none; 
+}
+
+.team-item:hover .team-image img {
+    transform: scale(1.1);
+}
+
+/* Aksen Garis Pemisah antara Foto & Info */
+.team-info::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 15%;
+    right: 15%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #00ced1, transparent);
+}
+
+.slogan {
+    font-size: 0.85rem;
+    color: #008b8b;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+    display: block;
+}
+
+.doctor-name {
+    font-size: 1.05rem;
+    color: #1a1a1a;
+    font-weight: 800;
+    margin-bottom: 8px;
+    margin: 8px 0 4px;
+    transition: color 0.3s ease;
+}
+
+.team-item:hover .doctor-name {
+    color: #00ced1; /* Berubah warna saat hover */
+}
+
+.specialty {
+    font-size: 0.75rem;
+    color: #777;
+    font-weight: 400;
+    display: block;
+    margin-bottom: 20px;
+}
+
+/* Efek Hover: Kartu Terangkat & Shadow Menguat */
+.team-item:hover {
+    transform: translateY(-15px);
+    box-shadow: 0 25px 50px rgba(0, 77, 77, 0.15);
+}
+
+/* Team Info dengan Glassmorphism */
+.team-info {
+    padding: 30px 20px;
+    text-align: center;
+    background: #ffffff;
+    position: relative;
+}
+
+
+.slogan {
+    font-size: 0.85rem;
+    color: #008b8b;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+    display: block;
+}
+
+.doctor-name {
+    font-size: 1.4rem;
+    color: #1a1a1a;
+    font-weight: 800;
+    margin-bottom: 8px;
+    transition: color 0.3s ease;
+}
+
+.specialty {
+    font-size: 0.95rem;
+    color: #777;
+    font-weight: 400;
+    display: block;
+    margin-bottom: 20px;
+}
+
+
+.btn-schedule {
+    display: inline-block;
+    padding: 12px 28px;
+    /* Menggunakan gradient agar terlihat lebih premium (soft cyan ke teal) */
+    background: linear-gradient(135deg, #00ced1 0%, #00b5b8 100%);
+    color: #ffffff;
+    border-radius: 50px;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    border: none; /* Menghilangkan border sepenuhnya */
+    margin-top: 15px;
+    
+    /* Visibilitas Tetap Terjaga */
+    opacity: 1; 
+    transform: translateY(0);
+    
+    /* Shadow halus untuk efek kedalaman tanpa garis */
+    box-shadow: 0 4px 15px rgba(0, 206, 209, 0.25);
+    
+    /* Transisi halus */
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    cursor: pointer;
+}
+
+.btn-schedule:hover {
+    /* Sedikit menggelap saat hover tapi tetap tanpa border */
+    background: linear-gradient(135deg, #00b5b8 0%, #008b8b 100%);
+    
+    /* Mengangkat tombol sedikit lebih tinggi */
+    transform: translateY(-4px);
+    
+    /* Shadow menjadi lebih menyebar saat tombol "terangkat" */
+    box-shadow: 0 8px 25px rgba(0, 181, 184, 0.4);
+    color: #ffffff;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.btn-schedule:active {
+    /* Efek saat diklik: tombol sedikit menekan ke bawah */
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 181, 184, 0.3);
+}
+
+
+/* Warna Gradasi Spesifik */
+.gradasi-cyan { background: linear-gradient(135deg, #e0e0e0, #e0e0e0); }
+.gradasi-putih { background: linear-gradient(135deg, #e0e0e0, #ffffff); }
+.gradasi-cyan-soft { background: linear-gradient(135deg, #e0e0e0, #e0e0e0); }
+
+.team-inner-card {
+    background: white;
+    border-radius: 17px;
+    overflow: hidden;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.team-info {
+    padding: 25px;
+    text-align: center;
+}
+
+.slogan {
+    font-size: 0.85rem;
+    color: #008b8b;
+    font-style: italic;
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+
+.doctor-name {
+    font-size: 1.3rem;
+    color: #0b0d10;
+    margin-bottom: 5px;
+}
+
+.specialty {
+    font-size: 0.95rem;
+    color: #7f8c8d;
+    display: block;
+}
+@media (max-width: 768px) {
+    /* 1. Reset Container */
+    .container {
+        margin: 30px auto;
+        padding: 0 20px;
+    }
+
+    .team-section {
+        padding: 50px 0;
+    }
+
+    /* 2. Header Adjustments */
+    .section-header h2 {
+        font-size: 2.2rem;
+    }
+
+    /* 3. TEAM HERO: Paksa Rasio 16/9 pada Wrapper & Img */
+    .team-hero {
+        margin-bottom: 30px;
+    }
+
+    .group-photo-wrapper {
+        /* Memastikan wrapper mengikuti rasio 16:9 */
+        width: 100%;
+        height: auto !important; /* Mematikan jika ada height di inline/main style */
+        aspect-ratio: 16 / 9;
+        display: block;
+    }
+
+    .group-photo-wrapper img {
+        width: 100%;
+        height: 100% !important; /* Paksa gambar memenuhi wrapper 16:9 */
+        object-fit: cover;
+        object-position: center;
+    }
+
+    /* 4. Overlay Adjustments */
+    .photo-overlay {
+        padding: 15px;
+        bottom: 10px;
+        left: 10px;
+        right: 10px;
+        border-radius: 15px;
+    }
+
+    .photo-overlay h3 {
+        font-size: 14px;
+        margin-bottom: 0;
+    }
+
+    .photo-overlay p {
+        font-size: 10px;
+        display: -webkit-box;
+        overflow: hidden;
+    }
+
+    /* 5. Team Grid Adjustments */
+    .team-grid {
+        /* Mengunci agar rapi di tablet (2 kolom) atau mobile (1 kolom) */
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        padding: 0;
+    }
+
+    .team-item {
+        max-width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .btn-schedule {
+        width: 100%;
+        text-align: center;
+        padding: 10px;
+    }
+}
+/* batas akhir team kami */
+
+/* jadwal dokter */
+.schedule-section {
+    padding: 80px 20px;
+    background-color: #fcfdfe;
+    font-family: 'Inter', sans-serif; /* Pastikan menggunakan font yang bersih */
+}
+
+/* Header Style */
+.section-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.header-badge {
+    background: rgba(0, 206, 209, 0.1);
+    color: #008b8b;
+    padding: 6px 16px;
+    border-radius: 50px;
+    display: inline-block;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 15px;
+    letter-spacing: 0.5px;
+}
+
+.section-header h2 {
+    font-size: 2.5rem;
+    color: #004d4d;
+    margin-bottom: 10px;
+}
+
+.section-header h2 span {
+    color: #00ced1;
+}
+
+/* Table Style */
+.schedule-table {
+    width: 100%;
+    border-collapse: separate; /* Digunakan agar border-radius berfungsi */
+    border-spacing: 0;
+    background: #ffffff;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 77, 77, 0.08);
+    border: 1px solid #f0f0f0;
+}
+
+.schedule-table th {
+    background-color: #00ced1;
+    color: #ffffff;
+    padding: 20px;
+    text-align: left;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+}
+
+.schedule-table td {
+    padding: 18px 20px;
+    border-bottom: 1px solid #f1f5f5;
+    color: #444;
+    vertical-align: middle;
+}
+
+/* Memperjelas Rowspan (Nama Dokter) */
+.doc-name {
+    font-weight: 700;
+    color: #004d4d;
+    background-color: #fdfdfd;
+    border-right: 2px solid rgba(0, 206, 209, 0.1);
+    font-size: 1rem;
+}
+
+/* Memberi garis pemisah tebal antar blok dokter */
+.schedule-table tbody tr:nth-child(3n) td {
+    border-bottom: 2px solid #e0f2f2;
+}
+
+.schedule-table tr:hover {
+    background-color: rgba(0, 206, 209, 0.02);
+}
+
+/* Highlight Khusus */
+.schedule-table em {
+    color: #008b8b;
+    font-weight: 600;
+    font-style: normal;
+}
+
+/* Footer & Button */
+.schedule-footer {
+    text-align: center;
+    margin-top: 40px;
+}
+
+.schedule-footer p {
+    font-size: 0.9rem;
+    color: #888;
+    margin-bottom: 25px;
+}
+
+.btn-whatsapp {
+    display: inline-block;
+    padding: 16px 40px;
+    background: #25D366;
+    color: white;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1rem;
+    box-shadow: 0 8px 20px rgba(37, 211, 102, 0.25);
+    transition: all 0.3s ease;
+}
+
+.btn-whatsapp:hover {
+    background: #1eb954;
+    transform: translateY(-3px);
+    box-shadow: 0 12px 25px rgba(37, 211, 102, 0.35);
+}
+
+
+/* Pastikan scroll halus */
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 100px; /* Supaya nggak mentok ke atas banget */
+}
+
+@keyframes pulse-highlight {
+    from { box-shadow: 0 0 0px rgba(0, 206, 209, 0); }
+    to { box-shadow: 0 0 20px rgba(0, 206, 209, 0.3); }
+}
+
+@keyframes reveal-doctor {
+    0% {
+        transform: translateX(-20px);
+        opacity: 0;
+        letter-spacing: -2px;
+    }
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+        letter-spacing: 0.5px;
+    }
+}
+
+/* Keyframes untuk Efek Cahaya */
+@keyframes shimmer {
+    100% {
+        left: 100%;
+    }
+}
+
+/* tombol filter */
+.team-item {
+    display: block;
+    transition: all 0.4s ease-in-out; /* Animasi lebih halus */
+    animation: fadeIn 0.5s; /* Efek muncul saat difilter */
+}
+
+/* Animasi keyframe agar muncul perlahan */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.hide {
+    display: none !important;
+}
+
+.btn-filter {
+    padding: 10px 25px;
+    border: 2px solid #00bcd4; /* Tambahkan border agar senada dengan tema */
+    background: transparent;
+    color: #00bcd4;
+    cursor: pointer;
+    border-radius: 25px;
+    margin: 5px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.btn-filter:hover {
+    background: #e0f7fa; /* Warna cyan sangat muda saat hover */
+}
+
+.btn-filter.active {
+    background: #00bcd4;
+    color: white;
+    box-shadow: 0 4px 10px rgba(0, 188, 212, 0.3); /* Tambahkan sedikit bayangan */
+}
+
+.group-photo-wrapper {
+    overflow: hidden;
+}
+
+.group-photo-wrapper img {
+    width: 100%;
+    height: 500px;          /* Hero height desktop */
+    object-fit: cover;     /* FULL di desktop */
+    display: block;
+}
+
+/* ===============================
+   SCHEDULE THEME – CLEAN & CLEAR
+================================ */
+
+.schedule-theme-cyan {
+    padding: 80px 0;
+    background: #f8ffff;
+}
+
+/* TABLE BASE */
+.schedule-table {
+    width: 100%;
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    display: none;
+}
+
+/* SHOW STATE */
+.schedule-table.show {
+    display: table;
+    animation: fadeUp 0.4s ease;
+}
+
+/* HEADER */
+.schedule-table thead th {
+    background: linear-gradient(135deg, #00ced1, #20b2aa);
+    color: #fff;
+    font-weight: 700;
+    text-transform: uppercase;
+    border: none;
+}
+
+/* BODY */
+.schedule-table tbody td {
+    padding: 14px 16px;
+    border-bottom: 1px solid #eaf6f6;
+    color: #333;
+}
+
+/* ZEBRA */
+.schedule-table tbody tr:nth-child(even) td {
+    background: #f6fefe;
+}
+
+/* DOCTOR NAME */
+.schedule-table .doc-name {
+    background: #e0f7f7;
+    color: #006d6d;
+    font-weight: 700;
+    vertical-align: middle;
+}
+
+/* EMPHASIS */
+.schedule-table em {
+    color: #008b8b;
+    font-style: normal;
+    font-weight: 600;
+}
+
+/* FOOTER */
+.schedule-footer {
+    margin-top: 24px;
+    text-align: center;
+}
+
+/* ANIMATION */
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+    .schedule-table thead {
+        display: none;
+    }
+
+    .schedule-table tr {
+        display: block;
+        margin-bottom: 16px;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #fff;
+    }
+
+    .schedule-table td {
+        display: block;
+        padding: 12px;
+        border: none;
+    }
+
+    .schedule-table .doc-name {
+        background: linear-gradient(135deg, #00ced1, #20b2aa);
+        color: #fff;
+        text-align: center;
+    }
+}
+
+

@@ -8,10 +8,13 @@ class Patient extends Model
 {
     // protected $guarded = [];
     protected $appends = ['total_kunjungan'];
+
     protected $fillable = [
         'nama_kk',
         'nama_pasien',
         'jenis_kelamin',
+        'tempat_lahir',
+        'tanggal_lahir',
         'alamat_pasien',
         'no_tlp_pasien',
         'pekerjaan_pasien',
@@ -35,32 +38,30 @@ class Patient extends Model
         return $this->rekamMedis()->count();
     }
 
+    // Accessor untuk tempat_lahir -> kapital
+    public function getTempatLahirAttribute($value)
+    {
+        return strtoupper($value);
+    }
+
     // Accessor untuk alamat_pasien -> kapital
     public function getAlamatPasienAttribute($value)
     {
         return strtoupper($value);
     }
 
-
     public static function generateNoRme()
     {
-        $year = now()->format('Y');
+        return DB::transaction(function () {
 
-        // cari no_rme terbesar di tahun ini
-        $lastPatient = self::whereYear('created_at', now()->year)
-            ->orderBy('no_rme', 'desc')
-            ->first();
+            // Kunci baris terakhir supaya tidak dibaca user lain
+            $lastPatient = self::lockForUpdate()
+                ->orderBy('no_rme', 'desc')
+                ->first();
 
-        if ($lastPatient) {
-            // ambil angka setelah tahun, contoh: 20250001 -> ambil 0001
-            $lastNumber = intval(substr($lastPatient->no_rme, -4));
-            $newNumber = $lastNumber + 1;
-        } else {
-            $newNumber = 1;
-        }
+            $newNumber = $lastPatient ? $lastPatient->no_rme + 1 : 1;
 
-        // format jadi misalnya: 20250001
-        return $year . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
+            return $newNumber;
+        });
     }
-
 }

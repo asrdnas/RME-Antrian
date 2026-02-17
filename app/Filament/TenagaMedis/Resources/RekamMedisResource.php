@@ -8,6 +8,7 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Carbon\Carbon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -58,7 +59,27 @@ class RekamMedisResource extends Resource
                                     ])
                                     ->required(),
                             ]),
+                        Forms\Components\TextInput::make('umur')
+                            ->label('Umur')
+                            ->disabled()
+                            ->dehydrated(false)
+                            ->afterStateHydrated(function ($set, $record) {
 
+                                $tanggalLahir = $record?->patient?->tanggal_lahir;
+
+                                if ($tanggalLahir) {
+                                    $lahir = \Carbon\Carbon::parse($tanggalLahir);
+                                    $sekarang = \Carbon\Carbon::now();
+
+                                    $diff = $lahir->diff($sekarang);
+
+                                    $umur = $diff->y.' tahun '
+                                          .$diff->m.' bulan '
+                                          .$diff->d.' hari';
+
+                                    $set('umur', $umur);
+                                }
+                            }),
                         // Bidang select untuk nama dokter, dibuat disabled saat mengedit
                         Forms\Components\Select::make('dokter_id')
                             ->label('Nama Dokter')

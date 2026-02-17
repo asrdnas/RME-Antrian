@@ -10,7 +10,6 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class RekamMedisResource extends Resource
 {
@@ -29,7 +28,6 @@ class RekamMedisResource extends Resource
 
         return $form
             ->schema([
-                // Patient Information section
                 Forms\Components\Fieldset::make('Informasi Pasien')
                     ->schema([
                         Forms\Components\Grid::make(3)
@@ -39,8 +37,7 @@ class RekamMedisResource extends Resource
                                     ->disabled()
                                     ->dehydrated(false)
                                     ->afterStateHydrated(
-                                        fn($set, $record) =>
-                                        $set('no_rme', $record?->patient?->no_rme)
+                                        fn ($set, $record) => $set('no_rme', $record?->patient?->no_rme)
                                     ),
 
                                 Forms\Components\TextInput::make('nama_pasien')
@@ -48,10 +45,9 @@ class RekamMedisResource extends Resource
                                     ->disabled()
                                     ->dehydrated(false)
                                     ->afterStateHydrated(
-                                        fn($set, $record) =>
-                                        $set('nama_pasien', $record?->patient?->nama_pasien)
+                                        fn ($set, $record) => $set('nama_pasien', $record?->patient?->nama_pasien)
                                     ),
-                                 // Bidang untuk jenis pelayanan, dibuat disabled saat mengedit
+                                // Bidang untuk jenis pelayanan, dibuat disabled saat mengedit
                                 Forms\Components\Select::make('pelayanan')
                                     ->label('Pelayanan')
                                     ->prefixIcon('heroicon-o-building-library')
@@ -61,6 +57,27 @@ class RekamMedisResource extends Resource
                                     ])
                                     ->required(),
                             ]),
+                        Forms\Components\TextInput::make('umur')
+                            ->label('Umur')
+                            ->disabled()
+                            ->dehydrated(false)
+                            ->afterStateHydrated(function ($set, $record) {
+
+                                $tanggalLahir = $record?->patient?->tanggal_lahir;
+
+                                if ($tanggalLahir) {
+                                    $lahir = \Carbon\Carbon::parse($tanggalLahir);
+                                    $sekarang = \Carbon\Carbon::now();
+
+                                    $diff = $lahir->diff($sekarang);
+
+                                    $umur = $diff->y.' tahun '
+                                          .$diff->m.' bulan '
+                                          .$diff->d.' hari';
+
+                                    $set('umur', $umur);
+                                }
+                            }),
 
                         // Bidang select untuk nama dokter, dibuat disabled saat mengedit
                         Forms\Components\Select::make('dokter_id')
@@ -73,7 +90,7 @@ class RekamMedisResource extends Resource
                             ->required(),
                     ])
                     ->extraAttributes([
-                        'style' => 'background-color:#1e1e1e; border:1px solid #2e2e2e; border-radius:8px; padding:15px;'
+                        'style' => ' border-radius:8px; padding:15px;',
                     ]),
 
                 // Waktu & Tanggal
@@ -104,7 +121,7 @@ class RekamMedisResource extends Resource
                             ]),
                     ])
                     ->extraAttributes([
-                        'style' => 'background-color:#1e1e1e; border:1px solid #2e2e2e; border-radius:8px; padding:15px;'
+                        'style' => ' border-radius:8px; padding:15px;',
                     ]),
 
                 // Pemeriksaan
@@ -133,7 +150,7 @@ class RekamMedisResource extends Resource
                             ->required(),
                     ])
                     ->extraAttributes([
-                        'style' => 'background-color:#1e1e1e; border:1px solid #2e2e2e; border-radius:8px; padding:15px;'
+                        'style' => ' border-radius:8px; padding:15px;',
                     ]),
 
                 // Tanda Vital & Pengukuran
@@ -180,118 +197,114 @@ class RekamMedisResource extends Resource
                         ]),
                     ])
                     ->extraAttributes([
-                        'style' => 'background-color:#1e1e1e; border:1px solid #2e2e2e; border-radius:8px; padding:15px;'
+                        'style' => ' border-radius:8px; padding:15px;',
                     ]),
 
-// Diagnosa & Terapi
+                // Diagnosa & Terapi
                 Forms\Components\Fieldset::make('Diagnosa & Terapi')
                     ->schema([
-                Forms\Components\Select::make('kasus_lama_baru')
-                    ->label('Kasus')
-                    ->prefixIcon('heroicon-o-clipboard')
-                    ->options([
-                        'Lama' => 'Lama',
-                        'Baru' => 'Baru',
-                    ])
-                    ->required(),
-                Forms\Components\Select::make('status_pulang')
-                    ->label('Status Pulang')
-                    ->prefixIcon('heroicon-o-home')
-                    ->options([
-                        'Pulang' => 'Pulang',
-                        'Rujuk' => 'Rujuk',
-                        'Rawat Jalan' => 'Rawat Jalan',
-                    ])
-                    ->required(),
-                Forms\Components\Textarea::make('terapi')
-                    ->label('Terapi')
-                    ->rows(3),
+                        Forms\Components\Select::make('kasus_lama_baru')
+                            ->label('Kasus')
+                            ->prefixIcon('heroicon-o-clipboard')
+                            ->options([
+                                'Lama' => 'Lama',
+                                'Baru' => 'Baru',
+                            ])
+                            ->required(),
+                        Forms\Components\Select::make('status_pulang')
+                            ->label('Status Pulang')
+                            ->prefixIcon('heroicon-o-home')
+                            ->options([
+                                'Pulang' => 'Pulang',
+                                'Rujuk' => 'Rujuk',
+                                'Rawat Jalan' => 'Rawat Jalan',
+                            ])
+                            ->required(),
+                        Forms\Components\Textarea::make('terapi')
+                            ->label('Terapi')
+                            ->rows(3),
 
-                Forms\Components\Textarea::make('resep')
-                ->label('Resep / Obat')
-                ->rows(2),
-                ])
-                ->extraAttributes([
-                'style' => 'background-color:#1e1e1e; border:1px solid #2e2e2e; border-radius:8px; padding:15px;'
-                ]),
-
-// Diagnosa ICD-10 (dipisah)
+                        Forms\Components\Textarea::make('resep')
+                            ->label('Resep / Obat')
+                            ->rows(2),
+                    ])
+                    ->extraAttributes([
+                        'style' => ' border-radius:8px; padding:15px;',
+                    ]),
                 Forms\Components\Fieldset::make('Diagnosa ICD-10')
                     ->schema([
-                Forms\Components\Select::make('kode_icd10')
-                    ->label('Kode ICD-10')
-                    ->prefixIcon('heroicon-o-hashtag')
-                    ->searchable()
-                    ->getSearchResultsUsing(function (string $query) {
-                        return \App\Models\IcdCode::query()
-                            ->where('code', 'like', "%{$query}%")
-                            ->limit(20)
-                            ->pluck('code', 'code');
-                    })
-                    ->getOptionLabelUsing(fn($value): ?string => $value)
-                    ->reactive()
-                    ->afterStateUpdated(function ($state, callable $set) {
-                        if ($state) {
-                            $icd = \App\Models\IcdCode::where('code', $state)->first();
-                            $set('deskripsi_icd10', $icd?->description ?? 'Kode tidak ditemukan');
-                            $set('deskripsi_icd10_view', $icd?->description ?? 'Kode tidak ditemukan');
-                        } else {
-                            $set('deskripsi_icd10', null);
-                            $set('deskripsi_icd10_view', null);
-                        }
-                    })
-                    ->required(),
-                Forms\Components\Hidden::make('deskripsi_icd10')
-                    ->dehydrated(true), // ini masuk DB
-                Forms\Components\Textarea::make('deskripsi_icd10_view')
-                    ->label('Deskripsi Diagnosa')
-                    ->rows(3)
-                    ->readOnly(),
-                        ])
-                        ->columns(2)
-                        ->extraAttributes([
-                            'style' => 'background-color:#1e1e1e; border:1px solid #2e2e2e; border-radius:8px; padding:15px;'
-                        ]),
-
-// Odontogram
+                        Forms\Components\Select::make('kode_icd10')
+                            ->label('Kode ICD-10')
+                            ->prefixIcon('heroicon-o-hashtag')
+                            ->searchable()
+                            ->getSearchResultsUsing(function (string $query) {
+                                return \App\Models\IcdCode::query()
+                                    ->where('code', 'like', "%{$query}%")
+                                    ->limit(20)
+                                    ->pluck('code', 'code');
+                            })
+                            ->getOptionLabelUsing(fn ($value): ?string => $value)
+                            ->reactive()
+                            ->afterStateUpdated(function ($state, callable $set) {
+                                if ($state) {
+                                    $icd = \App\Models\IcdCode::where('code', $state)->first();
+                                    $set('deskripsi_icd10', $icd?->description ?? 'Kode tidak ditemukan');
+                                    $set('deskripsi_icd10_view', $icd?->description ?? 'Kode tidak ditemukan');
+                                } else {
+                                    $set('deskripsi_icd10', null);
+                                    $set('deskripsi_icd10_view', null);
+                                }
+                            })
+                            ->required(),
+                        Forms\Components\Hidden::make('deskripsi_icd10')
+                            ->dehydrated(true), // ini masuk DB
+                        Forms\Components\Textarea::make('deskripsi_icd10_view')
+                            ->label('Deskripsi Diagnosa')
+                            ->rows(3)
+                            ->readOnly(),
+                    ])
+                    ->columns(2)
+                    ->extraAttributes([
+                        'style' => ' border-radius:8px; padding:15px;',
+                    ]),
                 Forms\Components\Repeater::make('odontogram')
-                ->relationship('odontogram')
-                ->schema([
-                    Forms\Components\Grid::make(2)
-                        ->schema([
-                            Forms\Components\TextInput::make('kode_gigi')
-                                ->label('Kode Gigi')
-                                ->placeholder('contoh: 11, 21, 36')
-                                ->required(),
+                    ->relationship('odontogram')
+                    ->schema([
+                        Forms\Components\Grid::make(2)
+                            ->schema([
+                                Forms\Components\TextInput::make('kode_gigi')
+                                    ->label('Kode Gigi')
+                                    ->placeholder('contoh: 11, 21, 36')
+                                    ->required(),
 
-                            Forms\Components\Select::make('kondisi')
-                                ->label('Kondisi Gigi')
-                                ->options([
-                                    'sehat' => 'Sehat',
-                                    'karies' => 'Karies',
-                                    'hilang' => 'Hilang',
-                                    'sisa_akar' => 'Sisa Akar',
-                                ])
-                                ->required(),
-                        ]),
+                                Forms\Components\Select::make('kondisi')
+                                    ->label('Kondisi Gigi')
+                                    ->options([
+                                        'sehat' => 'Sehat',
+                                        'karies' => 'Karies',
+                                        'hilang' => 'Hilang',
+                                        'sisa_akar' => 'Sisa Akar',
+                                    ])
+                                    ->required(),
+                            ]),
 
-                    Forms\Components\Grid::make(2)
-                        ->schema([
-                            Forms\Components\TextInput::make('tindakan')
-                                ->label('Tindakan')
-                                ->placeholder('contoh: Penambalan, Pencabutan'),
+                        Forms\Components\Grid::make(2)
+                            ->schema([
+                                Forms\Components\TextInput::make('tindakan')
+                                    ->label('Tindakan')
+                                    ->placeholder('contoh: Penambalan, Pencabutan'),
 
-                            Forms\Components\Textarea::make('catatan')
-                                ->label('Catatan')
-                                ->rows(2)
-                                ->placeholder('Catatan tambahan jika ada'),
-                        ]),
-                ])
-                ->defaultItems(1) // Ini yang membuat satu form langsung muncul saat halaman dibuka
-                ->createItemButtonLabel('Tambah Gigi')
-                ->columns(2)
-                ->columnSpan(2)
-                ->visible(fn ($get) => $get('pelayanan') === 'Gilut'),
+                                Forms\Components\Textarea::make('catatan')
+                                    ->label('Catatan')
+                                    ->rows(2)
+                                    ->placeholder('Catatan tambahan jika ada'),
+                            ]),
+                    ])
+                    ->defaultItems(1) // Ini yang membuat satu form langsung muncul saat halaman dibuka
+                    ->createItemButtonLabel('Tambah Gigi')
+                    ->columns(2)
+                    ->columnSpan(2)
+                    ->visible(fn ($get) => $get('pelayanan') === 'Gilut'),
 
                 // Keterangan Tambahan
                 Forms\Components\Fieldset::make('Keterangan Tambahan')
@@ -301,7 +314,7 @@ class RekamMedisResource extends Resource
                             ->rows(2),
                     ])
                     ->extraAttributes([
-                        'style' => 'background-color:#1e1e1e; border:1px solid #2e2e2e; border-radius:8px; padding:15px;'
+                        'style' => ' border-radius:8px; padding:15px;',
                     ]),
             ]);
     }
@@ -328,7 +341,7 @@ class RekamMedisResource extends Resource
                     ->iconColor('success')
                     ->weight('bold') // nama jadi tebal
                     ->wrap() // biar alamat panjang nggak kepotong
-                    ->tooltip(fn($record) => $record->patient->alamat_pasien ?? '-')
+                    ->tooltip(fn ($record) => $record->patient->alamat_pasien ?? '-')
                     ->alignStart(),
 
                 Tables\Columns\TextColumn::make('pelayanan')
@@ -356,7 +369,7 @@ class RekamMedisResource extends Resource
                         'heroicon-o-clock' => 'pending',
                         'heroicon-o-check-circle' => 'approved',
                     ])
-                    ->formatStateUsing(fn($state) => ucfirst($state))
+                    ->formatStateUsing(fn ($state) => ucfirst($state))
                     ->alignCenter(),
             ])
             ->filters([
@@ -368,7 +381,7 @@ class RekamMedisResource extends Resource
                     ->label('Status Rekam Medis')
                     ->native(false), // dropdown lebih modern
 
-                    Tables\Filters\Filter::make('tanggal')
+                Tables\Filters\Filter::make('tanggal')
                     ->form([
                         Forms\Components\DatePicker::make('tanggal')
                             ->placeholder('Pilih Tanggal')
@@ -378,8 +391,7 @@ class RekamMedisResource extends Resource
                         return $query
                             ->when(
                                 $data['tanggal'],
-                                fn (Builder $query, $date): Builder =>
-                                    $query->whereDate('tanggal', $date),
+                                fn (Builder $query, $date): Builder => $query->whereDate('tanggal', $date),
                             );
                     })
                     ->label('Filter Tanggal'),

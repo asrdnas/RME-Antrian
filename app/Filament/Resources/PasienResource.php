@@ -2,20 +2,19 @@
 
 namespace App\Filament\Resources;
 
+use App\Exports\PasiensExport;
 use App\Filament\Resources\PasienResource\Pages;
-use App\Models\Patient;
 use App\Models\Antrian;
+use App\Models\Patient;
+use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Table;
-use Filament\Notifications\Notification;
 use Filament\Tables\Actions\Action;
+use Filament\Tables\Table;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\PasiensExport;
-use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Builder;
 
 class PasienResource extends Resource
 {
@@ -33,43 +32,61 @@ class PasienResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('nama_pasien')
-                    ->label('Nama Pasien')
-                    ->required()
-                    ->default(fn($record) => $record?->nama_pasien)
-                    ->reactive()
-                    ->prefixIcon('heroicon-o-user'),
-
-                Forms\Components\TextInput::make('nik')
-                    ->label('NIK')
-                    ->required()
-                    ->maxLength(16)
-                    ->default(fn($record) => $record?->nik)
-                    ->prefixIcon('heroicon-o-identification'),
-
-                // Perbaikan: Sekarang bisa diedit, tapi dengan validasi unik
                 Forms\Components\TextInput::make('no_rme')
                     ->label('No RME')
                     ->required()
-                    ->default(fn($record) => $record?->no_rme)
+                    ->default(fn ($record) => $record?->no_rme)
                     ->prefixIcon('heroicon-o-identification')
-                    ->unique(ignoreRecord: true), // Validasi unik, tapi abaikan record yang sedang diedit
+                    ->unique(ignoreRecord: true),
+
+                Forms\Components\TextInput::make('nama_kk')
+                    ->label('Nama Kepala Keluarga (KK)')
+                    ->required()
+                    ->default(fn ($record) => $record?->nama_kk)
+                    ->reactive()
+                    ->prefixIcon('heroicon-o-user'),
+
+                Forms\Components\TextInput::make('nama_pasien')
+                    ->label('Nama Pasien')
+                    ->required()
+                    ->default(fn ($record) => $record?->nama_pasien)
+                    ->reactive()
+                    ->prefixIcon('heroicon-o-user'),
 
                 Forms\Components\Textarea::make('alamat_pasien')
                     ->label('Alamat')
                     ->rows(3)
-                    ->default(fn($record) => $record?->alamat_pasien),
+                    ->default(fn ($record) => $record?->alamat_pasien),
 
                 Forms\Components\TextInput::make('tempat_lahir')
                     ->label('Tempat Lahir')
-                    ->default(fn($record) => $record?->tempat_lahir),
+                    ->default(fn ($record) => $record?->tempat_lahir),
 
                 // Perbaikan untuk format tanggal
                 Forms\Components\DatePicker::make('tanggal_lahir')
                     ->label('Tanggal Lahir')
                     ->native(false) // Menggunakan datepicker Filament
                     ->displayFormat('d/m/Y') // Format untuk ditampilkan di form
-                    ->default(fn($record) => $record?->tanggal_lahir),
+                    ->default(fn ($record) => $record?->tanggal_lahir),
+
+                Forms\Components\Placeholder::make('umur')
+                    ->label('Umur')
+                    ->content(function ($get) {
+
+                        $tanggalLahir = $get('tanggal_lahir');
+
+                        if (! $tanggalLahir) {
+                            return '-';
+                        }
+
+                        $lahir = Carbon::parse($tanggalLahir);
+                        $now = Carbon::now();
+
+                        $diff = $lahir->diff($now);
+
+                        return "{$diff->y} Tahun {$diff->m} Bulan {$diff->d} Hari";
+                    })
+                    ->reactive(),
 
                 Forms\Components\Select::make('jenis_kelamin')
                     ->label('Jenis Kelamin')
@@ -78,12 +95,16 @@ class PasienResource extends Resource
                         'perempuan' => 'Perempuan',
                     ])
                     ->required()
-                    ->default(fn($record) => $record?->jenis_kelamin),
+                    ->default(fn ($record) => $record?->jenis_kelamin),
 
                 Forms\Components\TextInput::make('no_tlp_pasien')
                     ->label('No Telepon')
-                    ->default(fn($record) => $record?->no_tlp_pasien)
+                    ->default(fn ($record) => $record?->no_tlp_pasien)
                     ->prefixIcon('heroicon-o-phone'),
+                
+                Forms\Components\TextInput::make('pekerjaan_pasien')
+                    ->label('Pekerjaan')
+                    ->default(fn ($record) => $record?->pekerjaan_pasien),
 
                 Forms\Components\Select::make('status_validasi')
                     ->label('Status Validasi')
@@ -93,7 +114,7 @@ class PasienResource extends Resource
                         'rejected' => 'Rejected',
                     ])
                     ->required()
-                    ->default(fn($record) => $record?->status_validasi),
+                    ->default(fn ($record) => $record?->status_validasi),
             ]);
     }
 
@@ -102,6 +123,21 @@ class PasienResource extends Resource
         return $table
             ->recordUrl(null)
             ->columns([
+                Tables\Columns\TextColumn::make('no_rme')
+                    ->label('No RME')
+                    ->sortable()
+                    ->badge()
+                    ->color('primary')
+                    ->alignCenter(),
+
+                Tables\Columns\TextColumn::make('nama_kk')
+                    ->label('Nama Kepala Keluarga (KK)')
+                    ->sortable()
+                    ->searchable()
+                    ->weight('bold')
+                    ->icon('heroicon-o-user')
+                    ->alignStart(),
+
                 Tables\Columns\TextColumn::make('nama_pasien')
                     ->label('Nama Pasien')
                     ->sortable()
@@ -110,28 +146,11 @@ class PasienResource extends Resource
                     ->icon('heroicon-o-user')
                     ->alignStart(),
 
-                Tables\Columns\TextColumn::make('nik')
-                    ->label('NIK')
-                    ->sortable()
-                    ->searchable()
-                    ->copyable()
-                    ->copyMessage('NIK berhasil disalin')
-                    ->icon('heroicon-o-identification')
-                    ->color('info')
-                    ->alignCenter(),
-
-                Tables\Columns\TextColumn::make('no_rme')
-                    ->label('No RME')
-                    ->sortable()
-                    ->badge()
-                    ->color('primary')
-                    ->alignCenter(),
-
                 Tables\Columns\TextColumn::make('alamat_pasien')
                     ->label('Alamat')
                     ->alignCenter()
                     ->limit(30)
-                    ->tooltip(fn($record) => $record->alamat_pasien)
+                    ->tooltip(fn ($record) => $record->alamat_pasien)
                     ->icon('heroicon-o-map-pin'),
 
                 Tables\Columns\TextColumn::make('tempat_lahir')
@@ -144,6 +163,22 @@ class PasienResource extends Resource
                     ->date('d/m/Y')
                     ->icon('heroicon-o-calendar')
                     ->alignCenter(),
+
+                Tables\Columns\TextColumn::make('umur')
+                    ->label('Umur')
+                    ->icon('heroicon-o-clock')
+                    ->alignCenter()
+                    ->getStateUsing(function ($record) {
+
+                        if (! $record->tanggal_lahir) {
+                            return '-';
+                        }
+
+                        $lahir = Carbon::parse($record->tanggal_lahir);
+                        $diff = $lahir->diff(now());
+
+                        return "{$diff->y} Th {$diff->m} Bln {$diff->d} Hr";
+                    }),
 
                 Tables\Columns\TextColumn::make('jenis_kelamin')
                     ->label('Jenis Kelamin')
@@ -162,6 +197,11 @@ class PasienResource extends Resource
                     ->label('No Telepon')
                     ->icon('heroicon-o-phone')
                     ->alignCenter(),
+
+                Tables\Columns\TextColumn::make('pekerjaan_pasien')
+                    ->label('Pekerjaan')
+                    ->alignCenter()
+                    ->limit(20),
 
                 Tables\Columns\TextColumn::make('total_kunjungan')
                     ->label('Total Kunjungan')
@@ -198,7 +238,7 @@ class PasienResource extends Resource
                     ->color('success')
                     ->outlined()
                     ->button()
-                    ->action(fn() => Excel::download(new PasiensExport, 'pasiens.xlsx')),
+                    ->action(fn () => Excel::download(new PasiensExport, 'pasiens.xlsx')),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
@@ -218,7 +258,7 @@ class PasienResource extends Resource
                         Forms\Components\Select::make('pelayanan')
                             ->label('Pilih Pelayanan')
                             ->options([
-                                'Umum'  => 'Umum',
+                                'Umum' => 'Umum',
                                 'Gilut' => 'Gilut',
                             ])
                             ->required()
@@ -238,16 +278,17 @@ class PasienResource extends Resource
                                 ->title('Pasien sudah ada antrian aktif untuk layanan ini hari ini.')
                                 ->warning()
                                 ->send();
+
                             return;
                         }
 
                         Antrian::create([
                             'patient_id' => $record->id,
-                            'pelayanan'  => $pelayanan,
-                            'ruangan'    => $pelayanan === 'Gilut' ? 'Cluster 4' : 'Cluster 3',
+                            'pelayanan' => $pelayanan,
+                            'ruangan' => $pelayanan === 'Gilut' ? 'Cluster 4' : 'Cluster 3',
                             'no_antrian' => \App\Filament\Resources\AntrianResource::generateNoAntrian($pelayanan),
-                            'status'     => 'menunggu',
-                            'tanggal'    => now(),
+                            'status' => 'menunggu',
+                            'tanggal' => now(),
                         ]);
 
                         Notification::make()
