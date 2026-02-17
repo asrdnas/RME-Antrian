@@ -6,27 +6,18 @@ use Illuminate\Database\Eloquent\Model;
 
 class Patient extends Model
 {
-    protected $guarded = [];
+    // protected $guarded = [];
     protected $appends = ['total_kunjungan'];
     protected $fillable = [
+        'nama_kk',
         'nama_pasien',
-        'nik',
-        'no_rme',
-        'tempat_lahir',
-        'tanggal_lahir',
         'jenis_kelamin',
         'alamat_pasien',
         'no_tlp_pasien',
-        'status_perkawinan_pasien',
-        'agama_pasien',
         'pekerjaan_pasien',
-        'pendidikan_pasien',
-        'status_pasien',
-        'total_kunjungan',
-        'nama_penanggung_jawab',
-        'no_tlp_penanggung_jawab',
-        'pekerjaan_penanggung_jawab',
-        'hubungan_dengan_pasien',
+        'nik',
+        'no_rme',
+        'status_validasi',
     ];
 
     public function antrians()
@@ -50,11 +41,6 @@ class Patient extends Model
         return strtoupper($value);
     }
 
-    // Accessor untuk tempat_lahir -> kapital
-    public function getTempatLahirAttribute($value)
-    {
-        return strtoupper($value);
-    }
 
     public static function generateNoRme()
     {

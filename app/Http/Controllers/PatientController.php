@@ -9,31 +9,32 @@ use App\Models\Patient;
 class PatientController extends Controller
 {
     public function store(Request $request)
-    {
-        $data = $request->validate([
-            'nama_pasien' => 'required|string',
-            'nik' => 'required|numeric|digits:16|unique:patients,nik',
-            'no_rme' => 'nullable|string|unique:patients,no_rme',
-            'tempat_lahir' => 'required|string',
-            'tanggal_lahir' => 'required|date',
-            'jenis_kelamin' => 'required|string',
-            'alamat_pasien' => 'nullable|string',
-            'no_tlp_pasien' => 'nullable|string',
-            'status_perkawinan_pasien' => 'nullable|string',
-            'agama_pasien' => 'nullable|string',
-            'pekerjaan_pasien' => 'nullable|string',
-            'pendidikan_pasien' => 'nullable|string',
-            'nama_penanggung_jawab' => 'required|string',
-            'no_tlp_penanggung_jawab' => 'nullable|string',
-            'pekerjaan_penanggung_jawab' => 'nullable|string',
-            'hubungan_dengan_pasien' => 'nullable|string',
-        ]);
+{
+    $data = $request->validate([
+        'nama_kk' => 'required|string|max:255',
+        'nama_pasien' => 'required|string|max:255',
+        'jenis_kelamin' => 'required|string',
+        'alamat_pasien' => 'required|string',
+        'no_tlp_pasien' => 'required|string',
+        'pekerjaan_pasien' => 'required|string',
+    ]);
 
-        $data['status_pasien'] = 'pending';
-        $data['no_rme'] = Patient::generateNoRme();
+    // Generate otomatis No RME
+    $data['no_rme'] = Patient::generateNoRme();
 
-        Patient::create($data);
+    // Default status validasi
+    $data['status_validasi'] = 'pending';
 
-        return redirect()->route('pendaftaran.form')->with('success', 'Data berhasil dikirim, menunggu validasi admin.');
+    // Jika pilih "lain-lain"
+    if ($request->pekerjaan_pasien === 'lain-lain') {
+        $data['pekerjaan_pasien'] = $request->pekerjaan_pasien_lain;
     }
+
+    Patient::create($data);
+
+    return redirect()
+        ->route('pendaftaran.form')
+        ->with('success', 'Data berhasil dikirim, menunggu validasi admin.');
+}
+
 }
