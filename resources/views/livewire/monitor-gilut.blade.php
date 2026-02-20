@@ -13,7 +13,7 @@
             <div class="remaining-queue">
                 Sisa Antrian: <span>{{ $sisa }}</span> Pasien
             </div>
-
+            <div class="table-container"> <table class="queue-table">
             <table class="queue-table">
                 <thead>
                     <tr>
@@ -40,6 +40,7 @@
                     @endforelse
                 </tbody>
             </table>
+        </div>
         </div>
     </div>
 </div>

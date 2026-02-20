@@ -168,6 +168,12 @@ class AntrianResource extends Resource
         $alamatPasien = $record->patient->alamat_pasien;
         $noAntrian    = $record->no_antrian;
         $ruangan      = $record->ruangan;
+        $alamatPasien = strtolower($alamatPasien);
+        $alamatPasien = ucwords($alamatPasien);
+        $mapRuangan = [
+            'cluster 4' => 'Dokter Dony',
+        ];
+        $ruangan = $mapRuangan[strtolower($ruangan)] ?? $ruangan;
 
         $livewire->js(<<<JS
             let text = `Atas nama {$namaPasien}, alamat {$alamatPasien}, dengan nomor antrian {$noAntrian}, silakan masuk ruangan {$ruangan}.`;
@@ -212,8 +218,6 @@ class AntrianResource extends Resource
         JS);
     }),
 
-
-
                         Tables\Actions\Action::make('ulangPanggilan')
                         ->label('Ulang')
                         ->icon('heroicon-o-speaker-wave')
@@ -243,6 +247,12 @@ class AntrianResource extends Resource
                             $alamatPasien = $record->patient->alamat_pasien;
                             $noAntrian    = $record->no_antrian;
                             $ruangan      = $record->ruangan;
+                            $alamatPasien = strtolower($alamatPasien);
+                            $alamatPasien = ucwords($alamatPasien);
+                            $mapRuangan = [
+                                'cluster 4' => 'Dokter Dony',
+                            ];
+                            $ruangan = $mapRuangan[strtolower($ruangan)] ?? $ruangan;
 
                             $livewire->js(<<<JS
                                 let text = `Satu kali lagi. Atas nama {$namaPasien}, alamat {$alamatPasien}, dengan nomor antrian {$noAntrian}, silakan masuk ruangan {$ruangan}.`;
