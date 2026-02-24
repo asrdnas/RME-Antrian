@@ -1,4 +1,4 @@
-<div class="container" wire:poll.1s>
+<div class="container" wire:poll.5s>
     <div class="queue-board full-width">
         <div class="queue-card red-theme full-card">
             <h2 class="card-title">ANTRIAN GIGI & MULUT</h2>

@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Filament\Resources;
+
 use App\Filament\Resources\ValidasiPasienResource\Pages;
 use App\Models\Antrian;
 use App\Models\Patient;
@@ -8,7 +10,6 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
-use App\Filament\Resources\AntrianResource;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Filters\SelectFilter;
@@ -59,7 +60,6 @@ class ValidasiPasienResource extends Resource
                         return "{$diff->y} Th {$diff->m} Bln {$diff->d} Hr";
                     }),
 
-
                 Tables\Columns\TextColumn::make('alamat_pasien')
                     ->label('Alamat')
                     ->limit(30),
@@ -95,13 +95,20 @@ class ValidasiPasienResource extends Resource
                                 'Umum' => 'Umum',
                                 'Gilut' => 'Gilut',
                             ])
+                             ->default('Gilut')
+                            ->required(),
+
+                        Forms\Components\TextInput::make('no_rme')
+                            ->label('No RME')
+                            ->default(fn ($record) => $record->no_rme) // ambil dari database
                             ->required(),
                     ])
                     ->action(function ($record, array $data) {
 
-                        // Update status validasi
+                        // Update status + no_rme
                         $record->update([
                             'status_validasi' => 'approved',
+                            'no_rme' => $data['no_rme'],
                         ]);
 
                         // Buat antrian baru
@@ -153,17 +160,12 @@ class ValidasiPasienResource extends Resource
 
                     Forms\Components\TextInput::make('nama_pasien')
                         ->label('Nama Lengkap')
-                        ->required()
-                        ->afterStateUpdated(
-                            fn ($state, callable $set) => $set('nama_pasien', strtoupper($state))
-                        ),
+                        ->required(),
+                       
 
                     Forms\Components\TextInput::make('tempat_lahir')
                         ->label('Tempat Lahir')
-                        ->required()
-                        ->afterStateUpdated(
-                            fn ($state, callable $set) => $set('tempat_lahir', strtoupper($state))
-                        ),
+                        ->required(),
 
                     Forms\Components\DatePicker::make('tanggal_lahir')
                         ->label('Tanggal Lahir')

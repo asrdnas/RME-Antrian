@@ -31,35 +31,34 @@ class Antrian extends Model
                 'Gilut' => 'Cluster 4',
             ];
 
-            if (!empty($antrian->pelayanan)) {
+            if (! empty($antrian->pelayanan)) {
                 $antrian->ruangan = $ruanganMapping[$antrian->pelayanan] ?? null;
                 $antrian->no_antrian = self::generateNoAntrian($antrian->pelayanan);
             }
 
             // default tanggal
-            if (!$antrian->tanggal) {
+            if (! $antrian->tanggal) {
                 $antrian->tanggal = now();
             }
 
             // default status
-            if (!$antrian->status) {
+            if (! $antrian->status) {
                 $antrian->status = 'menunggu';
             }
         });
 
         // Update waktu mulai/selesai otomatis
         static::updating(function ($antrian) {
-            if ($antrian->isDirty('status') && $antrian->status === 'dipanggil' && !$antrian->waktu_mulai) {
+            if ($antrian->isDirty('status') && $antrian->status === 'dipanggil' && ! $antrian->waktu_mulai) {
                 $antrian->waktu_mulai = now();
             }
 
-            if ($antrian->isDirty('status') && $antrian->status === 'selesai' && !$antrian->waktu_selesai) {
+            if ($antrian->isDirty('status') && $antrian->status === 'selesai' && ! $antrian->waktu_selesai) {
                 $antrian->waktu_selesai = now();
             }
         });
     }
 
-    
     public static function generateNoAntrian(string $pelayanan): string
     {
         $prefix = $pelayanan === 'Gilut' ? 'KG-' : 'KU-';
@@ -70,12 +69,12 @@ class Antrian extends Model
             ->value('no_antrian');
 
         if ($lastNumber) {
-            $number = (int) substr($lastNumber, 1); // ambil angka setelah prefix
+            $number = (int) str_replace($prefix, '', $lastNumber);
             $newNumber = $number + 1;
         } else {
             $newNumber = 1;
         }
 
-        return $prefix . str_pad($newNumber, 2, '0', STR_PAD_LEFT);
+        return $prefix.str_pad($newNumber, 2, '0', STR_PAD_LEFT);
     }
 }

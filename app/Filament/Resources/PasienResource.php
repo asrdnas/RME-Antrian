@@ -122,6 +122,7 @@ class PasienResource extends Resource
     {
         return $table
             ->recordUrl(null)
+            ->defaultSort('no_rme', 'asc')
             ->columns([
                 Tables\Columns\TextColumn::make('no_rme')
                     ->label('No RME')

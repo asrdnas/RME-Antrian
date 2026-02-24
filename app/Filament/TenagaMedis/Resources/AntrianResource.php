@@ -3,18 +3,13 @@
 namespace App\Filament\TenagaMedis\Resources;
 
 use App\Filament\TenagaMedis\Resources\AntrianResource\Pages;
-use App\Filament\TenagaMedis\Resources\AntrianResource\RelationManagers;
 use App\Models\Antrian;
 use App\Models\RekamMedis;
-use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Filament\Notifications\Notification;
-
 
 class AntrianResource extends Resource
 {
@@ -38,9 +33,9 @@ class AntrianResource extends Resource
     {
         return $table
             ->recordUrl(null) // row tidak bisa diklik
-            ->poll('5s')
+            ->poll('7s')
             ->striped()
-            ->defaultSort('tanggal', 'desc')
+             ->defaultSort('no_antrian', 'asc')
             ->paginated([10, 25, 50])
             ->searchPlaceholder('Cari nama, RME, atau no antrian...')
             ->columns([
@@ -70,7 +65,7 @@ class AntrianResource extends Resource
                 Tables\Columns\TextColumn::make('patient.alamat_pasien')
                     ->label('Alamat Pasien')
                     ->limit(20)
-                    ->tooltip(fn($record) => $record->patient->alamat_pasien),
+                    ->tooltip(fn ($record) => $record->patient->alamat_pasien),
 
                 // Pelayanan
                 Tables\Columns\TextColumn::make('pelayanan')
@@ -91,7 +86,7 @@ class AntrianResource extends Resource
                 Tables\Columns\TextColumn::make('status')
                     ->label('Status')
                     ->badge()
-                    ->icon(fn($state) => match ($state) {
+                    ->icon(fn ($state) => match ($state) {
                         'menunggu' => 'heroicon-o-clock',
                         'dipanggil' => 'heroicon-o-megaphone',
                         'selesai' => 'heroicon-o-check-circle',
@@ -102,7 +97,7 @@ class AntrianResource extends Resource
                         'info' => 'dipanggil',
                         'success' => 'selesai',
                     ])
-                    ->extraAttributes(fn($state) => $state === 'menunggu'
+                    ->extraAttributes(fn ($state) => $state === 'menunggu'
                         ? ['class' => 'animate-pulse']
                         : []),
 
@@ -133,49 +128,50 @@ class AntrianResource extends Resource
 
             ->actions([
                 Tables\Actions\Action::make('panggilPasien')
-    ->label('Panggil')
-    ->icon('heroicon-o-megaphone')
-    ->color('warning')
-    ->visible(fn($record) => $record->status === 'menunggu')
-    ->requiresConfirmation()
-    ->action(function ($record, $livewire) {
-        $record->update(['status' => 'dipanggil']);
+                    ->label('Panggil')
+                    ->icon('heroicon-o-megaphone')
+                    ->color('warning')
+                    ->visible(fn ($record) => $record->status === 'menunggu')
+                    ->requiresConfirmation()
+                    ->action(function ($record, $livewire) {
+                        $record->update(['status' => 'dipanggil']);
 
-        Notification::make()
-            ->title('Pasien ' . $record->patient->nama_pasien . ' dipanggil.')
-            ->success()
-            ->send();
+                        Notification::make()
+                            ->title('Pasien '.$record->patient->nama_pasien.' dipanggil.')
+                            ->success()
+                            ->send();
 
-        // ✅ Rapikan nama pasien (singkatan tetap uppercase)
-        $formatNamaPasien = function ($nama) {
-            if ($nama === strtoupper($nama)) {
-                $nama = strtolower($nama);
-            }
-            $parts = explode(' ', $nama);
-            $result = [];
-            foreach ($parts as $word) {
-                if (strlen($word) <= 3) {
-                    $result[] = strtoupper($word); // singkatan tetap besar
-                } else {
-                    $result[] = ucfirst(strtolower($word));
-                }
-            }
-            return implode(' ', $result);
-        };
+                        // ✅ Rapikan nama pasien (singkatan tetap uppercase)
+                        $formatNamaPasien = function ($nama) {
+                            if ($nama === strtoupper($nama)) {
+                                $nama = strtolower($nama);
+                            }
+                            $parts = explode(' ', $nama);
+                            $result = [];
+                            foreach ($parts as $word) {
+                                if (strlen($word) <= 3) {
+                                    $result[] = strtoupper($word); // singkatan tetap besar
+                                } else {
+                                    $result[] = ucfirst(strtolower($word));
+                                }
+                            }
 
-        // Data pasien
-        $namaPasien   = $formatNamaPasien($record->patient->nama_pasien);
-        $alamatPasien = $record->patient->alamat_pasien;
-        $noAntrian    = $record->no_antrian;
-        $ruangan      = $record->ruangan;
-        $alamatPasien = strtolower($alamatPasien);
-        $alamatPasien = ucwords($alamatPasien);
-        $mapRuangan = [
-            'cluster 4' => 'Dokter Dony',
-        ];
-        $ruangan = $mapRuangan[strtolower($ruangan)] ?? $ruangan;
+                            return implode(' ', $result);
+                        };
 
-        $livewire->js(<<<JS
+                        // Data pasien
+                        $namaPasien = $formatNamaPasien($record->patient->nama_pasien);
+                        $alamatPasien = $record->patient->alamat_pasien;
+                        $noAntrian = $record->no_antrian;
+                        $ruangan = $record->ruangan;
+                        $alamatPasien = strtolower($alamatPasien);
+                        $alamatPasien = ucwords($alamatPasien);
+                        $mapRuangan = [
+                            'cluster 4' => 'Dokter Dony',
+                        ];
+                        $ruangan = $mapRuangan[strtolower($ruangan)] ?? $ruangan;
+
+                        $livewire->js(<<<JS
             let text = `Atas nama {$namaPasien}, alamat {$alamatPasien}, dengan nomor antrian {$noAntrian}, silakan masuk ruangan {$ruangan}.`;
             text = text.replace(/kluster/gi, "cluster");
 
@@ -216,45 +212,64 @@ class AntrianResource extends Resource
                 setVoice();
             }
         JS);
-    }),
+                    }),
+                Tables\Actions\Action::make('cancelPanggilan')
+                    ->label('Cancel')
+                    ->icon('heroicon-o-x-circle')
+                    ->color('danger')
+                    ->outlined()
+                    ->visible(fn ($record) => $record->status === 'dipanggil')
+                    ->requiresConfirmation()
+                    ->action(function ($record) {
 
-                        Tables\Actions\Action::make('ulangPanggilan')
-                        ->label('Ulang')
-                        ->icon('heroicon-o-speaker-wave')
-                        ->color('secondary')
-                        ->visible(fn($record) => $record->status === 'dipanggil')
-                        ->action(function ($record, $livewire) {
+                        $record->update([
+                            'status' => 'menunggu',
+                        ]);
 
-                            // Fungsi rapikan nama pasien (singkatan tetap uppercase)
-                            $formatNamaPasien = function ($nama) {
-                                if ($nama === strtoupper($nama)) {
-                                    $nama = strtolower($nama);
+                        Notification::make()
+                            ->title('Panggilan dibatalkan. Status kembali ke menunggu.')
+                            ->warning()
+                            ->send();
+                    }),
+
+                Tables\Actions\Action::make('ulangPanggilan')
+                    ->label('Ulang')
+                    ->icon('heroicon-o-speaker-wave')
+                    ->color('secondary')
+                    ->visible(fn ($record) => $record->status === 'dipanggil')
+                    ->action(function ($record, $livewire) {
+
+                        // Fungsi rapikan nama pasien (singkatan tetap uppercase)
+                        $formatNamaPasien = function ($nama) {
+                            if ($nama === strtoupper($nama)) {
+                                $nama = strtolower($nama);
+                            }
+                            $parts = explode(' ', $nama);
+                            $result = [];
+                            foreach ($parts as $word) {
+                                if (strlen($word) <= 3) {
+                                    $result[] = strtoupper($word); // singkatan tetap besar
+                                } else {
+                                    $result[] = ucfirst(strtolower($word));
                                 }
-                                $parts = explode(' ', $nama);
-                                $result = [];
-                                foreach ($parts as $word) {
-                                    if (strlen($word) <= 3) {
-                                        $result[] = strtoupper($word); // singkatan tetap besar
-                                    } else {
-                                        $result[] = ucfirst(strtolower($word));
-                                    }
-                                }
-                                return implode(' ', $result);
-                            };
+                            }
 
-                            // Rapikan data pasien
-                            $namaPasien   = $formatNamaPasien($record->patient->nama_pasien);
-                            $alamatPasien = $record->patient->alamat_pasien;
-                            $noAntrian    = $record->no_antrian;
-                            $ruangan      = $record->ruangan;
-                            $alamatPasien = strtolower($alamatPasien);
-                            $alamatPasien = ucwords($alamatPasien);
-                            $mapRuangan = [
-                                'cluster 4' => 'Dokter Dony',
-                            ];
-                            $ruangan = $mapRuangan[strtolower($ruangan)] ?? $ruangan;
+                            return implode(' ', $result);
+                        };
 
-                            $livewire->js(<<<JS
+                        // Rapikan data pasien
+                        $namaPasien = $formatNamaPasien($record->patient->nama_pasien);
+                        $alamatPasien = $record->patient->alamat_pasien;
+                        $noAntrian = $record->no_antrian;
+                        $ruangan = $record->ruangan;
+                        $alamatPasien = strtolower($alamatPasien);
+                        $alamatPasien = ucwords($alamatPasien);
+                        $mapRuangan = [
+                            'cluster 4' => 'Dokter Dony',
+                        ];
+                        $ruangan = $mapRuangan[strtolower($ruangan)] ?? $ruangan;
+
+                        $livewire->js(<<<JS
                                 let text = `Satu kali lagi. Atas nama {$namaPasien}, alamat {$alamatPasien}, dengan nomor antrian {$noAntrian}, silakan masuk ruangan {$ruangan}.`;
                                 text = text.replace(/kluster/gi, "cluster");
 
@@ -291,37 +306,37 @@ class AntrianResource extends Resource
                                     setVoice();
                                 }
                             JS);
-                        }),
+                    }),
 
-                    Tables\Actions\Action::make('tandaiSelesai')
-                        ->label('Selesai')
-                        ->icon('heroicon-o-check-circle')
-                        ->color('success')
-                        ->outlined()
-                        ->visible(fn($record) => $record->status === 'dipanggil')
-                        ->requiresConfirmation()
-                        ->action(function ($record) {
-                            $record->update([
-                                'status' => 'selesai',
-                                'waktu_selesai' => now(),
-                            ]);
+                Tables\Actions\Action::make('tandaiSelesai')
+                    ->label('Selesai')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->outlined()
+                    ->visible(fn ($record) => $record->status === 'dipanggil')
+                    ->requiresConfirmation()
+                    ->action(function ($record) {
+                        $record->update([
+                            'status' => 'selesai',
+                            'waktu_selesai' => now(),
+                        ]);
 
-                            RekamMedis::create([
-                                'tanggal' => $record->tanggal,
-                                'patient_id' => $record->patient_id,
-                                'pelayanan' => $record->pelayanan,
-                                'waktu_kedatangan' => $record->created_at,
-                                'waktu_mulai' => $record->waktu_mulai,
-                                'waktu_selesai' => $record->waktu_selesai,
-                                'status_rekam_medis' => 'pending',
-                                'dokter_id' => null,
-                            ]);
+                        RekamMedis::create([
+                            'tanggal' => $record->tanggal,
+                            'patient_id' => $record->patient_id,
+                            'pelayanan' => $record->pelayanan,
+                            'waktu_kedatangan' => $record->created_at,
+                            'waktu_mulai' => $record->waktu_mulai,
+                            'waktu_selesai' => $record->waktu_selesai,
+                            'status_rekam_medis' => 'pending',
+                            'dokter_id' => null,
+                        ]);
 
-                            Notification::make()
-                                ->title('Pasien telah selesai. Rekam medis baru telah dibuat.')
-                                ->success()
-                                ->send();
-                        }),
+                        Notification::make()
+                            ->title('Pasien telah selesai. Rekam medis baru telah dibuat.')
+                            ->success()
+                            ->send();
+                    }),
             ])
 
             ->bulkActions([
@@ -329,15 +344,13 @@ class AntrianResource extends Resource
             ])
 
             // Styling baris
-            ->recordClasses(fn($record) => match ($record->status) {
+            ->recordClasses(fn ($record) => match ($record->status) {
                 'menunggu' => 'bg-yellow-50 dark:bg-yellow-900/20 hover:bg-yellow-100 transition',
                 'dipanggil' => 'bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 transition',
                 'selesai' => 'bg-green-50 dark:bg-green-900/20 hover:bg-green-100 transition',
                 default => 'hover:bg-gray-100 dark:hover:bg-gray-800 transition',
             });
     }
-
-
 
     public static function getRelations(): array
     {
@@ -355,6 +368,3 @@ class AntrianResource extends Resource
         ];
     }
 }
-
-
-

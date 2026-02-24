@@ -47,7 +47,7 @@ class PasienResource extends Resource
         return $table
             // ->description('Daftar pasien terbaru lengkap dengan status & riwayat kunjungan.')
             ->striped()
-            ->defaultSort('nama_pasien')
+            ->defaultSort('no_rme', 'asc')
             ->columns([
                 Tables\Columns\TextColumn::make('no_rme')
                     ->label('No RME')

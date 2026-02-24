@@ -51,6 +51,18 @@ class Patient extends Model
         return strtoupper($value);
     }
 
+    // Accessor untuk nama_pasien -> kapital
+    public function getNamaPasienAttribute($value)
+    {
+        return strtoupper($value);
+    }
+
+    // Accessor untuk nama_kk -> kapital
+    public function getNamaKkAttribute($value)
+    {
+        return strtoupper($value);
+    }
+
     public static function generateNoRme()
     {
         return DB::transaction(function () {

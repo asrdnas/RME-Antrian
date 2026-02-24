@@ -24,7 +24,7 @@
                     <li><a href="#dokter">Dokter</a></li>
                     <li><a href="#kontak">Kontak</a></li>
                     <li><a href="#Lokasi">Lokasi</a></li>
-                    <li><a href="/pendaftaran-patient-klinik-tirta-amerta" class="btn-primary">Daftar Pasien</a></li>
+                    <li><a href="/pendaftaran-patient-dokter-donny" class="btn-primary">Daftar Pasien</a></li>
                 </ul>
             </nav>
             <button class="menu-toggle"><i class="fas fa-bars"></i></button>
