@@ -25,13 +25,7 @@ Route::get('/monitor/antrian-gilut', [MonitorGilutController::class, 'index'])
 Route::get('/monitor/antrian-umum', [MonitorUmumController::class, 'index'])
     ->name('monitor.antrianumum');
 
-    Route::get('/cek-limit', function () {
-    return response()->json(
-        config('livewire.temporary_file_upload')
-    );
-});
-
-Route::get('/cek-config-path', function () {
-    return base_path('config/livewire.php');
-});
-
+Route::view('/coba-home', 'page.home')->name('home');
+Route::view('/coba-layanan', 'page.layanan')->name('layanan');
+Route::view('/coba-fasilitas', 'page.fasilitas')->name('fasilitas');
+Route::view('/coba-team', 'page.team')->name('team');
