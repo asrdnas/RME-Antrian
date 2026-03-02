@@ -238,66 +238,73 @@ body.loaded #welcome-screen {
 }
 
 @media (max-width: 768px) {
-    /* 1. Atur container utama supaya logo & burger pas di pinggir */
-    .navbar{
-      padding: 0;
+    .navbar {
+        padding: 0;
     }
+    
     .nav-flex {
         display: flex;
-        justify-content: space-between; /* Logo kiri, Burger kanan */
+        justify-content: space-between;
         align-items: center;
-        padding: 0 20px; /* Jarak dari pinggir layar */
+        padding: 0 20px;
         height: 70px;
+        position: relative; /* Penting untuk patokan posisi menu */
     }
 
     .menu-toggle {
         display: block;
-        order: 2; /* Memastikan burger ada di paling kanan */
+        order: 3; /* Paling kanan */
     }
 
-    /* 2. Drawer Menu (Nav Links + CTA digabung) */
-    .nav-links {
+   .nav-links, .nav-cta {
         position: fixed;
-        top: -100%; /* Kita ubah: Muncul dari atas, bukan dari samping */
         left: 0;
-        width: 100%; /* Full lebar biar gak terlihat aneh */
-        height: auto; /* Tinggi mengikuti jumlah menu */
-        background: rgba(255, 255, 255, 0.98); 
-        backdrop-filter: blur(10px); /* Efek blur mewah */
-        flex-direction: column;
-        display: flex;
-        padding: 40px 0;
-        gap: 20px;
-        transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1); /* Transisi lebih halus */
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        width: 100%;
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(10px);
+        transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         z-index: 999;
-        opacity: 0; /* Awalnya transparan */
-        pointer-events: none; /* Supaya link tidak bisa diklik saat menu tertutup */
+        opacity: 0;
+        pointer-events: none;
+        /* Hilangkan box shadow individual agar tidak terlihat terpisah */
+        box-shadow: none; 
     }
 
-    /* Saat menu diklik (Active) */
+    .nav-links {
+        top: -100%; 
+        display: flex;
+        flex-direction: column;
+        padding: 40px 0 0 0; /* Padding bawah dinolkan */
+        gap: 15px;
+    }
+
+    .nav-cta {
+        top: -100%;
+        display: flex;
+        justify-content: center;
+        padding: 20px 0 40px 0; /* Jarak antara link terakhir dan tombol */
+        /* Berikan shadow hanya di elemen paling bawah (CTA) */
+    }
+
+    /* --- LOGIKA PENYATUAN --- */
+    
     .nav-links.active {
-        top: 70px; /* Turun tepat di bawah navbar */
+        top: 70px; 
         opacity: 1;
         pointer-events: auto;
+    }
+
+    .nav-cta.active {
+        /* Kuncinya di sini: top harus menyambung persis dengan tinggi nav-links */
+        /* Jika menu kamu ada 4, biasanya tingginya sekitar 200px-240px */
+        top: 270px; 
+        opacity: 1;
     }
 
     .nav-links a {
         font-size: 1.2rem;
         font-weight: 600;
-        width: 100%;
         text-align: center;
-        padding: 10px 0;
-    }
-    /* 3. Masukkan tombol Konservasi ke dalam drawer menu */
-    .nav-cta {
-        display: none; /* Sembunyikan tombol asli di navbar mobile */
-    }
-
-    /* Trik: Tambahkan tombol Konservasi di dalam list menu saat mobile */
-    .nav-links::after {
-        content: "";
-        margin-top: 20px;
     }
 }
 /* akhir navbar */
