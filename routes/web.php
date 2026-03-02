@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\MonitorGilutController;
 use App\Http\Controllers\MonitorUmumController;
+use App\Models\Navbar;
 
 // Halaman Form Skrining
 Route::get('/pendaftaran-patient-dokter-donny', function () {
@@ -26,6 +27,10 @@ Route::get('/monitor/antrian-umum', [MonitorUmumController::class, 'index'])
     ->name('monitor.antrianumum');
 
 Route::view('/coba-home', 'page.home')->name('home');
-Route::view('/coba-layanan', 'page.layanan')->name('layanan');
-Route::view('/coba-fasilitas', 'page.fasilitas')->name('fasilitas');
-Route::view('/coba-team', 'page.team')->name('team');
+Route::get('/{slug}', function ($slug) {
+
+    $navbar = Navbar::where('slug', $slug)->firstOrFail();
+
+    return view('page.' . $slug);
+
+});

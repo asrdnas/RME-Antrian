@@ -242,6 +242,12 @@ class PasienResource extends Resource
                     ->action(fn () => Excel::download(new PasiensExport, 'pasiens.xlsx')),
             ])
             ->actions([
+                Tables\Actions\ViewAction::make()
+                    ->label('Lihat')
+                    ->icon('heroicon-o-eye')
+                    ->color('primary')
+                    ->button()
+                    ->outlined(),
                 Tables\Actions\EditAction::make()
                     ->label('Edit')
                     ->icon('heroicon-o-pencil-square')

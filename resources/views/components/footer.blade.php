@@ -5,11 +5,17 @@
           <h3>Navigasi</h3>
           <nav class="footer-nav">
             <ul>
-              <li><a href="#beranda">Beranda</a></li>
-              <li><a href="#layanan">Layanan</a></li>
-              <li><a href="#dokter">Dokter</a></li>
-              <li><a href="#kontak">Kontak</a></li>
-              <li><a href="#Lokasi">Lokasi</a></li>
+              <a href="{{ route('home') }}">Beranda</a>
+
+            @php
+                $navbars = \App\Models\Navbar::orderBy('id')->get();
+            @endphp
+            
+            @foreach($navbars as $nav)
+                <a href="{{ url($nav->slug) }}">
+                    {{ $nav->name }}
+                </a>
+            @endforeach
             </ul>
           </nav>
         </div>

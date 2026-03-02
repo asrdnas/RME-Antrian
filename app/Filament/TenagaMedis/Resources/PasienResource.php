@@ -149,6 +149,10 @@ class PasienResource extends Resource
                     ])
                     ->native(false),
             ])
+            
+             ->actions([
+                Tables\Actions\ViewAction::make(),
+             ])
 
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
