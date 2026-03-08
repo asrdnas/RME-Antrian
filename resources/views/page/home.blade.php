@@ -59,88 +59,52 @@
     </section>
 
     <!-- stats -->
-   <section class="stats">
-    <div class="stats-grid">
+    <section class="stats">
+        <div class="stats-grid">
 
-        @foreach ($stats as $stat)
-        <div class="stat-card {{ $stat->highlight ? 'highlight-card' : '' }}">
-            
-            <div class="stat-icon">
-                <i class="{{ $stat->icon }}"></i>
-            </div>
+            @foreach ($stats as $stat)
+                <div class="stat-card {{ $stat->highlight ? 'highlight-card' : '' }}">
 
-            <div class="stat-info">
-                <h3>{{ $stat->title }}</h3>
-                <p>{{ $stat->description }}</p>
-            </div>
+                    <div class="stat-icon">
+                        <i class="{{ $stat->icon }}"></i>
+                    </div>
+
+                    <div class="stat-info">
+                        <h3>{{ $stat->title }}</h3>
+                        <p>{{ $stat->description }}</p>
+                    </div>
+
+                </div>
+            @endforeach
 
         </div>
-        @endforeach
-
-    </div>
     </section>
 
     <!-- tentang kami -->
-    <section class="about-section">
-        <div class="about-row">
-            <div class="about-text">
-                <span class="badge-about">Profesionalisme</span>
-                <h2>
-                    Didukung oleh <br /><span class="highlight">Tim Dokter Terbaik</span>
-                </h2>
-                <p>
-                    Kesehatan Anda ditangani oleh para tenaga medis profesional yang
-                    ahli di bidangnya. Kami menggabungkan keahlian medis dengan
-                    pendekatan yang ramah dan empatik untuk memberikan perawatan terbaik
-                    bagi setiap pasien.
-                </p>
-            </div>
-            <div class="about-image">
-                <div class="img-wrapper">
-                    <img src="bersama.jpeg" alt="Tim Dokter Terbaik" />
-                </div>
-            </div>
+<section class="about-section">
+
+    @foreach ($aboutKlinik as $about)
+    <div class="about-row">
+        <div class="about-text">
+            <span class="badge-about">{{ $about->badge }}</span>
+            <h2>
+                {{ $about->title }} <br />
+                <span class="highlight">{{ $about->highlight }}</span>
+            </h2>
+            <p>
+                {{ $about->description }}
+            </p>
         </div>
 
-        <div class="about-row">
-            <div class="about-text">
-                <span class="badge-about">Kredibilitas</span>
-                <h2>
-                    Dipercaya Masyarakat <br /><span class="highlight">Sejak Tahun 2011</span>
-                </h2>
-                <p>
-                    Lebih dari satu dekade kami telah melayani ribuan pasien dengan
-                    dedikasi penuh. Pengalaman panjang ini membentuk kami menjadi klinik
-                    yang matang dalam menangani berbagai kebutuhan kesehatan umum maupun
-                    gigi.
-                </p>
-            </div>
-            <div class="about-image">
-                <div class="img-wrapper">
-                    <img src="poli umum.png" alt="Klinik Tirta Amerta Sejak 2011" />
-                </div>
+        <div class="about-image">
+            <div class="img-wrapper">
+                <img src="{{ asset('storage/' . $about->image) }}" alt="{{ $about->highlight }}" />
             </div>
         </div>
+    </div>
+    @endforeach
 
-        <div class="about-row">
-            <div class="about-text">
-                <span class="badge-about">Visi & Misi</span>
-                <h2>
-                    Misi Kami Untuk <br /><span class="highlight">Kesehatan Anda</span>
-                </h2>
-                <p>
-                    Misi kami adalah menyediakan layanan kesehatan yang terjangkau,
-                    berkualitas, dan mengedepankan keamanan pasien melalui teknologi
-                    medis modern serta sterilisasi yang terjamin.
-                </p>
-            </div>
-            <div class="about-image">
-                <div class="img-wrapper">
-                    <img src="team.jpeg" alt="Misi Klinik" />
-                </div>
-            </div>
-        </div>
-    </section>
+</section>
 
     <!-- layanan -->
     <section id="layanan" class="services">
