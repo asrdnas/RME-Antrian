@@ -81,76 +81,59 @@
     </section>
 
     <!-- tentang kami -->
-<section class="about-section">
+    <section class="about-section">
 
-    @foreach ($aboutKlinik as $about)
-    <div class="about-row">
-        <div class="about-text">
-            <span class="badge-about">{{ $about->badge }}</span>
-            <h2>
-                {{ $about->title }} <br />
-                <span class="highlight">{{ $about->highlight }}</span>
-            </h2>
-            <p>
-                {{ $about->description }}
-            </p>
-        </div>
+        @foreach ($aboutKlinik as $about)
+            <div class="about-row">
+                <div class="about-text">
+                    <span class="badge-about">{{ $about->badge }}</span>
+                    <h2>
+                        {{ $about->title }} <br />
+                        <span class="highlight">{{ $about->highlight }}</span>
+                    </h2>
+                    <p>
+                        {{ $about->description }}
+                    </p>
+                </div>
 
-        <div class="about-image">
-            <div class="img-wrapper">
-                <img src="{{ asset('storage/' . $about->image) }}" alt="{{ $about->highlight }}" />
+                <div class="about-image">
+                    <div class="img-wrapper">
+                        <img src="{{ asset('storage/' . $about->image) }}" alt="{{ $about->highlight }}" />
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
-    @endforeach
+        @endforeach
 
-</section>
+    </section>
 
     <!-- layanan -->
     <section id="layanan" class="services">
         <div class="services-header">
             <h1 class="subtitle">Layanan Kami</h1>
             <h2>
-                Kami menyediakan berbagai layanan kesehatan<span class="highlight">
-                    untuk memenuhi kebutuhan Anda</span>
+                Kami menyediakan berbagai layanan kesehatan
+                <span class="highlight">untuk memenuhi kebutuhan Anda</span>
             </h2>
         </div>
+
         <div class="services-grid">
-            <div class="service-card">
-                <div class="service-image">
-                    <img src="poli umum.png" alt="Layanan Poli Umum" />
-                </div>
-                <h3>Poli Umum</h3>
-                <p>
-                    Pemeriksaan kesehatan rutin, konsultasi dokter, dan pengobatan
-                    penyakit umum untuk dewasa dan anak-anak.
-                </p>
-            </div>
 
-            <div class="service-card">
-                <div class="service-image">
-                    <img src="images.jpeg" alt="Layanan Poli Gigi" />
+            @foreach ($layananKliniks as $layanan)
+                <div class="service-card">
+                   <a href="{{ url('/' . $layanan->navbar->slug) }}" style="text-decoration: none; color: inherit;">
+                        <div class="service-image">
+                            <img src="{{ asset('storage/' . $layanan->gambar) }}" alt="{{ $layanan->nama }}">
+                        </div>
+                        <h3>{{ $layanan->nama }}</h3>
+                        <p>{{ $layanan->deskripsi }}</p>
+                    </a>
                 </div>
-                <h3>Poli Gigi</h3>
-                <p>
-                    Perawatan gigi komprehensif mulai dari scaling, cabut gigi, tambal,
-                    hingga estetika gigi (veneer/behel).
-                </p>
-            </div>
+            @endforeach
 
-            <div class="service-card">
-                <div class="service-image">
-                    <img src="download.jpeg" alt="Layanan Laboratorium" />
-                </div>
-                <h3>Laboratorium</h3>
-                <p>
-                    Cek darah, gula darah, kolesterol, dan asam urat dengan hasil yang
-                    cepat dan akurat.
-                </p>
-            </div>
         </div>
+
         <div class="services-footer">
-            <a href="../layanan/layanan.html" class="view-all-btn">
+            <a href="{{ url('/layanan') }}" class="view-all-btn">
                 Lihat Semua Layanan <i class="fas fa-arrow-right"></i>
             </a>
         </div>

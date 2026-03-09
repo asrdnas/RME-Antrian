@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\SettingInfo;
 use App\Models\StatsKlinik;
 use App\Models\AboutKlinik;
+use App\Models\LayananKlinik;
 
 class HomeController extends Controller
 {
@@ -13,7 +14,10 @@ class HomeController extends Controller
         $setting = SettingInfo::first();
         $stats = StatsKlinik::all();
         $aboutKlinik = AboutKlinik::all();
+        $layananKliniks = LayananKlinik::with('navbar')
+            ->where('is_featured', true)
+            ->get();
 
-        return view('page.home', compact('setting', 'stats', 'aboutKlinik'));
+        return view('page.home', compact('setting', 'stats', 'aboutKlinik', 'layananKliniks'));
     }
 }

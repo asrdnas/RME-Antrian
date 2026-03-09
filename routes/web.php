@@ -6,6 +6,7 @@ use App\Http\Controllers\PatientController;
 use App\Http\Controllers\MonitorGilutController;
 use App\Http\Controllers\MonitorUmumController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\LayananController;
 use App\Models\Navbar;
 
 // Halaman Form Skrining
@@ -18,6 +19,9 @@ Route::post('/patients', [PatientController::class, 'store'])->name('patients.st
 
 //  Route Branding Klinik
 Route::get('/', [HomeController::class, 'home'])->name('home');
+
+// Route Layanan Klinik
+Route::get('/layanan', [LayananController::class, 'layanan'])->name('layanan');
 
 // Route Monitor Antrian Gigi dan Mulut
 Route::get('/monitor/antrian-gilut', [MonitorGilutController::class, 'index'])

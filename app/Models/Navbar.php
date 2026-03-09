@@ -10,4 +10,8 @@ class Navbar extends Model
         'name',
         'slug',
     ];
+    public function layananKliniks()
+    {
+        return $this->hasMany(LayananKlinik::class);
+    }
 }
