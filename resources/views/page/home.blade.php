@@ -120,7 +120,7 @@
 
             @foreach ($layananKliniks as $layanan)
                 <div class="service-card">
-                   <a href="{{ url('/' . $layanan->navbar->slug) }}" style="text-decoration: none; color: inherit;">
+                    <a href="{{ url('/' . $layanan->navbar->slug) }}" style="text-decoration: none; color: inherit;">
                         <div class="service-image">
                             <img src="{{ asset('storage/' . $layanan->gambar) }}" alt="{{ $layanan->nama }}">
                         </div>
@@ -275,45 +275,23 @@
             <span class="badge-alt">Fasilitas Klinik</span>
             <h2>Kenyamanan Pasien <span class="highlight">Prioritas Kami</span></h2>
         </div>
+
         <div class="facility-slider">
             <div class="facility-grid" id="facilityGrid">
-                <div class="facility-card">
-                    <a href="../layanan/Layanan.html">
-                        <div class="facility-img">
-                            <img src="../Fasilitas/IMG_20260126_163138.jpg.jpeg" alt="Ruang Dokter Umum" />
-                        </div>
-                        <div class="facility-info">
-                            <h3>Ruang Dokter Umum</h3>
-                        </div>
-                    </a>
-                </div>
 
-                <div class="facility-card">
-                    <div class="facility-img">
-                        <img src="../Fasilitas/IMG_20260126_163424.jpg.jpeg" alt="Gigi" />
+                @foreach ($fasilitasKliniks as $fasilitas)
+                    <div class="facility-card">
+                        <a href="{{ url('/' . $fasilitas->navbar->slug) }}">
+                            <div class="facility-img">
+                                <img src="{{ asset('storage/' . $fasilitas->gambar) }}" alt="{{ $fasilitas->nama }}">
+                            </div>
+                            <div class="facility-info">
+                                <h3>{{ $fasilitas->nama }}</h3>
+                            </div>
+                        </a>
                     </div>
-                    <div class="facility-info">
-                        <h3>Ruangan Gigi Modern</h3>
-                    </div>
-                </div>
+                @endforeach
 
-                <div class="facility-card">
-                    <div class="facility-img">
-                        <img src="../Fasilitas/IMG_20260126_163332.jpg.jpeg" alt="Tunggu" />
-                    </div>
-                    <div class="facility-info">
-                        <h3>Ruang Tunggu Nyaman</h3>
-                    </div>
-                </div>
-
-                <div class="facility-card">
-                    <div class="facility-img">
-                        <img src="../Fasilitas/IMG_20260126_163332.jpg.jpeg" alt="Cafe" />
-                    </div>
-                    <div class="facility-info">
-                        <h3>Amerta Cafe</h3>
-                    </div>
-                </div>
             </div>
         </div>
 

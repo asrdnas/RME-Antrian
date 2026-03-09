@@ -65,9 +65,8 @@ class StatsKlinikResource extends Resource
                 ->label('Deskripsi')
                 ->searchable(),
 
-            Tables\Columns\IconColumn::make('highlight')
-                ->label('Highlight')
-                ->boolean(),
+            Tables\Columns\ToggleColumn::make('highlight')
+                ->label('Highlight'),
         ])
             ->filters([
                 //

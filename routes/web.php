@@ -7,6 +7,7 @@ use App\Http\Controllers\MonitorGilutController;
 use App\Http\Controllers\MonitorUmumController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LayananController;
+use App\Http\Controllers\FasilitasController;
 use App\Models\Navbar;
 
 // Halaman Form Skrining
@@ -22,6 +23,9 @@ Route::get('/', [HomeController::class, 'home'])->name('home');
 
 // Route Layanan Klinik
 Route::get('/layanan', [LayananController::class, 'layanan'])->name('layanan');
+
+// Route Fasilitas Klinik
+Route::get('/fasilitas', [FasilitasController::class, 'fasilitas'])->name('fasilitas');
 
 // Route Monitor Antrian Gigi dan Mulut
 Route::get('/monitor/antrian-gilut', [MonitorGilutController::class, 'index'])

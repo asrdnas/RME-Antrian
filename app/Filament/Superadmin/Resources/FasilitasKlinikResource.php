@@ -2,55 +2,54 @@
 
 namespace App\Filament\Superadmin\Resources;
 
-use App\Filament\Superadmin\Resources\LayananKlinikResource\Pages;
-use App\Models\LayananKlinik;
+use App\Filament\Superadmin\Resources\FasilitasKlinikResource\Pages;
+use App\Filament\Superadmin\Resources\FasilitasKlinikResource\RelationManagers;
+use App\Models\FasilitasKlinik;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class LayananKlinikResource extends Resource
+class FasilitasKlinikResource extends Resource
 {
-    protected static ?string $model = LayananKlinik::class;
+    protected static ?string $model = FasilitasKlinik::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    public static function form(Form $form): Form
+   public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('navbar_id')
-                    ->label('Slug Navbar')
-                    ->relationship('navbar', 'name')
-                    ->searchable()
-                    ->required(),
+                 Forms\Components\Select::make('navbar_id')
+                ->label('Slug Navbar')
+                ->relationship('navbar', 'name')
+                ->searchable()
+                ->required(),
 
-                Forms\Components\TextInput::make('nama')
-                    ->label('Nama Layanan')
-                    ->required(),
+            Forms\Components\TextInput::make('nama')
+                ->label('Nama Fasilitas')
+                ->required(),
 
-                Forms\Components\TextInput::make('tag')
-                    ->label('Tag Layanan'),
+            Forms\Components\Textarea::make('deskripsi')
+                ->label('Deskripsi')
+                ->rows(4)
+                ->required(),
 
-                Forms\Components\Textarea::make('deskripsi')
-                    ->label('Deskripsi')
-                    ->rows(4)
-                    ->required(),
-
-                Forms\Components\FileUpload::make('gambar')
-                    ->label('Gambar')
-                    ->image()
-                    ->directory('layanan')
-                    ->required(),
+            Forms\Components\FileUpload::make('gambar')
+                ->label('Gambar')
+                ->image()
+                ->directory('layanan')
+                ->required(),
 
             ]);
     }
-
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+             ->columns([
                 Tables\Columns\ImageColumn::make('gambar')
                     ->label('Gambar'),
 
@@ -63,7 +62,6 @@ class LayananKlinikResource extends Resource
 
                 Tables\Columns\ToggleColumn::make('is_featured')
                     ->label('Tampil di Home'),
-
             ])
             ->filters([
                 //
@@ -90,9 +88,9 @@ class LayananKlinikResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListLayananKliniks::route('/'),
-            'create' => Pages\CreateLayananKlinik::route('/create'),
-            'edit' => Pages\EditLayananKlinik::route('/{record}/edit'),
+            'index' => Pages\ListFasilitasKliniks::route('/'),
+            'create' => Pages\CreateFasilitasKlinik::route('/create'),
+            'edit' => Pages\EditFasilitasKlinik::route('/{record}/edit'),
         ];
     }
 }
