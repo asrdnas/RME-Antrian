@@ -185,77 +185,23 @@
         <div class="slider-wrapper">
             <div id="sliderContainer">
                 <div id="sliderTrack">
-                    <div class="slide-card">
-                        <div class="doc-arch">
-                            <img src="1769058777281.png" alt="drg. Priska" />
-                        </div>
-                        <h3>drg. Priska Tania Goenardi</h3>
-                        <p>Dokter Gigi</p>
-                    </div>
 
-                    <div class="slide-card">
-                        <div class="doc-arch">
-                            <img src="1769231708611.png" alt="drg. Giacinta" />
-                        </div>
-                        <h3>drg. Giacinta Celine Susanto</h3>
-                        <p>Dokter Gigi</p>
-                    </div>
+                    @foreach ($dokters as $dokter)
+                        <a href="{{ route('team') }}" class="slide-card" style="text-decoration:none; color:inherit; display:block;">
 
-                    <div class="slide-card">
-                        <div class="doc-arch">
-                            <img src="1769243110864.png" alt="drg. Kim" />
-                        </div>
-                        <h3>drg. Kim Henadi</h3>
-                        <p>Dokter Gigi</p>
-                    </div>
+                            <div class="doc-arch">
+                                <img src="{{ asset('storage/' . $dokter->photo) }}" alt="{{ $dokter->name }}">
+                            </div>
 
-                    <div class="slide-card">
-                        <div class="doc-arch">
-                            <img src="bersama.jpeg" alt="drg. Wilda" />
-                        </div>
-                        <h3>drg. Wilda Safira</h3>
-                        <p>Dokter Gigi</p>
-                    </div>
+                            <h3>{{ $dokter->name }}</h3>
 
-                    <div class="slide-card">
-                        <div class="doc-arch">
-                            <img src="drg.firdaus.jpg" alt="drg. Claudia" />
-                        </div>
-                        <h3>drg. anas</h3>
-                        <p>Dokter Gigi</p>
-                    </div>
+                            <p>
+                                {{ $dokter->jenis_dokter == 'Gigi' ? 'Dokter Gigi' : 'Dokter Umum' }}
+                            </p>
 
-                    <div class="slide-card">
-                        <div class="doc-arch">
-                            <img src="1769231708611.png" alt="drg. Giacinta" />
-                        </div>
-                        <h3>drg. Giacinta Celine Susanto</h3>
-                        <p>Dokter Gigi</p>
-                    </div>
+                        </a>
+                    @endforeach
 
-                    <div class="slide-card">
-                        <div class="doc-arch">
-                            <img src="1769243110864.png" alt="drg. Kim" />
-                        </div>
-                        <h3>drg. Kim Henadi</h3>
-                        <p>Dokter Gigi</p>
-                    </div>
-
-                    <div class="slide-card">
-                        <div class="doc-arch">
-                            <img src="bersama.jpeg" alt="drg. Wilda" />
-                        </div>
-                        <h3>drg. Wilda Safira</h3>
-                        <p>Dokter Gigi</p>
-                    </div>
-
-                    <div class="slide-card">
-                        <div class="doc-arch">
-                            <img src="drg.firdaus.jpg" alt="drg. Claudia" />
-                        </div>
-                        <h3>drg. anas</h3>
-                        <p>Dokter Gigi</p>
-                    </div>
                 </div>
             </div>
             <div class="slider-nav">

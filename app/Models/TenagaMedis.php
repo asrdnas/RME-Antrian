@@ -11,7 +11,7 @@ class TenagaMedis extends Authenticatable
     protected $guard = 'tenaga_medis';
 
     protected $fillable = [
-        'username', 'name', 'email', 'password','photo',
+        'username', 'name', 'slug', 'email', 'password','photo',
         'jenis_dokter',
 
     ];

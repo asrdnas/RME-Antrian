@@ -7,6 +7,7 @@ use App\Models\StatsKlinik;
 use App\Models\AboutKlinik;
 use App\Models\LayananKlinik;
 use App\Models\FasilitasKlinik;
+use App\Models\TenagaMedis;
 
 class HomeController extends Controller
 {
@@ -21,7 +22,8 @@ class HomeController extends Controller
         $fasilitasKliniks = FasilitasKlinik::with('navbar')
             ->where('is_featured', true)
             ->get();
+        $dokters = TenagaMedis::all();
 
-        return view('page.home', compact('setting', 'stats', 'aboutKlinik', 'layananKliniks', 'fasilitasKliniks'));
+        return view('page.home', compact('setting', 'stats', 'aboutKlinik', 'layananKliniks', 'fasilitasKliniks', 'dokters'));
     }
 }

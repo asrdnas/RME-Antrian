@@ -10,6 +10,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class TenagaMedisResource extends Resource
 {
@@ -36,7 +37,16 @@ class TenagaMedisResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->label('Nama Lengkap')
                     ->required()
-                    ->maxLength(100),
+                    ->maxLength(100)
+                    ->live(onBlur: true)
+                    ->afterStateUpdated(fn ($state, callable $set) => $set('slug', Str::slug($state))
+                    ),
+
+                Forms\Components\TextInput::make('slug')
+                    ->label('Slug')
+                    ->readOnly()
+                    ->dehydrated()
+                    ->required(),
 
                 Forms\Components\TextInput::make('email')
                     ->label('Email')
@@ -54,10 +64,10 @@ class TenagaMedisResource extends Resource
                 Forms\Components\Select::make('jenis_dokter')
                     ->label('Jenis Dokter')
                     ->options([
-                        'Umum' => 'Dokter Umum',
-                        'Gigi' => 'Dokter Gigi',
-                    ])
-                    ->required(),
+                                        'Umum' => 'Dokter Umum',
+                                        'Gigi' => 'Dokter Gigi',
+                                    ])
+                     ->required(),
 
                 Forms\Components\FileUpload::make('photo')
                     ->label('Foto Dokter')
@@ -65,7 +75,7 @@ class TenagaMedisResource extends Resource
                     ->imageEditor()
                     ->directory('dokter')
                     ->disk('public')
-                    ->maxSize(51200) // 50MB
+                    ->maxSize(51200)
                     ->rules(['max:51200'])
                     ->columnSpanFull(),
             ]);
@@ -106,21 +116,12 @@ class TenagaMedisResource extends Resource
                         default => $state,
                     })
                     ->sortable(),
-
-                Tables\Columns\TextColumn::make('created_at')
-                    ->label('Dibuat')
-                    ->dateTime('d M Y H:i')
-                    ->sortable(),
-
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->label('Diupdate')
-                    ->dateTime('d M Y H:i')
-                    ->sortable(),
             ])
             ->filters([
                 //
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
