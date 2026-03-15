@@ -19,12 +19,11 @@
             </div>
             <div class="team-hero">
                 <div class="group-photo-wrapper">
-                    <img src="team.jpeg" alt="Tim Dokter Kami" />
+                    <img src="{{ asset('storage/'.$teamKlinik->image) }}" alt="Tim Dokter Kami" />
                     <div class="photo-overlay">
-                        <h3>Dedikasi Untuk Kesehatan Anda</h3>
+                        <h3>{{ $teamKlinik->hero_title }}</h3>
                         <p>
-                            Kami bekerja sebagai satu kesatuan untuk memberikan pelayanan
-                            terbaik.
+                           {{ $teamKlinik->hero_description }}
                         </p>
                     </div>
                 </div>

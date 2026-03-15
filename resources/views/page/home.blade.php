@@ -144,14 +144,13 @@
         <div class="team">
             <div class="team-split">
                 <div class="team-text-content">
-                    <h2>
-                        Meet our <br /><span class="highlight-yellow">Amazing Team!</span>
-                    </h2>
+                    <a href="{{ url('/team') }}" style="text-decoration: none; color: inherit;">
+                        <h2>
+                            Meet our <br /><span class="highlight-yellow">Amazing Team!</span>
+                        </h2>
+                    </a>
                     <p>
-                        Kami percaya bahwa pelayanan kesehatan terbaik lahir dari
-                        kerjasama tim yang solid. Tenaga medis di Tirta Amerta adalah para
-                        profesional yang berdedikasi tinggi untuk kenyamanan dan
-                        kesembuhan Anda.
+                         {{ $teamKlinik->description }}
                     </p>
                     <div class="team-features">
                         <div class="feat-item">
@@ -169,7 +168,7 @@
                 <div class="team-visual">
                     <div class="decorative-shape"></div>
                     <div class="team-image-wrapper">
-                        <img src="team.jpeg" alt="Tirta Amerta Team" class="main-team-img" />
+                        <img src="{{ asset('storage/'.$teamKlinik->image) }}" alt="Tirta Amerta Team" class="main-team-img" />
                     </div>
                 </div>
             </div>
