@@ -365,11 +365,11 @@ body.loaded #welcome-screen {
 
 /* hero image */
 .hero-image{
+    position: relative;
+    display: flex;
     justify-content: center;
     align-items: center;
-    width: 150%;
     margin-top: 130px;
-    margin-left: 130px;
 }
 .circle-bg {
    width: 300px;
@@ -429,7 +429,7 @@ body.loaded #welcome-screen {
 }
 .badge-1 { 
   position: absolute;
- top: 55%;
+ bottom: -10px;
 }
 
 @media (max-width: 768px) {
@@ -467,14 +467,10 @@ body.loaded #welcome-screen {
     }
 
     /* 4. Perbaikan Image Hero */
-    .hero-image {
-        margin-left: 0; /* Hapus margin besar kamu */
-        margin-top: 50px;
-        width: 100%;
-        display: flex;
-        justify-content: center; /* Pastikan gambar di tengah */
-    }
-
+    .hero-image{
+    margin-left:0;
+    margin-top:50px;
+}
     .circle-bg {
         width: 200px; /* Perkecil bulatan bg */
         height: 200px;
@@ -486,11 +482,8 @@ body.loaded #welcome-screen {
     }
 
     .badge-1 {
-        position: absolute;
-        top: 92%; /* Sesuaikan posisi agar tidak menutupi muka gambar */
-        left: 50%;
-        transform: translateX(-50%); /* Ketengahin badge */
-        width: max-content;
+      posision: absolute;
+       bottom: -20px;
     }
 }
 /* AKHIR HERO SECTION */
