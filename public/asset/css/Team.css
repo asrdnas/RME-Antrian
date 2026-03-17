@@ -703,10 +703,6 @@ html {
     color: #333;
 }
 
-/* ZEBRA */
-.schedule-table tbody tr:nth-child(even) td {
-    background: #f6fefe;
-}
 
 /* DOCTOR NAME */
 .schedule-table .doc-name {

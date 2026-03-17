@@ -487,7 +487,7 @@ body.loaded #welcome-screen {
 
     .badge-1 {
         position: absolute;
-        top: 95%; /* Sesuaikan posisi agar tidak menutupi muka gambar */
+        top: 92%; /* Sesuaikan posisi agar tidak menutupi muka gambar */
         left: 50%;
         transform: translateX(-50%); /* Ketengahin badge */
         width: max-content;
