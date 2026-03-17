@@ -482,7 +482,7 @@ body.loaded #welcome-screen {
     }
 
     .badge-1 {
-      posision: absolute;
+      position: absolute;
        bottom: -20px;
     }
 }
