@@ -20,7 +20,7 @@
         </nav>
 
         <div class="nav-cta">
-            <a href="https://wa.me/yournumber" class="btn-outline">Konservasi</a>
+            <a href="{{ route('pendaftaran.form') }}" class="btn-outline">Pendaftaran</a>
         </div>
 
         <button class="menu-toggle">

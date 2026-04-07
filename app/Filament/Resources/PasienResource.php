@@ -268,6 +268,7 @@ class PasienResource extends Resource
                                 'Umum' => 'Umum',
                                 'Gilut' => 'Gilut',
                             ])
+                            ->default('Gilut')
                             ->required()
                             ->native(false),
                     ])
