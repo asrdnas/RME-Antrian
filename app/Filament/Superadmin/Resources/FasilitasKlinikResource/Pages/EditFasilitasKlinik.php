@@ -3,9 +3,8 @@
 namespace App\Filament\Superadmin\Resources\FasilitasKlinikResource\Pages;
 
 use App\Filament\Superadmin\Resources\FasilitasKlinikResource;
-use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
 use Filament\Notifications\Notification;
+use Filament\Resources\Pages\EditRecord;
 
 class EditFasilitasKlinik extends EditRecord
 {
@@ -15,10 +14,11 @@ class EditFasilitasKlinik extends EditRecord
     {
         return $this->getResource()::getUrl('index');
     }
+
     protected function afterSave(): void
     {
-        Actions\Action::make()
-            ->label('Berhasil diedit')
+        Notification::make()
+            ->title('Berhasil diedit')
             ->success()
             ->send();
     }
