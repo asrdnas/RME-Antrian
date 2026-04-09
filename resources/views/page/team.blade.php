@@ -116,7 +116,7 @@
 
             <div class="schedule-footer">
                 <p>*Jadwal dapat berubah sewaktu-waktu.</p>
-                <a href="https://wa.me/yournumber" class="btn-whatsapp">
+                <a href="https://wa.me/6281249340040" class="btn-whatsapp">
                     Reservasi via WhatsApp
                 </a>
             </div>
