@@ -11,6 +11,10 @@ use App\Http\Controllers\FasilitasController;
 use App\Http\Controllers\TeamController;
 use App\Models\Navbar;
 
+Route::get('/tes', function () {
+    return 'OK';
+});
+
 // Halaman Form Skrining
 Route::get('/pendaftaran-patient-dokter-donny', function () {
     return view('pendaftaran.formulir');
