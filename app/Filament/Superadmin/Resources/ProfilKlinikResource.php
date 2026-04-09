@@ -10,7 +10,7 @@ use Filament\Tables\Table;
 use App\Models\SettingInfo;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextArea;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
 
@@ -80,7 +80,7 @@ class ProfilKlinikResource extends Resource
 
                 Section::make('Lokasi Klinik')
                     ->schema([
-                        Textarea::make('alamat')
+                        TextArea::make('alamat')
                             ->label('Alamat Lengkap')
                             ->rows(3)
                             ->required(),
