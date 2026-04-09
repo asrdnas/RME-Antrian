@@ -10,7 +10,7 @@ use Filament\Tables\Table;
 use App\Models\SettingInfo;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\TextArea;
+use Filament\Forms\Components\Textarea; // Perbaikan penulisan 'a' kecil
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
 
@@ -20,84 +20,102 @@ class ProfilKlinikResource extends Resource
 
     protected static ?string $navigationLabel = 'Profil Klinik';
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-home-modern'; // Icon lebih relevan untuk profil klinik
+
+    protected static ?string $pluralModelLabel = 'Profil Klinik';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-
                 Section::make('Hero Klinik')
+                    ->description('Pengaturan tampilan utama (Hero Section) pada website.')
                     ->schema([
                         TextInput::make('judul_klinik1')
                             ->label('Judul Klinik Baris 1')
-                            ->required(),
+                            ->required()
+                            ->maxLength(255),
 
                         TextInput::make('judul_highlight1')
                             ->label('Highlight Baris 1')
-                            ->required(),
+                            ->required()
+                            ->maxLength(255),
 
                         TextInput::make('judul_klinik2')
                             ->label('Judul Klinik Baris 2')
-                            ->required(),
+                            ->required()
+                            ->maxLength(255),
 
                         TextInput::make('judul_highlight2')
                             ->label('Highlight Baris 2')
-                            ->required(),
+                            ->required()
+                            ->maxLength(255),
 
-                        TextArea::make('deskripsi_klinik')
+                        Textarea::make('deskripsi_klinik')
                             ->label('Deskripsi Klinik')
                             ->rows(4)
-                            ->required(),
+                            ->required()
+                            ->columnSpanFull(),
                     ])
                     ->columns(2),
 
                 Section::make('Founder')
+                    ->description('Informasi mengenai pendiri klinik.')
                     ->schema([
                         FileUpload::make('foto_founder')
                             ->label('Foto Founder')
                             ->image()
                             ->directory('founder')
                             ->disk('public')
-                            ->imagePreviewHeight('150'),
+                            ->imagePreviewHeight('150')
+                            ->columnSpanFull(),
 
                         TextInput::make('nama_founder')
                             ->label('Nama Founder')
-                            ->required(),
+                            ->required()
+                            ->maxLength(255),
 
                         TextInput::make('jabatan_founder')
                             ->label('Jabatan Founder')
-                            ->required(),
+                            ->required()
+                            ->maxLength(255),
                     ])
                     ->columns(2),
 
-                Section::make('Kontak')
+                Section::make('Kontak & Operasional')
                     ->schema([
                         TextInput::make('nomor_whatsapp')
                             ->label('Nomor WhatsApp')
-                            ->required(),
-                    ]),
-
-                Section::make('Lokasi Klinik')
-                    ->schema([
-                        TextArea::make('alamat')
-                            ->label('Alamat Lengkap')
-                            ->rows(3)
+                            ->tel() // Menggunakan tipe tel untuk input nomor telepon
+                            ->placeholder('Contoh: 08123456789')
                             ->required(),
 
                         TextInput::make('hari_operasional')
                             ->label('Hari Operasional')
+                            ->placeholder('Contoh: Senin - Sabtu')
                             ->required(),
 
                         TextInput::make('jam_operasional')
                             ->label('Jam Operasional')
+                            ->placeholder('Contoh: 08:00 - 21:00')
                             ->required(),
-
-                        RichEditor::make('embed_maps')
-                            ->label('Embed Google Maps')
-                            ->columnSpanFull(),
                     ])
-                    ->columns(2),
+                    ->columns(3),
+
+                Section::make('Lokasi Klinik')
+                    ->schema([
+                        Textarea::make('alamat')
+                            ->label('Alamat Lengkap')
+                            ->rows(3)
+                            ->required()
+                            ->columnSpanFull(),
+
+                        Textarea::make('embed_maps') // Menggunakan Textarea agar tag <iframe> tidak terfilter
+                            ->label('Embed Google Maps (Iframe)')
+                            ->placeholder('<iframe src="..."></iframe>')
+                            ->helperText('Tempelkan kode iframe dari Google Maps di sini.')
+                            ->columnSpanFull(),
+                    ]),
             ]);
     }
 
@@ -107,30 +125,33 @@ class ProfilKlinikResource extends Resource
             ->columns([
                 Tables\Columns\ImageColumn::make('foto_founder')
                     ->label('Foto')
-                    ->circular()
-                    ->size(60),
+                    ->circular(),
 
                 Tables\Columns\TextColumn::make('judul_klinik1')
                     ->label('Judul')
                     ->searchable()
-                    ->limit(20),
+                    ->limit(30),
 
                 Tables\Columns\TextColumn::make('nama_founder')
                     ->label('Founder')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
 
                 Tables\Columns\TextColumn::make('nomor_whatsapp')
-                    ->label('WhatsApp'),
+                    ->label('WhatsApp')
+                    ->copyable(), // Fitur klik untuk copy nomor
 
                 Tables\Columns\TextColumn::make('jam_operasional')
-                    ->label('Jam Operasional'),
+                    ->label('Jam Operasional')
+                    ->badge() // Memberikan tampilan badge agar lebih menarik
+                    ->color('success'),
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
