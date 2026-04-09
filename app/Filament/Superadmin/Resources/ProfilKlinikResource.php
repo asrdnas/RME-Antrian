@@ -45,7 +45,7 @@ class ProfilKlinikResource extends Resource
                             ->label('Highlight Baris 2')
                             ->required(),
 
-                        Textarea::make('deskripsi_klinik')
+                        TextArea::make('deskripsi_klinik')
                             ->label('Deskripsi Klinik')
                             ->rows(4)
                             ->required(),
@@ -80,7 +80,7 @@ class ProfilKlinikResource extends Resource
 
                 Section::make('Lokasi Klinik')
                     ->schema([
-                        Textarea::make('alamat')
+                        TextArea::make('alamat')
                             ->label('Alamat Lengkap')
                             ->rows(3)
                             ->required(),
