@@ -17,7 +17,7 @@ class EditFasilitasKlinik extends EditRecord
     }
     protected function afterSave(): void
     {
-        Actions\Action::make('success')
+        Actions\Action::make()
             ->label('Berhasil diedit')
             ->success()
             ->send();
