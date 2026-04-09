@@ -45,7 +45,7 @@ class ProfilKlinikResource extends Resource
                             ->label('Highlight Baris 2')
                             ->required(),
 
-                        Textarea::make('deskripsi_klinik')
+                        TextArea::make('deskripsi_klinik')
                             ->label('Deskripsi Klinik')
                             ->rows(4)
                             ->required(),
