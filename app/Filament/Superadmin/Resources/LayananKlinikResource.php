@@ -14,7 +14,7 @@ class LayananKlinikResource extends Resource
 {
     protected static ?string $model = LayananKlinik::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-briefcase-medical';
+    protected static ?string $navigationIcon = 'heroicon-o-briefcase';
 
     public static function form(Form $form): Form
     {
