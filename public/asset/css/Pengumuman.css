@@ -307,7 +307,7 @@ body {
     font-size: 32px;
     font-weight: 800;
     color: var(--dark-text);
-    margin-bottom: 18px;
+    margin-bottom: 0px;
 }
 
 .ly-card-text {
@@ -357,7 +357,7 @@ body {
     }
 
     .ly-card-tag {
-        margin: 0 auto ;
+        margin: 0 0 15px;
     }
 
     .ly-card-title {

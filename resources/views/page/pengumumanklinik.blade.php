@@ -38,7 +38,7 @@
                             </span>
 
                             <p class="ly-card-text">
-                                {{ $pengumuman->deskripsi }}
+                             {!! $pengumuman->deskripsi !!}
                             </p>
                         </div>
 

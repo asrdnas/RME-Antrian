@@ -22,7 +22,7 @@
     @include('components.footer')
 
     <!-- overlay konsul -->
-    <a href="https://wa.me/yournumber" class="fab-whatsapp">
+    <a href="https://wa.me/6281249340040" class="fab-whatsapp">
       <i class="fab fa-whatsapp"></i>
       <span>Konsultasi</span>
     </a>

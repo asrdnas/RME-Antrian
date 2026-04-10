@@ -282,7 +282,7 @@ body.loaded #welcome-screen {
         top: -100%;
         display: flex;
         justify-content: center;
-        padding: 20px 0 40px 0; /* Jarak antara link terakhir dan tombol */
+        padding: 20px 0 20px 0; /* Jarak antara link terakhir dan tombol */
         /* Berikan shadow hanya di elemen paling bawah (CTA) */
     }
 
@@ -297,7 +297,7 @@ body.loaded #welcome-screen {
     .nav-cta.active {
         /* Kuncinya di sini: top harus menyambung persis dengan tinggi nav-links */
         /* Jika menu kamu ada 4, biasanya tingginya sekitar 200px-240px */
-        top: 270px; 
+        top: 320px; 
         opacity: 1;
     }
 
