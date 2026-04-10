@@ -23,7 +23,6 @@ class LayananKlinikResource extends Resource
                 Forms\Components\Select::make('navbar_id')
                     ->label('Slug Navbar')
                     ->relationship('navbar', 'name')
-                    ->searchable()
                     ->required(),
 
                 Forms\Components\TextInput::make('nama')

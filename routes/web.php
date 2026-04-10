@@ -9,6 +9,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LayananController;
 use App\Http\Controllers\FasilitasController;
 use App\Http\Controllers\TeamController;
+use App\Http\Controllers\PengumumanController;
 use App\Models\Navbar;
 
 Route::get('/tes', function () {
@@ -34,6 +35,10 @@ Route::get('/fasilitas', [FasilitasController::class, 'fasilitas'])->name('fasil
 
 // Route Team Klinik
 Route::get('/team', [TeamController::class, 'team'])->name('team');
+
+// Route Pengumuman Klinik
+Route::get('/pengumuman', [PengumumanController::class, 'pengumuman'])->name('pengumuman');
+
 
 // Route Monitor Antrian Gigi dan Mulut
 Route::get('/monitor/antrian-gilut', [MonitorGilutController::class, 'index'])

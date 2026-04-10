@@ -27,7 +27,6 @@ public static function form(Form $form): Form
             Forms\Components\Select::make('tenaga_medis_id')
                 ->label('Dokter')
                 ->relationship('tenagaMedis', 'name')
-                ->searchable()
                 ->preload()
                 ->required(),
 

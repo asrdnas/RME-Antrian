@@ -27,8 +27,8 @@
                 </p>
 
                 <div class="hero-actions">
-                    <a href="https://wa.me/6281249340040" class="btn-primary">
-                        Mulai Perjalanan Kesehatan
+                    <a href="{{ route('pengumuman') }}" class="btn-primary">
+                        Lihat Pengumuman Terkini
                     </a>
                 </div>
 
