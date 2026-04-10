@@ -19,6 +19,7 @@ class JadwalDokterResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-calendar-days';
     protected static ?string $navigationLabel = 'Jadwal Dokter';
+    protected static ?string $navigationGroup = 'Role Management Klinik';
 
 public static function form(Form $form): Form
 {
