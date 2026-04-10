@@ -19,6 +19,8 @@ class PengumumanKlinikResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $navigationGroup = 'Management Pengumuman Klinik';
+
     public static function form(Form $form): Form
     {
         return $form
@@ -47,7 +49,7 @@ class PengumumanKlinikResource extends Resource
                 Forms\Components\RichEditor::make('deskripsi')
                     ->required()
                     ->columnSpan(2),
-                
+
             ]),
             ]);
     }

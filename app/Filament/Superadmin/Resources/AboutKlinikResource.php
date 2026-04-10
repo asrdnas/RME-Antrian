@@ -19,6 +19,8 @@ class AboutKlinikResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-information-circle';
 
+    protected static ?string $navigationGroup = 'Management Profil Klinik';
+
     public static function form(Form $form): Form
     {
         return $form

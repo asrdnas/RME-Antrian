@@ -16,6 +16,8 @@ class NavbarResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-bars-3';
 
+    protected static ?string $navigationGroup = 'Management Profil Klinik';
+
     protected static ?string $navigationLabel = 'Navbar';
 
     public static function form(Form $form): Form

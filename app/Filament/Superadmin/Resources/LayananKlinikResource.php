@@ -16,6 +16,8 @@ class LayananKlinikResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-briefcase';
 
+    protected static ?string $navigationGroup = 'Management Konten Klinik';
+
     public static function form(Form $form): Form
     {
         return $form

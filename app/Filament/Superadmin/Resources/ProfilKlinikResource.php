@@ -20,6 +20,8 @@ class ProfilKlinikResource extends Resource
 
     protected static ?string $navigationLabel = 'Profil Klinik';
 
+    protected static ?string $navigationGroup = 'Management Profil Klinik';
+
     protected static ?string $navigationIcon = 'heroicon-o-home-modern'; // Icon lebih relevan untuk profil klinik
 
     protected static ?string $pluralModelLabel = 'Profil Klinik';
