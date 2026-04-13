@@ -8,7 +8,7 @@ class PengumumanController extends Controller
 {
     public function pengumuman()
     {
-        $pengumumanKliniks = \App\Models\pengumumanklinik::with('navbar')->get();
+        $pengumumanKliniks = \App\Models\PengumumanKlinik::with('navbar')->get();
         return view('page.pengumumanklinik', compact('pengumumanKliniks'));
     }
 }
