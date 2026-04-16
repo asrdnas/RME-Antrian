@@ -6,7 +6,6 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -36,28 +35,32 @@ class TenagaMedisPanelProvider extends PanelProvider
             ->resources([
                 \App\Filament\TenagaMedis\Resources\RekamMedisResource::class,
             ])
-            ->discoverPages(in: app_path('Filament/TenagaMedis/Pages'), for: 'App\\Filament\\TenagaMedis\\Pages')
+            ->discoverPages(
+                in: app_path('Filament/TenagaMedis/Pages'),
+                for: 'App\\Filament\\TenagaMedis\\Pages'
+            )
             ->pages([
-                Pages\Dashboard::class,
-            ])
+                            \App\Filament\TenagaMedis\Pages\DashboardTenagaMedis::class,
+                        ])
+            ->homeUrl(fn () => \App\Filament\TenagaMedis\Pages\DashboardTenagaMedis::getUrl())
             ->discoverWidgets(in: app_path('Filament/TenagaMedis/Widgets'), for: 'App\\Filament\\TenagaMedis\\Widgets')
             ->widgets([
-                Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
-            ])
+                            Widgets\AccountWidget::class,
+                            Widgets\FilamentInfoWidget::class,
+                        ])
             ->middleware([
-                EncryptCookies::class,
-                AddQueuedCookiesToResponse::class,
-                StartSession::class,
-                AuthenticateSession::class,
-                ShareErrorsFromSession::class,
-                VerifyCsrfToken::class,
-                SubstituteBindings::class,
-                DisableBladeIconComponents::class,
-                DispatchServingFilamentEvent::class,
-            ])
+                            EncryptCookies::class,
+                            AddQueuedCookiesToResponse::class,
+                            StartSession::class,
+                            AuthenticateSession::class,
+                            ShareErrorsFromSession::class,
+                            VerifyCsrfToken::class,
+                            SubstituteBindings::class,
+                            DisableBladeIconComponents::class,
+                            DispatchServingFilamentEvent::class,
+                        ])
             ->authMiddleware([
-                Authenticate::class,
-            ]);
+                            Authenticate::class,
+                        ]);
     }
 }
