@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class PengumumanKlinik extends Model
+class pengumumanklinik extends Model
 {
     protected $fillable = [
         'navbar_id',
