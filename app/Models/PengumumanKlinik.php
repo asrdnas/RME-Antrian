@@ -4,8 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class pengumumanklinik extends Model
+class PengumumanKlinik extends Model
 {
+    protected $table = 'pengumumankliniks';
     protected $fillable = [
         'navbar_id',
         'judul',
