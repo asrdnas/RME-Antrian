@@ -1,0 +1,24 @@
+<IfModule mod_rewrite.c>
+    Options +FollowSymLinks
+    RewriteEngine On
+
+    # 1. PROTEKSI: Hanya blokir file yang BENAR-BENAR rahasia
+    RewriteRule ^\.env - [F,L]
+    RewriteRule ^artisan$ - [F,L]
+    RewriteRule ^composer\.(json|lock) - [F,L]
+    RewriteRule ^package\.(json|lock) - [F,L]
+
+    # Blokir folder internal Laravel tapi IZINKAN folder storage (untuk gambar)
+    RewriteRule ^storage/framework/(.*) - [F,L]
+    RewriteRule ^storage/logs/(.*) - [F,L]
+
+    # 2. REDIRECT: Arahkan semua trafik ke folder /public
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+# Blokir dotfiles kecuali jika diizinkan
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>

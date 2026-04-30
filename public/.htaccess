@@ -1,24 +1,25 @@
 <IfModule mod_rewrite.c>
-    Options +FollowSymLinks
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
     RewriteEngine On
 
-    # 1. PROTEKSI: Hanya blokir file yang BENAR-BENAR rahasia
-    RewriteRule ^\.env - [F,L]
-    RewriteRule ^artisan$ - [F,L]
-    RewriteRule ^composer\.(json|lock) - [F,L]
-    RewriteRule ^package\.(json|lock) - [F,L]
+    # Handle Authorization Header
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
-    # Blokir folder internal Laravel tapi IZINKAN folder storage (untuk gambar)
-    RewriteRule ^storage/framework/(.*) - [F,L]
-    RewriteRule ^storage/logs/(.*) - [F,L]
+    # Handle X-XSRF-Token Header
+    RewriteCond %{HTTP:x-xsrf-token} .
+    RewriteRule .* - [E=HTTP_X_XSRF_TOKEN:%{HTTP:X-XSRF-Token}]
 
-    # 2. REDIRECT: Arahkan semua trafik ke folder /public
-    RewriteCond %{REQUEST_URI} !^/public/
-    RewriteRule ^(.*)$ public/$1 [L]
-</IfModule>
+    # Redirect Trailing Slashes If Not A Folder...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} (.+)/$
+    RewriteRule ^ %1 [L,R=301]
 
-# Blokir dotfiles kecuali jika diizinkan
-<FilesMatch "^\.">
-    Order allow,deny
-    Deny from all
-</FilesMatch>
+    # Send Requests To Front Controller...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [L]
+</IfModule> ini sudah kak di deny
