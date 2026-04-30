@@ -1,3 +1,6 @@
+Options -Indexes
+AllowOverride All
+
 <Files .env>
     Order allow,deny
     Deny from all
