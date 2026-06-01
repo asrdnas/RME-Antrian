@@ -10,6 +10,7 @@ use App\Http\Controllers\LayananController;
 use App\Http\Controllers\FasilitasController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\PengumumanController;
+use App\Http\Controllers\OnlineAntrianController;
 use App\Models\Navbar;
 
 Route::get('/tes', function () {
@@ -39,19 +40,21 @@ Route::get('/team', [TeamController::class, 'team'])->name('team');
 // Route Pengumuman Klinik
 Route::get('/pengumuman', [PengumumanController::class, 'pengumuman'])->name('pengumuman');
 
-
 // Route Monitor Antrian Gigi dan Mulut
-Route::get('/monitor/antrian-gilut', [MonitorGilutController::class, 'index'])
-    ->name('monitor.antriangilut');
+Route::get('/monitor/antrian-gilut', [MonitorGilutController::class, 'index'])->name('monitor.antriangilut');
 
 // Route Monitor Antrian Umum
-Route::get('/monitor/antrian-umum', [MonitorUmumController::class, 'index'])
-    ->name('monitor.antrianumum');
+Route::get('/monitor/antrian-umum', [MonitorUmumController::class, 'index'])->name('monitor.antrianumum');
+
+// route Ambil Antrian Online
+Route::get('/ambil-antrian', [OnlineAntrianController::class, 'index'])->name('antrian.index');
+
+Route::post('/ambil-antrian/cek', [OnlineAntrianController::class, 'cek'])->name('antrian.cek');
+
+Route::post('/ambil-antrian/simpan', [OnlineAntrianController::class, 'simpan'])->name('antrian.simpan');
 
 Route::get('/{slug}', function ($slug) {
-
     $navbar = Navbar::where('slug', $slug)->firstOrFail();
 
     return view('page.' . $slug);
-
 });
