@@ -323,10 +323,10 @@
 
                     <span class="value"
                         style="
-                        color: {{ $antrian->payment_status == 'sudah_bayar' ? '#16a34a' : '#dc2626' }};
-                        font-weight:700;
-                    ">
-                        {{ strtoupper(str_replace('_', ' ', $antrian->payment_status)) }}
+                            color: {{ $antrian->payment_status == 'paid' ? '#16a34a' : '#dc2626' }};
+                            font-weight:700;
+                        ">
+                        {{ $antrian->payment_status == 'paid' ? 'SUDAH BAYAR' : 'BELUM BAYAR' }}
                     </span>
                 </div>
 

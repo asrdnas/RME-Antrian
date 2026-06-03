@@ -20,22 +20,14 @@ class OnlineAntrianController extends Controller
             'tanggal_lahir' => 'required|date',
         ]);
 
-        $patient = Patient::where('no_rme', $request->no_rme)
-            ->whereDate('tanggal_lahir', $request->tanggal_lahir)
-            ->first();
+        $patient = Patient::where('no_rme', $request->no_rme)->whereDate('tanggal_lahir', $request->tanggal_lahir)->first();
 
         if (!$patient) {
-            return back()->with(
-                'error',
-                'Data pasien tidak ditemukan. Silakan melakukan pendaftaran terlebih dahulu.'
-            );
+            return back()->with('error', 'Data pasien tidak ditemukan. Silakan melakukan pendaftaran terlebih dahulu.');
         }
 
         if ($patient->status_validasi !== 'approved') {
-            return back()->with(
-                'error',
-                'Data Anda masih menunggu validasi admin. Silakan hubungi klinik terlebih dahulu.'
-            );
+            return back()->with('error', 'Data Anda masih menunggu validasi admin. Silakan hubungi klinik terlebih dahulu.');
         }
 
         return view('antrian.konfirmasi', compact('patient'));
@@ -61,15 +53,13 @@ class OnlineAntrianController extends Controller
         $antrian = Antrian::create([
             'patient_id' => $patient->id,
             'pelayanan' => 'Gilut',
+            'ruangan' => 'Cluster 4',
+            'no_antrian' => \App\Filament\Resources\AntrianResource::generateNoAntrian('Gilut'),
+            'status' => 'menunggu',
             'payment_status' => 'unpaid',
+            'tanggal' => now(),
         ]);
 
-        $antrian = Antrian::create([
-            'patient_id' => $patient->id,
-            'pelayanan' => 'Gilut',
-            'payment_status' => 'belum_bayar',
-        ]);
-        
         return view('antrian.hasil', [
             'antrian' => $antrian,
             'pesan' => 'Antrian berhasil dibuat.',
