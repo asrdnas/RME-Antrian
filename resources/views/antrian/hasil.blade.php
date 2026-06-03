@@ -238,6 +238,36 @@
 
             <h2>{{ $pesan }}</h2>
 
+            @if ($antrian->payment_status == 'unpaid')
+                <div
+                    style="
+        margin: 18px auto;
+        padding: 16px 18px;
+        border-radius: 16px;
+        background: linear-gradient(135deg, #fef3c7, #fde68a);
+        color: #92400e;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        text-align: center;
+        max-width: 420px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    ">
+                    <i class="fas fa-circle-exclamation" style="font-size: 20px;"></i>
+
+                    <div>
+                        <div style="font-size: 15px;">
+                            Status pembayaran: BELUM BAYAR
+                        </div>
+                        <div style="font-size: 13px; font-weight: 500; opacity: 0.9;">
+                            Silakan melakukan pembayaran di admin klinik terlebih dahulu.
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             <p class="subtitle">
                 Nomor antrean Anda berhasil dibuat
             </p>
@@ -282,6 +312,21 @@
 
                     <span class="status">
                         {{ strtoupper($antrian->status) }}
+                    </span>
+                </div>
+
+                <div class="row">
+                    <span class="label">
+                        <i class="fas fa-wallet"></i>
+                        Pembayaran
+                    </span>
+
+                    <span class="value"
+                        style="
+                        color: {{ $antrian->payment_status == 'sudah_bayar' ? '#16a34a' : '#dc2626' }};
+                        font-weight:700;
+                    ">
+                        {{ strtoupper(str_replace('_', ' ', $antrian->payment_status)) }}
                     </span>
                 </div>
 

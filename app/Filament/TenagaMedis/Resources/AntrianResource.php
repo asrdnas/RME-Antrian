@@ -107,6 +107,18 @@ class AntrianResource extends Resource
                     ->dateTime('d/m/Y H:i')
                     ->color('gray')
                     ->alignCenter(),
+
+                Tables\Columns\BadgeColumn::make('payment_status')
+                    ->label('Payment')
+                    ->colors([
+                    'danger' => 'belum_bayar',
+                    'success' => 'sudah_bayar',
+                        ])
+                    ->icons([
+                        'heroicon-o-x-circle' => 'belum_bayar',
+                        'heroicon-o-check-circle' => 'sudah_bayar',
+                        ])
+                    ->alignCenter(),
             ])
 
             ->filters([

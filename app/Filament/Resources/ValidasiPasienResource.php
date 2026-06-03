@@ -120,6 +120,7 @@ class ValidasiPasienResource extends Resource
                                 : 'Cluster 3',
                             'no_antrian' => AntrianResource::generateNoAntrian($data['pelayanan']),
                             'status' => 'menunggu',
+                            'payment_status' => 'unpaid',
                             'tanggal' => now(),
                         ]);
 
@@ -161,7 +162,7 @@ class ValidasiPasienResource extends Resource
                     Forms\Components\TextInput::make('nama_pasien')
                         ->label('Nama Lengkap')
                         ->required(),
-                       
+
 
                     Forms\Components\TextInput::make('tempat_lahir')
                         ->label('Tempat Lahir')

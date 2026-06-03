@@ -46,16 +46,10 @@ class AntrianResource extends Resource
 
                             $pelayanan = $get('pelayanan');
                             if ($pelayanan) {
-                                $existing = Antrian::where('patient_id', $patient->id)
-                                    ->where('pelayanan', $pelayanan)
-                                    ->where('status', '!=', 'selesai')
-                                    ->first();
+                                $existing = Antrian::where('patient_id', $patient->id)->where('pelayanan', $pelayanan)->where('status', '!=', 'selesai')->first();
 
                                 if ($existing) {
-                                    Notification::make()
-                                        ->title('Pasien sudah ada di antrian untuk pelayanan ini!')
-                                        ->danger()
-                                        ->send();
+                                    Notification::make()->title('Pasien sudah ada di antrian untuk pelayanan ini!')->danger()->send();
                                     $set('patient_id', null);
                                     $set('nama_pasien', null);
                                 } else {
@@ -82,8 +76,9 @@ class AntrianResource extends Resource
                 ->afterStateHydrated(function ($state, callable $set, $get) {
                     if (empty($state) && $get('patient_id')) {
                         $patient = Patient::find($get('patient_id'));
-                        if ($patient)
+                        if ($patient) {
                             $set('nama_pasien', $patient->nama_pasien);
+                        }
                     }
                 }),
 
@@ -105,17 +100,10 @@ class AntrianResource extends Resource
 
                     $oldPelayanan = $record?->pelayanan;
 
-                    $existing = Antrian::where('patient_id', $patient_id)
-                        ->where('pelayanan', $state)
-                        ->where('status', '!=', 'selesai')
-                        ->where('id', '!=', $record?->id)
-                        ->first();
+                    $existing = Antrian::where('patient_id', $patient_id)->where('pelayanan', $state)->where('status', '!=', 'selesai')->where('id', '!=', $record?->id)->first();
 
                     if ($existing) {
-                        Notification::make()
-                            ->title('Pasien sudah ada di antrian untuk pelayanan ini!')
-                            ->danger()
-                            ->send();
+                        Notification::make()->title('Pasien sudah ada di antrian untuk pelayanan ini!')->danger()->send();
                         $set('pelayanan', $oldPelayanan);
                         return;
                     }
@@ -144,16 +132,10 @@ class AntrianResource extends Resource
                     $recordId = $get('record')->id ?? null;
 
                     if ($pelayanan && $state) {
-                        $existing = Antrian::where('pelayanan', $pelayanan)
-                            ->where('no_antrian', $state)
-                            ->where('id', '!=', $recordId)
-                            ->first();
+                        $existing = Antrian::where('pelayanan', $pelayanan)->where('no_antrian', $state)->where('id', '!=', $recordId)->first();
 
                         if ($existing) {
-                            Notification::make()
-                                ->title('Nomor antrian sudah dipakai pasien lain!')
-                                ->danger()
-                                ->send();
+                            Notification::make()->title('Nomor antrian sudah dipakai pasien lain!')->danger()->send();
 
                             if ($recordId) {
                                 $set('no_antrian', $get('record')->no_antrian);
@@ -174,10 +156,7 @@ class AntrianResource extends Resource
                 ->default('menunggu')
                 ->required(),
 
-            Forms\Components\DateTimePicker::make('tanggal')
-                ->label('Tanggal Antrian')
-                ->default(now())
-                ->required(),
+            Forms\Components\DateTimePicker::make('tanggal')->label('Tanggal Antrian')->default(now())->required(),
 
             Forms\Components\Hidden::make('ruangan'),
         ]);
@@ -189,12 +168,45 @@ class AntrianResource extends Resource
             ->recordUrl(null)
             ->poll('5s')
             ->columns([
-                Tables\Columns\TextColumn::make('no_antrian')->label('No Antrian')->alignCenter()->badge()->color('primary'),
-                Tables\Columns\TextColumn::make('patient.no_rme')->label('No RME')->copyable()->icon('heroicon-o-identification')->color('info')->alignCenter(),
-                Tables\Columns\TextColumn::make('patient.nama_pasien')->label('Nama Pasien')->sortable()->searchable()->weight('bold')->alignCenter(),
-                Tables\Columns\TextColumn::make('patient.alamat_pasien')->label('Alamat Pasien')->limit(20)->tooltip(fn($record) => $record->patient->alamat_pasien)->alignCenter(),
-                Tables\Columns\TextColumn::make('pelayanan')->label('Pelayanan')->badge()->color('info')->sortable()->alignCenter(),
-                Tables\Columns\TextColumn::make('ruangan')->label('Ruangan')->badge()->color('success')->alignCenter(),
+                Tables\Columns\TextColumn::make('no_antrian')
+                    ->label('No Antrian')
+                    ->alignCenter()
+                    ->badge()
+                    ->color('primary'),
+
+                Tables\Columns\TextColumn::make('patient.no_rme')
+                    ->label('No RME')
+                    ->copyable()
+                    ->icon('heroicon-o-identification')
+                    ->color('info')
+                    ->alignCenter(),
+
+                Tables\Columns\TextColumn::make('patient.nama_pasien')
+                    ->label('Nama Pasien')
+                    ->sortable()
+                    ->searchable()
+                    ->weight('bold')
+                    ->alignCenter(),
+
+                Tables\Columns\TextColumn::make('patient.alamat_pasien')
+                    ->label('Alamat Pasien')
+                    ->limit(20)
+                    ->tooltip(fn($record) => $record->patient->alamat_pasien)
+                    ->alignCenter(),
+
+                Tables\Columns\TextColumn::make('pelayanan')
+                    ->label('Pelayanan')
+                    ->badge()
+                    ->color('info')
+                    ->sortable()
+                    ->alignCenter(),
+
+                Tables\Columns\TextColumn::make('ruangan')
+                    ->label('Ruangan')
+                    ->badge()
+                    ->color('success')
+                    ->alignCenter(),
+
                 Tables\Columns\BadgeColumn::make('status')
                     ->label('Status')
                     ->colors([
@@ -208,18 +220,41 @@ class AntrianResource extends Resource
                         'heroicon-o-check-circle' => 'selesai',
                     ])
                     ->alignCenter(),
-                Tables\Columns\TextColumn::make('tanggal')->label('Tanggal')->dateTime('d/m/Y H:i')->sortable()->icon('heroicon-o-calendar')->alignCenter(),
+
+                // 🔥 INI YANG BARU KITA TAMBAH
+                Tables\Columns\BadgeColumn::make('payment_status')
+                    ->label('Payment')
+                    ->colors([
+                        'danger' => 'unpaid',
+                        'success' => 'paid',
+                    ])
+                    ->icons([
+                        'heroicon-o-x-circle' => 'unpaid',
+                        'heroicon-o-check-circle' => 'paid',
+                    ])
+                    ->alignCenter(),
+
+                Tables\Columns\TextColumn::make('tanggal')
+                    ->label('Tanggal')
+                    ->dateTime('d/m/Y H:i')
+                    ->sortable()
+                    ->icon('heroicon-o-calendar')
+                    ->alignCenter(),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('status')->options([
-                    'menunggu' => 'Menunggu',
-                    'dipanggil' => 'Dipanggil',
-                    'selesai' => 'Selesai',
-                ])->native(false),
-                Tables\Filters\SelectFilter::make('pelayanan')->options([
-                    'Umum' => 'Umum',
-                    'Gilut' => 'Gilut',
-                ])->native(false),
+                Tables\Filters\SelectFilter::make('status')
+                    ->options([
+                        'menunggu' => 'Menunggu',
+                        'dipanggil' => 'Dipanggil',
+                        'selesai' => 'Selesai',
+                    ])
+                    ->native(false),
+                Tables\Filters\SelectFilter::make('pelayanan')
+                    ->options([
+                        'Umum' => 'Umum',
+                        'Gilut' => 'Gilut',
+                    ])
+                    ->native(false),
             ])
             ->headerActions([
                 Tables\Actions\Action::make('resetAntrian')
@@ -235,9 +270,7 @@ class AntrianResource extends Resource
                         $now = Carbon::now();
 
                         // Ambil semua antrian sampai hari ini
-                        $antrians = Antrian::whereDate('tanggal', '<=', today())
-                            ->with('patient')
-                            ->get();
+                        $antrians = Antrian::whereDate('tanggal', '<=', today())->with('patient')->get();
 
                         foreach ($antrians as $antrian) {
                             if ($antrian->patient) {
@@ -260,14 +293,24 @@ class AntrianResource extends Resource
                         // Hapus semua antrian sampai hari ini
                         Antrian::whereDate('tanggal', '<=', today())->delete();
 
-                        Notification::make()
-                            ->title('Semua antrian (hari ini & sebelumnya) berhasil di-backup dan di-reset.')
-                            ->success()
-                            ->send();
+                        Notification::make()->title('Semua antrian (hari ini & sebelumnya) berhasil di-backup dan di-reset.')->success()->send();
                     }),
             ])
 
             ->actions([
+                Tables\Actions\Action::make('konfirmasiBayar')
+                    ->label('Sudah Bayar')
+                    ->icon('heroicon-o-banknotes')
+                    ->color('success')
+                    ->visible(fn($record) => $record->payment_status === 'unpaid')
+                    ->requiresConfirmation()
+                    ->action(function ($record) {
+                        $record->update([
+                            'payment_status' => 'paid',
+                        ]);
+
+                        Notification::make()->title('Pembayaran berhasil dikonfirmasi')->success()->send();
+                    }),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\Action::make('panggilPasien')
                     ->label('Panggil')
@@ -307,10 +350,7 @@ class AntrianResource extends Resource
                             'dokter_id' => null,
                         ]);
 
-                        Notification::make()
-                            ->title('Pasien telah selesai. Rekam medis baru telah dibuat.')
-                            ->success()
-                            ->send();
+                        Notification::make()->title('Pasien telah selesai. Rekam medis baru telah dibuat.')->success()->send();
                     }),
                 Tables\Actions\DeleteAction::make(),
             ])
@@ -335,11 +375,7 @@ class AntrianResource extends Resource
     {
         $prefix = $pelayanan === 'Gilut' ? 'KG-' : 'KU-';
 
-        $last = Antrian::whereDate('tanggal', today())
-            ->where('pelayanan', $pelayanan)
-            ->where('status', '!=', 'selesai')
-            ->orderBy('no_antrian', 'desc')
-            ->value('no_antrian');
+        $last = Antrian::whereDate('tanggal', today())->where('pelayanan', $pelayanan)->where('status', '!=', 'selesai')->orderBy('no_antrian', 'desc')->value('no_antrian');
 
         $number = $last ? (int) substr($last, 1) + 1 : 1;
         return $prefix . str_pad($number, 2, '0', STR_PAD_LEFT);
@@ -347,11 +383,7 @@ class AntrianResource extends Resource
 
     public static function renumberAntrian(string $pelayanan)
     {
-        $antrians = Antrian::where('pelayanan', $pelayanan)
-            ->whereDate('tanggal', today())
-            ->where('status', '!=', 'selesai')
-            ->orderBy('no_antrian')
-            ->get();
+        $antrians = Antrian::where('pelayanan', $pelayanan)->whereDate('tanggal', today())->where('status', '!=', 'selesai')->orderBy('no_antrian')->get();
 
         $prefix = $pelayanan === 'Gilut' ? 'KG-' : 'KU-';
         $counter = 1;

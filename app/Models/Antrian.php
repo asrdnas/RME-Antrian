@@ -15,6 +15,7 @@ class Antrian extends Model
         'tanggal',
         'waktu_mulai',
         'waktu_selesai',
+        'payment_status', 
     ];
 
     public function patient()

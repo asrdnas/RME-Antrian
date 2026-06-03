@@ -61,8 +61,15 @@ class OnlineAntrianController extends Controller
         $antrian = Antrian::create([
             'patient_id' => $patient->id,
             'pelayanan' => 'Gilut',
+            'payment_status' => 'unpaid',
         ]);
 
+        $antrian = Antrian::create([
+            'patient_id' => $patient->id,
+            'pelayanan' => 'Gilut',
+            'payment_status' => 'belum_bayar',
+        ]);
+        
         return view('antrian.hasil', [
             'antrian' => $antrian,
             'pesan' => 'Antrian berhasil dibuat.',

@@ -22,10 +22,9 @@ return new class extends Migration {
             // cukup ini saja
             $table->timestamp('waktu_mulai')->nullable();
             $table->timestamp('waktu_selesai')->nullable();
-
+            $table->enum('payment_status', ['unpaid', 'paid'])->default('unpaid');
             $table->timestamps();
         });
-
     }
 
     /**
