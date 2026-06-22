@@ -27,8 +27,34 @@
                 </p>
 
                 <div class="hero-actions">
-                    <a href="{{ route('pengumuman') }}" class="btn-primary">
-                        Lihat Pengumuman Terkini
+                    <a href="{{ route('antrian.index') }}" class="btn-primary btn-hero">
+                        <i class="fas fa-ticket-alt"></i> Ambil Antrian
+                    </a>
+
+                    <div class="dropdown-login">
+                        <button class="btn-outline btn-hero dropdown-btn" id="loginDropdownBtn">
+                            <i class="fas fa-sign-in-alt"></i> Login <i class="fas fa-chevron-down arrow-icon"></i>
+                        </button>
+                        <div class="dropdown-menu-custom" id="loginDropdownMenu">
+                            <a href="{{ url('/tenaga-medis') }}" class="dropdown-item-custom">
+                                <span class="item-icon bg-medis"><i class="fas fa-user-md"></i></span>
+                                <div class="item-text">
+                                    <strong>Tenaga Medis</strong>
+                                    <span>Masuk ke dashboard medis</span>
+                                </div>
+                            </a>
+                            <a href="{{ url('/admin') }}" class="dropdown-item-custom">
+                                <span class="item-icon bg-admin"><i class="fas fa-user-shield"></i></span>
+                                <div class="item-text">
+                                    <strong>Administrator</strong>
+                                    <span>Kelola sistem dan antrian</span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+
+                    <a href="{{ route('pengumuman') }}" class="btn-link-custom">
+                        Lihat Pengumuman <i class="fas fa-arrow-right"></i>
                     </a>
                 </div>
 
@@ -320,6 +346,30 @@
                     </iframe>
                 </div>
             </div>
-        </div>
     </section>
+@endsection
+
+@section('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdownBtn = document.getElementById('loginDropdownBtn');
+            const dropdownMenu = document.getElementById('loginDropdownMenu');
+
+            if (dropdownBtn && dropdownMenu) {
+                dropdownBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    dropdownMenu.classList.toggle('show');
+                    dropdownBtn.classList.toggle('active');
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!dropdownBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                        dropdownMenu.classList.remove('show');
+                        dropdownBtn.classList.remove('active');
+                    }
+                });
+            }
+        });
+    </script>
 @endsection
