@@ -299,6 +299,7 @@ body.loaded #welcome-screen {
         /* Jika menu kamu ada 4, biasanya tingginya sekitar 200px-240px */
         top: 320px; 
         opacity: 1;
+        pointer-events: auto;
     }
 
     .nav-links a {
